@@ -14,24 +14,26 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ToastModule } from 'primeng/toast';
 import { SliderModule } from 'primeng/slider';
 import { RatingModule } from 'primeng/rating';
+import { AppSharedModule } from 'src/app/shared/app-shared.module';
 
 @NgModule({
-	imports: [
-		CommonModule,
-		TableDemoRoutingModule,
-		FormsModule,
-		TableModule,
-		RatingModule,
-		ButtonModule,
-		SliderModule,
-		InputTextModule,
-		ToggleButtonModule,
-		RippleModule,
-		MultiSelectModule,
-		DropdownModule,
-		ProgressBarModule,
-		ToastModule
-	],
-	declarations: [TableDemoComponent]
+    declarations: [TableDemoComponent],
+    imports: [
+        CommonModule,
+        TableDemoRoutingModule,
+        FormsModule,
+        TableModule,
+        RatingModule,
+        ButtonModule,
+        SliderModule,
+        InputTextModule,
+        ToggleButtonModule,
+        RippleModule,
+        MultiSelectModule,
+        DropdownModule,
+        ProgressBarModule,
+        ToastModule,
+				AppSharedModule
+    ]
 })
 export class TableDemoModule { }

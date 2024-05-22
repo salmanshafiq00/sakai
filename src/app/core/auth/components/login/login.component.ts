@@ -1,0 +1,44 @@
+import { Component, inject } from '@angular/core';
+import { LayoutService } from 'src/app/layout/service/app.layout.service';
+import {AuthService} from '../../services/auth.service';
+import {LoginRequestCommand} from '../../services/auth-client.service';
+import { Router } from '@angular/router';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styles: [`
+  :host ::ng-deep .pi-eye,
+  :host ::ng-deep .pi-eye-slash {
+      transform:scale(1.6);
+      margin-right: 1rem;
+      color: var(--primary-color) !important;
+  }
+`]
+})
+export class LoginComponent {
+
+  email: string = 'administrator@localhost';
+  password: string = 'Salman@123';
+  isRemember: boolean = false;
+
+  public layoutService: LayoutService = inject(LayoutService);
+  private authService: AuthService = inject(AuthService)
+  private router: Router = inject(Router)
+
+  login(){
+    console.log(this.password);
+    console.log(this.email);
+    console.log(this.isRemember);
+    const loginRequest = new LoginRequestCommand({userName: this.email, password: this.password, isRemember: this.isRemember})
+    this.authService.login(loginRequest).subscribe({
+      next: (isSuccessful) => {
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        alert('Login Error!!!')
+      }
+    });
+
+  }
+}

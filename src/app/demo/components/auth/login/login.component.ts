@@ -20,4 +20,9 @@ export class LoginComponent {
     password!: string;
 
     constructor(public layoutService: LayoutService) { }
+
+    login(){
+        console.log(this.valCheck)
+        console.log(this.password)
+    }
 }
