@@ -9,12 +9,13 @@ export class TokenInterceptor implements HttpInterceptor{
   authService: AuthService = inject(AuthService);
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const accessToken = this.authService.getAccessToken();
 
+    const accessToken = this.authService.getAccessToken();
+    
     if(accessToken){
       const clonedRequest = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${accessToken}`,
         }
       });
       return next.handle(clonedRequest);

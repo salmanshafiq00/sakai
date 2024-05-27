@@ -11,7 +11,7 @@ import { EventService } from './demo/service/event.service';
 import { IconService } from './demo/service/icon.service';
 import { NodeService } from './demo/service/node.service';
 import { PhotoService } from './demo/service/photo.service';
-
+import { CoreModule } from './core/core.module';
 @NgModule({
     declarations: [
         AppComponent, 
@@ -19,17 +19,18 @@ import { PhotoService } from './demo/service/photo.service';
     ],
     imports: [
         AppRoutingModule, 
-        AppLayoutModule
+        AppLayoutModule,
+        CoreModule
     ],
     providers: [
-        { provide: LocationStrategy, useClass: PathLocationStrategy }
-        , CountryService
-        , CustomerService
-        , EventService
-        , IconService
-        , NodeService
-        , PhotoService
-        , ProductService
+        { provide: LocationStrategy, useClass: PathLocationStrategy },
+        CountryService,
+        CustomerService,
+        EventService,
+        IconService,
+        NodeService,
+        PhotoService,
+        ProductService,
     ],
     bootstrap: [AppComponent],
 })

@@ -21,6 +21,32 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
+                label: 'Common Setup',
+                items: [
+                    {
+                        label: 'Common Setup', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'Lookup', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup'] },
+                            { label: 'Lookup Detail', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup-detail'] },
+                            {
+                                label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
+                                items: [
+                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
+                                ]
+                            },
+                            {
+                                label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
+                                items: [
+                                    { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }
+                                ]
+                            },
+                        ]
+                    }
+                ]
+            },
+            {
                 label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },

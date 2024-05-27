@@ -15,8 +15,16 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
+export interface ILookupDetailsClient {
+    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailResponse>;
+    getLookupDetail(id: string): Observable<LookupDetailResponse>;
+    deleteLookupDetail(id: string): Observable<void>;
+    createLookupDetail(command: CreateLookupDetailCommand): Observable<string>;
+    updateLookupDetail(command: UpdateLookupDetailCommand): Observable<void>;
+}
+
 @Injectable()
-export class LookupDetailsClient {
+export class LookupDetailsClient implements ILookupDetailsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -26,30 +34,24 @@ export class LookupDetailsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookupDetails(pageNumber: number, pageSize: number, keyword: string | null | undefined): Observable<PaginatedResponseOfLookupDetailResponse> {
-        let url_ = this.baseUrl + "/api/LookupDetails?";
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
-        else
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === undefined || pageSize === null)
-            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
-        else
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (keyword !== undefined && keyword !== null)
-            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
+    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailResponse> {
+        let url_ = this.baseUrl + "/api/LookupDetails/GetLookupDetails";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(query);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processGetLookupDetails(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -76,6 +78,113 @@ export class LookupDetailsClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PaginatedResponseOfLookupDetailResponse.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getLookupDetail(id: string): Observable<LookupDetailResponse> {
+        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetLookupDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetLookupDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LookupDetailResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LookupDetailResponse>;
+        }));
+    }
+
+    protected processGetLookupDetail(response: HttpResponseBase): Observable<LookupDetailResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LookupDetailResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteLookupDetail(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteLookupDetail(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteLookupDetail(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteLookupDetail(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -205,117 +314,18 @@ export class LookupDetailsClient {
         }
         return _observableOf(null as any);
     }
+}
 
-    getLookupDetail(id: string): Observable<LookupDetailResponse> {
-        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookupDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetLookupDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<LookupDetailResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<LookupDetailResponse>;
-        }));
-    }
-
-    protected processGetLookupDetail(response: HttpResponseBase): Observable<LookupDetailResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LookupDetailResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    deleteLookupDetail(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteLookupDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteLookupDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processDeleteLookupDetail(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
+export interface ILookupsClient {
+    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupResponse>;
+    getLookup(id: string): Observable<LookupResponse>;
+    deleteLookup(id: string): Observable<void>;
+    createLookup(command: CreateLookupCommand): Observable<string>;
+    updateLookup(command: UpdateLookupCommand): Observable<void>;
 }
 
 @Injectable()
-export class LookupsClient {
+export class LookupsClient implements ILookupsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -325,30 +335,24 @@ export class LookupsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookups(pageNumber: number, pageSize: number, keyword: string | null | undefined): Observable<PaginatedResponseOfLookupResponse> {
-        let url_ = this.baseUrl + "/api/Lookups?";
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
-        else
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === undefined || pageSize === null)
-            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
-        else
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (keyword !== undefined && keyword !== null)
-            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
+    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupResponse> {
+        let url_ = this.baseUrl + "/api/Lookups/GetLookups";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(query);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processGetLookups(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -375,6 +379,113 @@ export class LookupsClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PaginatedResponseOfLookupResponse.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getLookup(id: string): Observable<LookupResponse> {
+        let url_ = this.baseUrl + "/api/Lookups/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetLookup(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetLookup(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<LookupResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<LookupResponse>;
+        }));
+    }
+
+    protected processGetLookup(response: HttpResponseBase): Observable<LookupResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = LookupResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteLookup(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Lookups/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteLookup(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteLookup(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteLookup(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -504,117 +615,15 @@ export class LookupsClient {
         }
         return _observableOf(null as any);
     }
+}
 
-    getLookup(id: string): Observable<LookupResponse> {
-        let url_ = this.baseUrl + "/api/Lookups/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookup(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetLookup(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<LookupResponse>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<LookupResponse>;
-        }));
-    }
-
-    protected processGetLookup(response: HttpResponseBase): Observable<LookupResponse> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LookupResponse.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    deleteLookup(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/Lookups/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteLookup(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteLookup(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processDeleteLookup(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
+export interface ISelectListsClient {
+    getLookupSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
+    getLookupDetailSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
 }
 
 @Injectable()
-export class SelectListsClient {
+export class SelectListsClient implements ISelectListsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -624,8 +633,10 @@ export class SelectListsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookupSelectList(): Observable<SelectListModel[]> {
-        let url_ = this.baseUrl + "/api/SelectLists/GetLookupSelectList";
+    getLookupSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]> {
+        let url_ = this.baseUrl + "/api/SelectLists/GetLookupSelectList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -680,8 +691,10 @@ export class SelectListsClient {
         return _observableOf(null as any);
     }
 
-    getLookupDetailSelectList(): Observable<SelectListModel[]> {
-        let url_ = this.baseUrl + "/api/SelectLists/GetLookupDetailSelectList";
+    getLookupDetailSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]> {
+        let url_ = this.baseUrl + "/api/SelectLists/GetLookupDetailSelectList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -737,8 +750,16 @@ export class SelectListsClient {
     }
 }
 
+export interface ITodoItemsClient {
+    getTodoItemsWithPagination(listId: string, pageNumber: number, pageSize: number): Observable<PaginatedListOfTodoItemBriefDto>;
+    createTodoItem(command: CreateTodoItemCommand): Observable<string>;
+    updateTodoItem(id: string, command: UpdateTodoItemCommand): Observable<void>;
+    deleteTodoItem(id: string): Observable<void>;
+    updateTodoItemDetail(id: string, command: UpdateTodoItemDetailCommand): Observable<void>;
+}
+
 @Injectable()
-export class TodoItemsClient {
+export class TodoItemsClient implements ITodoItemsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1016,8 +1037,15 @@ export class TodoItemsClient {
     }
 }
 
+export interface ITodoListsClient {
+    getTodoLists(): Observable<TodosVm>;
+    createTodoList(command: CreateTodoListCommand): Observable<string>;
+    updateTodoList(id: string, command: UpdateTodoListCommand): Observable<void>;
+    deleteTodoList(id: string): Observable<void>;
+}
+
 @Injectable()
-export class TodoListsClient {
+export class TodoListsClient implements ITodoListsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1231,8 +1259,13 @@ export class TodoListsClient {
     }
 }
 
+export interface IAccountsClient {
+    login(command: LoginRequestCommand): Observable<AuthenticatedResponse>;
+    refreshToken(): Observable<AuthenticatedResponse>;
+}
+
 @Injectable()
-export class AccountsClient {
+export class AccountsClient implements IAccountsClient {
     private http: HttpClient;
     private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
@@ -1363,22 +1396,14 @@ export class AccountsClient {
     }
 }
 
-export class PaginatedResponseOfLookupDetailResponse implements IPaginatedResponseOfLookupDetailResponse {
+export class PaginatedResponseOfLookupDetailResponse {
     items?: LookupDetailResponse[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-
-    constructor(data?: IPaginatedResponseOfLookupDetailResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
+    dataFields?: DataFieldModel[];
 
     init(_data?: any) {
         if (_data) {
@@ -1392,6 +1417,11 @@ export class PaginatedResponseOfLookupDetailResponse implements IPaginatedRespon
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
         }
     }
 
@@ -1414,20 +1444,16 @@ export class PaginatedResponseOfLookupDetailResponse implements IPaginatedRespon
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IPaginatedResponseOfLookupDetailResponse {
-    items?: LookupDetailResponse[];
-    pageNumber?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-}
-
-export class LookupDetailResponse implements ILookupDetailResponse {
+export class LookupDetailResponse {
     id?: string;
     name?: string;
     code?: string;
@@ -1438,15 +1464,6 @@ export class LookupDetailResponse implements ILookupDetailResponse {
     parentName?: string;
     lookupId?: string;
     lookupName?: string;
-
-    constructor(data?: ILookupDetailResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1486,20 +1503,167 @@ export class LookupDetailResponse implements ILookupDetailResponse {
     }
 }
 
-export interface ILookupDetailResponse {
-    id?: string;
-    name?: string;
-    code?: string;
-    description?: string;
-    status?: boolean;
-    statusName?: string;
-    parentId?: string | undefined;
-    parentName?: string;
-    lookupId?: string;
-    lookupName?: string;
+export class DataFieldModel {
+    field?: string;
+    header?: string;
+    dataType?: string;
+    dbField?: string;
+    dbDataType?: string;
+    visible?: boolean;
+    isSortable?: boolean;
+    isGlobalFilterable?: boolean;
+    isFilterable?: boolean;
+
+    init(_data?: any) {
+        if (_data) {
+            this.field = _data["field"];
+            this.header = _data["header"];
+            this.dataType = _data["dataType"];
+            this.dbField = _data["dbField"];
+            this.dbDataType = _data["dbDataType"];
+            this.visible = _data["visible"];
+            this.isSortable = _data["isSortable"];
+            this.isGlobalFilterable = _data["isGlobalFilterable"];
+            this.isFilterable = _data["isFilterable"];
+        }
+    }
+
+    static fromJS(data: any): DataFieldModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataFieldModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["field"] = this.field;
+        data["header"] = this.header;
+        data["dataType"] = this.dataType;
+        data["dbField"] = this.dbField;
+        data["dbDataType"] = this.dbDataType;
+        data["visible"] = this.visible;
+        data["isSortable"] = this.isSortable;
+        data["isGlobalFilterable"] = this.isGlobalFilterable;
+        data["isFilterable"] = this.isFilterable;
+        return data;
+    }
 }
 
-export class ProblemDetails implements IProblemDetails {
+export abstract class DataGridModel {
+    allowCache?: boolean | undefined;
+    pageNumber?: number;
+    pageSize?: number;
+    offset?: number;
+    sortField?: string;
+    sortOrder?: number | undefined;
+    defaultOrderFieldName?: string | undefined;
+    globalFilterValue?: string;
+    filters?: DataFilterModel[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.allowCache = _data["allowCache"];
+            this.pageNumber = _data["pageNumber"];
+            this.pageSize = _data["pageSize"];
+            this.offset = _data["offset"];
+            this.sortField = _data["sortField"];
+            this.sortOrder = _data["sortOrder"];
+            this.defaultOrderFieldName = _data["defaultOrderFieldName"];
+            this.globalFilterValue = _data["globalFilterValue"];
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DataGridModel {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'DataGridModel' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["allowCache"] = this.allowCache;
+        data["pageNumber"] = this.pageNumber;
+        data["pageSize"] = this.pageSize;
+        data["offset"] = this.offset;
+        data["sortField"] = this.sortField;
+        data["sortOrder"] = this.sortOrder;
+        data["defaultOrderFieldName"] = this.defaultOrderFieldName;
+        data["globalFilterValue"] = this.globalFilterValue;
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export class GetLookupDetailListQuery extends DataGridModel {
+    cacheKey?: string;
+    expiration?: string | undefined;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.cacheKey = _data["cacheKey"];
+            this.expiration = _data["expiration"];
+        }
+    }
+
+    static override fromJS(data: any): GetLookupDetailListQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetLookupDetailListQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["cacheKey"] = this.cacheKey;
+        data["expiration"] = this.expiration;
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class DataFilterModel {
+    field?: string;
+    value?: string;
+    matchMode?: string;
+    operator?: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.field = _data["field"];
+            this.value = _data["value"];
+            this.matchMode = _data["matchMode"];
+            this.operator = _data["operator"];
+        }
+    }
+
+    static fromJS(data: any): DataFilterModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataFilterModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["field"] = this.field;
+        data["value"] = this.value;
+        data["matchMode"] = this.matchMode;
+        data["operator"] = this.operator;
+        return data;
+    }
+}
+
+export class ProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
@@ -1507,15 +1671,6 @@ export class ProblemDetails implements IProblemDetails {
     instance?: string | undefined;
 
     [key: string]: any;
-
-    constructor(data?: IProblemDetails) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1553,17 +1708,7 @@ export class ProblemDetails implements IProblemDetails {
     }
 }
 
-export interface IProblemDetails {
-    type?: string | undefined;
-    title?: string | undefined;
-    status?: number | undefined;
-    detail?: string | undefined;
-    instance?: string | undefined;
-
-    [key: string]: any;
-}
-
-export class CreateLookupDetailCommand implements ICreateLookupDetailCommand {
+export class CreateLookupDetailCommand {
     name!: string;
     code!: string;
     description?: string;
@@ -1571,15 +1716,6 @@ export class CreateLookupDetailCommand implements ICreateLookupDetailCommand {
     lookupId?: string;
     parentId?: string | undefined;
     cacheKey?: string;
-
-    constructor(data?: ICreateLookupDetailCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1613,17 +1749,7 @@ export class CreateLookupDetailCommand implements ICreateLookupDetailCommand {
     }
 }
 
-export interface ICreateLookupDetailCommand {
-    name: string;
-    code: string;
-    description?: string;
-    status?: boolean;
-    lookupId?: string;
-    parentId?: string | undefined;
-    cacheKey?: string;
-}
-
-export class UpdateLookupDetailCommand implements IUpdateLookupDetailCommand {
+export class UpdateLookupDetailCommand {
     id?: string;
     name!: string;
     code!: string;
@@ -1632,15 +1758,6 @@ export class UpdateLookupDetailCommand implements IUpdateLookupDetailCommand {
     lookupId!: string;
     parentId?: string | undefined;
     cacheKey?: string;
-
-    constructor(data?: IUpdateLookupDetailCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1676,33 +1793,14 @@ export class UpdateLookupDetailCommand implements IUpdateLookupDetailCommand {
     }
 }
 
-export interface IUpdateLookupDetailCommand {
-    id?: string;
-    name: string;
-    code: string;
-    description?: string;
-    status?: boolean;
-    lookupId: string;
-    parentId?: string | undefined;
-    cacheKey?: string;
-}
-
-export class PaginatedResponseOfLookupResponse implements IPaginatedResponseOfLookupResponse {
+export class PaginatedResponseOfLookupResponse {
     items?: LookupResponse[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-
-    constructor(data?: IPaginatedResponseOfLookupResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
+    dataFields?: DataFieldModel[];
 
     init(_data?: any) {
         if (_data) {
@@ -1716,6 +1814,11 @@ export class PaginatedResponseOfLookupResponse implements IPaginatedResponseOfLo
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
         }
     }
 
@@ -1738,20 +1841,16 @@ export class PaginatedResponseOfLookupResponse implements IPaginatedResponseOfLo
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
+        }
         return data;
     }
 }
 
-export interface IPaginatedResponseOfLookupResponse {
-    items?: LookupResponse[];
-    pageNumber?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-}
-
-export class LookupResponse implements ILookupResponse {
+export class LookupResponse {
     id?: string;
     name?: string;
     code?: string;
@@ -1760,15 +1859,6 @@ export class LookupResponse implements ILookupResponse {
     statusName?: string;
     parentId?: string | undefined;
     parentName?: string;
-
-    constructor(data?: ILookupResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1804,33 +1894,38 @@ export class LookupResponse implements ILookupResponse {
     }
 }
 
-export interface ILookupResponse {
-    id?: string;
-    name?: string;
-    code?: string;
-    description?: string;
-    status?: boolean;
-    statusName?: string;
-    parentId?: string | undefined;
-    parentName?: string;
+export class GetLookupListQuery extends DataGridModel {
+    expiration?: string | undefined;
+
+    override init(_data?: any) {
+        super.init(_data);
+        if (_data) {
+            this.expiration = _data["expiration"];
+        }
+    }
+
+    static override fromJS(data: any): GetLookupListQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetLookupListQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["expiration"] = this.expiration;
+        super.toJSON(data);
+        return data;
+    }
 }
 
-export class CreateLookupCommand implements ICreateLookupCommand {
+export class CreateLookupCommand {
     name!: string;
     code!: string;
     description?: string;
     status?: boolean;
     parentId?: string | undefined;
     cacheKey?: string;
-
-    constructor(data?: ICreateLookupCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1862,16 +1957,7 @@ export class CreateLookupCommand implements ICreateLookupCommand {
     }
 }
 
-export interface ICreateLookupCommand {
-    name: string;
-    code: string;
-    description?: string;
-    status?: boolean;
-    parentId?: string | undefined;
-    cacheKey?: string;
-}
-
-export class UpdateLookupCommand implements IUpdateLookupCommand {
+export class UpdateLookupCommand {
     id?: string;
     name!: string;
     code!: string;
@@ -1879,15 +1965,6 @@ export class UpdateLookupCommand implements IUpdateLookupCommand {
     status?: boolean;
     parentId?: string | undefined;
     cacheKey?: string;
-
-    constructor(data?: IUpdateLookupCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -1921,33 +1998,16 @@ export class UpdateLookupCommand implements IUpdateLookupCommand {
     }
 }
 
-export interface IUpdateLookupCommand {
-    id?: string;
-    name: string;
-    code: string;
-    description?: string;
-    status?: boolean;
-    parentId?: string | undefined;
-    cacheKey?: string;
-}
-
-export class SelectListModel implements ISelectListModel {
+export class SelectListModel {
     id?: string;
     name?: string;
-
-    constructor(data?: ISelectListModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
+    isDefault?: boolean;
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            this.isDefault = _data["isDefault"];
         }
     }
 
@@ -1962,31 +2022,18 @@ export class SelectListModel implements ISelectListModel {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        data["isDefault"] = this.isDefault;
         return data;
     }
 }
 
-export interface ISelectListModel {
-    id?: string;
-    name?: string;
-}
-
-export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItemBriefDto {
+export class PaginatedListOfTodoItemBriefDto {
     items?: TodoItemBriefDto[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-
-    constructor(data?: IPaginatedListOfTodoItemBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2026,29 +2073,11 @@ export class PaginatedListOfTodoItemBriefDto implements IPaginatedListOfTodoItem
     }
 }
 
-export interface IPaginatedListOfTodoItemBriefDto {
-    items?: TodoItemBriefDto[];
-    pageNumber?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-}
-
-export class TodoItemBriefDto implements ITodoItemBriefDto {
+export class TodoItemBriefDto {
     id?: string;
     listId?: string;
     title?: string | undefined;
     done?: boolean;
-
-    constructor(data?: ITodoItemBriefDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2076,25 +2105,9 @@ export class TodoItemBriefDto implements ITodoItemBriefDto {
     }
 }
 
-export interface ITodoItemBriefDto {
-    id?: string;
-    listId?: string;
-    title?: string | undefined;
-    done?: boolean;
-}
-
-export class CreateTodoItemCommand implements ICreateTodoItemCommand {
+export class CreateTodoItemCommand {
     listId?: string;
     title!: string | undefined;
-
-    constructor(data?: ICreateTodoItemCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2118,24 +2131,10 @@ export class CreateTodoItemCommand implements ICreateTodoItemCommand {
     }
 }
 
-export interface ICreateTodoItemCommand {
-    listId?: string;
-    title: string | undefined;
-}
-
-export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
+export class UpdateTodoItemCommand {
     id?: string;
     title!: string | undefined;
     done?: boolean;
-
-    constructor(data?: IUpdateTodoItemCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2161,26 +2160,11 @@ export class UpdateTodoItemCommand implements IUpdateTodoItemCommand {
     }
 }
 
-export interface IUpdateTodoItemCommand {
-    id?: string;
-    title: string | undefined;
-    done?: boolean;
-}
-
-export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand {
+export class UpdateTodoItemDetailCommand {
     id?: string;
     listId?: string;
     priority?: PriorityLevel;
     note?: string | undefined;
-
-    constructor(data?: IUpdateTodoItemDetailCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2208,13 +2192,6 @@ export class UpdateTodoItemDetailCommand implements IUpdateTodoItemDetailCommand
     }
 }
 
-export interface IUpdateTodoItemDetailCommand {
-    id?: string;
-    listId?: string;
-    priority?: PriorityLevel;
-    note?: string | undefined;
-}
-
 export enum PriorityLevel {
     None = 0,
     Low = 1,
@@ -2222,18 +2199,9 @@ export enum PriorityLevel {
     High = 3,
 }
 
-export class TodosVm implements ITodosVm {
+export class TodosVm {
     priorityLevels?: LookupDto[];
     lists?: TodoListDto[];
-
-    constructor(data?: ITodosVm) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2273,23 +2241,9 @@ export class TodosVm implements ITodosVm {
     }
 }
 
-export interface ITodosVm {
-    priorityLevels?: LookupDto[];
-    lists?: TodoListDto[];
-}
-
-export class LookupDto implements ILookupDto {
+export class LookupDto {
     id?: string;
     title?: string | undefined;
-
-    constructor(data?: ILookupDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2313,25 +2267,11 @@ export class LookupDto implements ILookupDto {
     }
 }
 
-export interface ILookupDto {
-    id?: string;
-    title?: string | undefined;
-}
-
-export class TodoListDto implements ITodoListDto {
+export class TodoListDto {
     id?: string;
     title?: string | undefined;
     colour?: string | undefined;
     items?: TodoItemDto[];
-
-    constructor(data?: ITodoListDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2367,29 +2307,13 @@ export class TodoListDto implements ITodoListDto {
     }
 }
 
-export interface ITodoListDto {
-    id?: string;
-    title?: string | undefined;
-    colour?: string | undefined;
-    items?: TodoItemDto[];
-}
-
-export class TodoItemDto implements ITodoItemDto {
+export class TodoItemDto {
     id?: string;
     listId?: string;
     title?: string | undefined;
     done?: boolean;
     priority?: number;
     note?: string | undefined;
-
-    constructor(data?: ITodoItemDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2421,26 +2345,8 @@ export class TodoItemDto implements ITodoItemDto {
     }
 }
 
-export interface ITodoItemDto {
-    id?: string;
-    listId?: string;
-    title?: string | undefined;
-    done?: boolean;
-    priority?: number;
-    note?: string | undefined;
-}
-
-export class CreateTodoListCommand implements ICreateTodoListCommand {
+export class CreateTodoListCommand {
     title!: string | undefined;
-
-    constructor(data?: ICreateTodoListCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2462,22 +2368,9 @@ export class CreateTodoListCommand implements ICreateTodoListCommand {
     }
 }
 
-export interface ICreateTodoListCommand {
-    title: string | undefined;
-}
-
-export class UpdateTodoListCommand implements IUpdateTodoListCommand {
+export class UpdateTodoListCommand {
     id?: string;
     title!: string | undefined;
-
-    constructor(data?: IUpdateTodoListCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2501,26 +2394,12 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
     }
 }
 
-export interface IUpdateTodoListCommand {
-    id?: string;
-    title: string | undefined;
-}
-
-export class AuthenticatedResponse implements IAuthenticatedResponse {
+export class AuthenticatedResponse {
     accessToken?: string;
     tokenType?: string;
     expiresInMinutes?: number;
     refreshToken?: string;
     refreshTokenExpiresOn?: Date;
-
-    constructor(data?: IAuthenticatedResponse) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2550,27 +2429,10 @@ export class AuthenticatedResponse implements IAuthenticatedResponse {
     }
 }
 
-export interface IAuthenticatedResponse {
-    accessToken?: string;
-    tokenType?: string;
-    expiresInMinutes?: number;
-    refreshToken?: string;
-    refreshTokenExpiresOn?: Date;
-}
-
-export class LoginRequestCommand implements ILoginRequestCommand {
+export class LoginRequestCommand {
     userName?: string;
     password?: string;
     isRemember?: boolean;
-
-    constructor(data?: ILoginRequestCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
 
     init(_data?: any) {
         if (_data) {
@@ -2594,12 +2456,6 @@ export class LoginRequestCommand implements ILoginRequestCommand {
         data["isRemember"] = this.isRemember;
         return data;
     }
-}
-
-export interface ILoginRequestCommand {
-    userName?: string;
-    password?: string;
-    isRemember?: boolean;
 }
 
 export class LMSException extends Error {

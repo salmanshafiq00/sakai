@@ -1,8 +1,8 @@
 import { Component, inject } from '@angular/core';
 import { LayoutService } from 'src/app/layout/service/app.layout.service';
-import {AuthService} from '../../services/auth.service';
-import {LoginRequestCommand} from '../../services/auth-client.service';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { LoginRequestCommand } from 'src/app/core/auth/services/auth-client.service';
 
 @Component({
   selector: 'app-login',
@@ -14,7 +14,8 @@ import { Router } from '@angular/router';
       margin-right: 1rem;
       color: var(--primary-color) !important;
   }
-`]
+`],
+  providers: [AuthService]
 })
 export class LoginComponent {
 

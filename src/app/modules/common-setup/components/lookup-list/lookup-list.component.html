@@ -1,0 +1,175 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger" (click)="deleteSelectedItems()" [disabled]="!selectedItems || !selectedItems.length"></button>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="right">
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                </ng-template>
+            </p-toolbar>
+
+            <p-table #dt 
+                [value]="items" 
+                [columns]="dataFields" 
+                [rows]="rows"  
+                [responsiveLayout]="responsiveLayout" 
+                [globalFilterFields]="globalFilterFields" 
+                [paginator]="paginator" 
+                [rowsPerPageOptions]="rowsPerPageOptions" 
+                [showCurrentPageReport]="showCurrentPageReport" 
+                [currentPageReportTemplate]="currentPageReportTemplate" 
+                [totalRecords]="totalRecords"
+                [(selection)]="selectedItems" 
+                [selectionMode]="selectionMode" 
+                [rowHover]="rowHover" 
+                [dataKey]="dataKey"
+                [loading]="loading"
+                [filterDelay]="debounceTimeout"
+                [lazyLoadOnInit]="true"
+                [lazy]="lazyLoading"
+                (onLazyLoad)="loadData($event)">
+
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <h5 class="m-0">{{caption}}</h5>
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText #globalSearchInput type="text" (input)="onSearchInput($event)" placeholder="Search..."  class="w-full sm:w-auto"/>
+                            <p-button label="Clear" class="ml-3" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt)" />
+                        </span>
+                    </div>
+                </ng-template>
+
+                <ng-template pTemplate="header" let-columns>
+                <!-- <ng-template pTemplate="header"> -->
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <ng-container *ngFor="let col of columns">
+                            <th  
+                            *ngIf="col.visible"
+                            [pSortableColumn]="col.isSortable ? col.dbField : ''" 
+                            >
+                            <p-columnFilter type="text" *ngIf="col.isFilterable" [field]="col.dbField" display="menu" [showAddButton]="false" [showClearButton]="true"  />
+                            {{col.header}}
+                            <p-sortIcon [hidden]="!col.isSortable" [field]="col.dbField"></p-sortIcon>
+                        </th>
+                        </ng-container>
+ 
+                    </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-items let-columns="columns">
+                    <tr >
+                        <td >
+                            <p-tableCheckbox [value]="items"></p-tableCheckbox>
+                        </td>
+                        <ng-container *ngFor="let col of columns">
+                            <td *ngIf="col.visible">
+                                {{items[col.field]}}
+                            </td>
+                        </ng-container>
+
+
+                        <!-- <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
+                            <span [class]="'status-badge status-' + (item.statusName.toLowerCase())">{{item.statusName}}</span>
+                        </td>  -->
+                        <td>
+                            <div class="flex">
+                                <!-- <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(product)"></button> -->
+                                <!-- <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button> -->
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+
+            </p-table>
+        </div>
+
+
+        <!-- Create or Edit Dialog Start -->
+
+        <p-dialog 
+            [(visible)]="itemDialog" 
+            [style]="{width: dialogWidth+'px'}" 
+            header="item Details" 
+            [modal]="true" 
+            [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" 
+            [draggable]="false" 
+            [resizable]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="code">Code</label>
+                        <input type="text" pInputText id="code" [(ngModel)]="item.code" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !item.code}"/>
+                        <small class="ng-dirty ng-invalid" *ngIf="submitted && !item.code">code is required.</small>
+                    </div>
+                    <div class="field col">
+                        <label for="name">Name</label>
+                        <input type="text" pInputText id="name" [(ngModel)]="item.name" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !item.name}"/>
+                        <small class="ng-dirty ng-invalid" *ngIf="submitted && !item.name">Name is required.</small>
+                    </div>
+                </div>
+
+                <div class="formgrid grid">
+                    <div class="field col">
+                        <label for="status">Parent Name</label>
+                        <p-dropdown 
+                            [(ngModel)]="item.parentId" 
+                            inputId="parentId" 
+                            optionValue="id" 
+                            optionLabel="name" 
+                            [options]="parentList" 
+                            [showClear]="true"
+                            [filter]="true"
+                            [disabled]="false"
+                            filterBy="name" 
+                            placeholder="Select">
+                        </p-dropdown>
+                    </div>
+
+                    <div class="field col flex mt-5 z-1">
+                        <!-- <label class="d-box"></label> -->
+                        <div class="flex align-items-center">
+                            <label class="input-switch-label" for="item.status">Status</label>
+                            <p-inputSwitch 
+                                class="input-switch"
+                                [(ngModel)]="item.status"
+                                [disabled]="false" /> 
+                        </div>
+                  
+                     </div>
+                </div>
+
+                <div class="field">
+                    <label for="description">Description</label>
+                    <textarea id="description" pInputTextarea [(ngModel)]="item.description" required rows="3" cols="20"></textarea>
+                </div>
+
+            </ng-template>
+
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveitem()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <!-- Create or Edit Dialog End -->
+
+    </div>
+</div>
+
+
+
+

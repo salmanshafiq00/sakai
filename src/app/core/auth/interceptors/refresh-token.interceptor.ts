@@ -43,7 +43,7 @@ authService: AuthService = inject(AuthService);
     return next.handle(request).pipe(
       catchError(error => {
         console.error(error);
-        if (error instanceof HttpErrorResponse && error.status === 401 && this.authService.isAuthenticated) {
+        if (error instanceof HttpErrorResponse && error.status === 401 && !this.authService.isAuthenticated) {
           return this.handleTokenExpiration(request, next);
         }
         return throwError(() => error);
