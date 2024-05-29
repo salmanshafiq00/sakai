@@ -18,6 +18,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { environment } from 'src/environments/environment';
 import { API_BASE_URL } from '../generated-clients/api-service';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { TagModule } from 'primeng/tag';
 
 
 
@@ -42,7 +43,8 @@ import { InputSwitchModule } from 'primeng/inputswitch';
     RadioButtonModule,
     InputNumberModule,
     DialogModule,
-    InputSwitchModule 
+    InputSwitchModule,
+    TagModule
   ],
   providers: [
    {provide: API_BASE_URL, useValue: environment.API_BASE_URL}

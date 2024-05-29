@@ -1510,6 +1510,7 @@ export class DataFieldModel {
     dbField?: string;
     dbDataType?: string;
     visible?: boolean;
+    sortOrder?: number;
     isSortable?: boolean;
     isGlobalFilterable?: boolean;
     isFilterable?: boolean;
@@ -1522,6 +1523,7 @@ export class DataFieldModel {
             this.dbField = _data["dbField"];
             this.dbDataType = _data["dbDataType"];
             this.visible = _data["visible"];
+            this.sortOrder = _data["sortOrder"];
             this.isSortable = _data["isSortable"];
             this.isGlobalFilterable = _data["isGlobalFilterable"];
             this.isFilterable = _data["isFilterable"];
@@ -1543,6 +1545,7 @@ export class DataFieldModel {
         data["dbField"] = this.dbField;
         data["dbDataType"] = this.dbDataType;
         data["visible"] = this.visible;
+        data["sortOrder"] = this.sortOrder;
         data["isSortable"] = this.isSortable;
         data["isGlobalFilterable"] = this.isGlobalFilterable;
         data["isFilterable"] = this.isFilterable;

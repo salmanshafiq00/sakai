@@ -42,8 +42,19 @@
                         <h5 class="m-0">{{caption}}</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText #globalSearchInput type="text" (input)="onSearchInput($event)" placeholder="Search..."  class="w-full sm:w-auto"/>
-                            <p-button label="Clear" class="ml-3" [outlined]="true" icon="pi pi-filter-slash" (click)="clear(dt)" />
+                            <input 
+                                pInputText 
+                                #globalSearchInput 
+                                type="text" 
+                                (input)="onSearchInput($event)" 
+                                placeholder="Search..."  
+                                class="w-full sm:w-auto"/>
+                            <p-button 
+                                label="Clear" 
+                                class="ml-3" 
+                                [outlined]="true" 
+                                icon="pi pi-filter-slash" 
+                                (click)="clear(dt)" />
                         </span>
                     </div>
                 </ng-template>
@@ -51,28 +62,79 @@
                 <ng-template pTemplate="header" let-columns>
                 <!-- <ng-template pTemplate="header"> -->
                     <tr>
-                        <th style="width: 3rem">
+                        <!-- <th style="width: 3rem" *ngIf="!hasDropdownOrDateType">
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th>
+                        </th> -->
                         <ng-container *ngFor="let col of columns">
                             <th  
-                            *ngIf="col.visible"
-                            [pSortableColumn]="col.isSortable ? col.dbField : ''" 
+                                *ngIf="col.visible"
+                                [pSortableColumn]="col.isSortable ? col.dbField : ''" 
                             >
-                            <p-columnFilter type="text" *ngIf="col.isFilterable" [field]="col.dbField" display="menu" [showAddButton]="false" [showClearButton]="true"  />
+                            
+                            <p-columnFilter 
+                                type="text" 
+                                *ngIf="col.isFilterable && col.dataType === 'string'" 
+                                [field]="col.dbField" 
+                                display="menu" 
+                                [showAddButton]="false" 
+                                [showClearButton]="true"  />
+                                                   
                             {{col.header}}
-                            <p-sortIcon [hidden]="!col.isSortable" [field]="col.dbField"></p-sortIcon>
+
+                            <p-sortIcon 
+                                [hidden]="!col.isSortable" 
+                                [field]="col.dbField">
+                            </p-sortIcon>
                         </th>
                         </ng-container>
  
+                    </tr>
+                    <tr *ngIf="hasDropdownOrDateType">
+
+                        <!-- <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th> -->
+
+                        <ng-container *ngFor="let col of columns">                       
+                            <th  
+                                *ngIf="col.visible"
+                            >
+                                                        
+                            <p-columnFilter 
+                                *ngIf="col.isFilterable && col.dataType === 'dropdown'" 
+                                [field]="col.dbField" 
+                                matchMode="equals" 
+                                [showMenu]="false"
+                                >
+                                <ng-template 
+                                    pTemplate="filter" 
+                                    let-value let-filter="filterCallback">
+                                    <p-dropdown 
+                                        [(ngModel)]="selectedValue"
+                                        [options]="statusList" 
+                                        (onChange)="filter($event.value.id)" 
+                                        placeholder="Select One"
+                                        [optionLabel]="'name'" 
+                                        [showClear]="true">
+                                            <ng-template let-option pTemplate="item">
+                                                <p-tag 
+                                                    [value]="option.name" 
+                                                    [severity]="option.severity" />
+                                            </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>
+                            
+                        </th>
+                        </ng-container>
                     </tr>
                 </ng-template>
 
                 <ng-template pTemplate="body" let-items let-columns="columns">
                     <tr >
-                        <td >
+                        <!-- <td >
                             <p-tableCheckbox [value]="items"></p-tableCheckbox>
-                        </td>
+                        </td> -->
                         <ng-container *ngFor="let col of columns">
                             <td *ngIf="col.visible">
                                 {{items[col.field]}}

@@ -61,8 +61,14 @@ export class LookupListComponent implements OnInit {
 
   //loading
   loading: boolean = false;
+
+
   // Dropdown
   parentList: any[] = [];
+  statusList: any[] = [];
+
+  selectedValue: any;
+
 
   @ViewChild('dt') table: Table;
   @ViewChild('globalSearchInput') globalSearchInput: ElementRef;
@@ -83,19 +89,16 @@ export class LookupListComponent implements OnInit {
 
   ngOnInit() {
 
-    this.cols = [
-      { field: 'code', header: 'Code', isSortable: true },
-      { field: 'name', header: 'Name', isSortable: true },
-      { field: 'parentName', header: 'Parent Name', isSortable: true },
-      { field: 'description', header: 'Description', isSortable: false },
-      { field: 'statusName', header: 'Status', isSortable: true }
-    ];
-
     // this.loadData({first: 1, rows: this.rows})
 
 
     // this.getParentSelectList();
+    this.statusList = this.getStatusSelectList();
 
+  }
+
+  get hasDropdownOrDateType(): boolean{
+    return this.dataFields.some(col => col.dataType === 'dropdown');
   }
 
   loadData(event: TableLazyLoadEvent) {
@@ -124,6 +127,9 @@ export class LookupListComponent implements OnInit {
         this.totalRecords = res.totalCount;
         this.pageNumber = res.pageNumber;
         this.dataFields = res.dataFields;
+        this.globalFilterFields = res.dataFields
+          .filter(x => x.isGlobalFilterable)
+          .map(x => x.dbField);
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
@@ -177,6 +183,9 @@ export class LookupListComponent implements OnInit {
     const dataFilterList: DataFilterModel[] = [];
 
     for (const field in filters) {
+
+      if(field === 'global') continue;
+
       if (Object.prototype.hasOwnProperty.call(filters, field)) {
         const filterMetadata = filters[field];
         if (Array.isArray(filterMetadata)) {
@@ -202,6 +211,32 @@ export class LookupListComponent implements OnInit {
     return dataFilterList;
   }
 
+  private getParentSelectList() {
+    this.selectListClient.getLookupSelectList(true).subscribe({
+      next: (res) => {
+        this.parentList = res;
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Parent Dropdown not found', life: 3000 })
+      }
+    });
+  }
+
+  private getStatusSelectList() {
+    const statusSelectList = [];
+    statusSelectList.push({
+      id: 1,
+      name: 'Active',
+      severity: 'success'
+    })
+    statusSelectList.push({
+      id: 0,
+      name: 'Inactive',
+      serverity: 'danger'
+    })
+
+    return statusSelectList;
+  }
 
 
     ///  --------------------------------
@@ -247,16 +282,7 @@ export class LookupListComponent implements OnInit {
 
     }
 
-  private getParentSelectList() {
-    this.selectListClient.getLookupSelectList(true).subscribe({
-      next: (res) => {
-        this.parentList = res;
-      },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Parent Dropdown not found', life: 3000 })
-      }
-    });
-  }
+
 }
 
 export interface FilterDictionary {
