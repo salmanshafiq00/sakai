@@ -1404,6 +1404,7 @@ export class PaginatedResponseOfLookupDetailResponse {
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
 
     init(_data?: any) {
         if (_data) {
@@ -1421,6 +1422,11 @@ export class PaginatedResponseOfLookupDetailResponse {
                 this.dataFields = [] as any;
                 for (let item of _data["dataFields"])
                     this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
             }
         }
     }
@@ -1448,6 +1454,11 @@ export class PaginatedResponseOfLookupDetailResponse {
             data["dataFields"] = [];
             for (let item of this.dataFields)
                 data["dataFields"].push(item.toJSON());
+        }
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
         }
         return data;
     }
@@ -1506,27 +1517,25 @@ export class LookupDetailResponse {
 export class DataFieldModel {
     field?: string;
     header?: string;
-    dataType?: string;
-    dbField?: string;
-    dbDataType?: string;
+    fieldType?: string;
     visible?: boolean;
     sortOrder?: number;
     isSortable?: boolean;
     isGlobalFilterable?: boolean;
     isFilterable?: boolean;
+    dsName?: string;
 
     init(_data?: any) {
         if (_data) {
             this.field = _data["field"];
             this.header = _data["header"];
-            this.dataType = _data["dataType"];
-            this.dbField = _data["dbField"];
-            this.dbDataType = _data["dbDataType"];
+            this.fieldType = _data["fieldType"];
             this.visible = _data["visible"];
             this.sortOrder = _data["sortOrder"];
             this.isSortable = _data["isSortable"];
             this.isGlobalFilterable = _data["isGlobalFilterable"];
             this.isFilterable = _data["isFilterable"];
+            this.dsName = _data["dsName"];
         }
     }
 
@@ -1541,14 +1550,88 @@ export class DataFieldModel {
         data = typeof data === 'object' ? data : {};
         data["field"] = this.field;
         data["header"] = this.header;
-        data["dataType"] = this.dataType;
-        data["dbField"] = this.dbField;
-        data["dbDataType"] = this.dbDataType;
+        data["fieldType"] = this.fieldType;
         data["visible"] = this.visible;
         data["sortOrder"] = this.sortOrder;
         data["isSortable"] = this.isSortable;
         data["isGlobalFilterable"] = this.isGlobalFilterable;
         data["isFilterable"] = this.isFilterable;
+        data["dsName"] = this.dsName;
+        return data;
+    }
+}
+
+export class DataFilterModel {
+    field?: string;
+    value?: string;
+    matchMode?: string;
+    operator?: string;
+    dsName?: string;
+    dataSource?: SelectListModel[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.field = _data["field"];
+            this.value = _data["value"];
+            this.matchMode = _data["matchMode"];
+            this.operator = _data["operator"];
+            this.dsName = _data["dsName"];
+            if (Array.isArray(_data["dataSource"])) {
+                this.dataSource = [] as any;
+                for (let item of _data["dataSource"])
+                    this.dataSource!.push(SelectListModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): DataFilterModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataFilterModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["field"] = this.field;
+        data["value"] = this.value;
+        data["matchMode"] = this.matchMode;
+        data["operator"] = this.operator;
+        data["dsName"] = this.dsName;
+        if (Array.isArray(this.dataSource)) {
+            data["dataSource"] = [];
+            for (let item of this.dataSource)
+                data["dataSource"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export class SelectListModel {
+    id?: string;
+    name?: string;
+    isDefault?: boolean;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.isDefault = _data["isDefault"];
+        }
+    }
+
+    static fromJS(data: any): SelectListModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["isDefault"] = this.isDefault;
         return data;
     }
 }
@@ -1630,38 +1713,6 @@ export class GetLookupDetailListQuery extends DataGridModel {
         data["cacheKey"] = this.cacheKey;
         data["expiration"] = this.expiration;
         super.toJSON(data);
-        return data;
-    }
-}
-
-export class DataFilterModel {
-    field?: string;
-    value?: string;
-    matchMode?: string;
-    operator?: string;
-
-    init(_data?: any) {
-        if (_data) {
-            this.field = _data["field"];
-            this.value = _data["value"];
-            this.matchMode = _data["matchMode"];
-            this.operator = _data["operator"];
-        }
-    }
-
-    static fromJS(data: any): DataFilterModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new DataFilterModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["field"] = this.field;
-        data["value"] = this.value;
-        data["matchMode"] = this.matchMode;
-        data["operator"] = this.operator;
         return data;
     }
 }
@@ -1804,6 +1855,7 @@ export class PaginatedResponseOfLookupResponse {
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
 
     init(_data?: any) {
         if (_data) {
@@ -1821,6 +1873,11 @@ export class PaginatedResponseOfLookupResponse {
                 this.dataFields = [] as any;
                 for (let item of _data["dataFields"])
                     this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
             }
         }
     }
@@ -1849,6 +1906,11 @@ export class PaginatedResponseOfLookupResponse {
             for (let item of this.dataFields)
                 data["dataFields"].push(item.toJSON());
         }
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
+        }
         return data;
     }
 }
@@ -1862,6 +1924,7 @@ export class LookupResponse {
     statusName?: string;
     parentId?: string | undefined;
     parentName?: string;
+    dataSources?: any;
 
     init(_data?: any) {
         if (_data) {
@@ -1873,6 +1936,7 @@ export class LookupResponse {
             this.statusName = _data["statusName"];
             this.parentId = _data["parentId"];
             this.parentName = _data["parentName"];
+            this.dataSources = _data["dataSources"];
         }
     }
 
@@ -1893,6 +1957,7 @@ export class LookupResponse {
         data["statusName"] = this.statusName;
         data["parentId"] = this.parentId;
         data["parentName"] = this.parentName;
+        data["dataSources"] = this.dataSources;
         return data;
     }
 }
@@ -1997,35 +2062,6 @@ export class UpdateLookupCommand {
         data["status"] = this.status;
         data["parentId"] = this.parentId;
         data["cacheKey"] = this.cacheKey;
-        return data;
-    }
-}
-
-export class SelectListModel {
-    id?: string;
-    name?: string;
-    isDefault?: boolean;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.isDefault = _data["isDefault"];
-        }
-    }
-
-    static fromJS(data: any): SelectListModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new SelectListModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["isDefault"] = this.isDefault;
         return data;
     }
 }

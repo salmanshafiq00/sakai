@@ -19,6 +19,8 @@ import { environment } from 'src/environments/environment';
 import { API_BASE_URL } from '../generated-clients/api-service';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { TagModule } from 'primeng/tag';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 
@@ -44,7 +46,9 @@ import { TagModule } from 'primeng/tag';
     InputNumberModule,
     DialogModule,
     InputSwitchModule,
-    TagModule
+    TagModule,
+    MultiSelectModule,
+    TooltipModule
   ],
   providers: [
    {provide: API_BASE_URL, useValue: environment.API_BASE_URL}

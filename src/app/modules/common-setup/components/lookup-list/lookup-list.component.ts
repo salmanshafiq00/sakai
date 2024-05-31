@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FilterMetadata, LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime } from 'rxjs';
+import { FieldType } from 'src/app/core/contants/FieldDataType';
 import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, LookupsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
 
 @Component({
@@ -12,14 +13,18 @@ import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, Lo
 })
 export class LookupListComponent implements OnInit {
 
+  FieldType = FieldType;
+
   // Table Settings //
   responsiveLayout = 'scroll';
   cols: any[] = []; // eta input diye anbo
   dataFields: DataFieldModel[] = [];
+  filters: DataFilterModel[] = [];
+
 
   // Lazy Loading
   lazyLoading: boolean = true;
-
+  
   // Pagination
   paginator: boolean = true;
   rowsPerPageOptions: number[] = [5, 10, 20, 30, 50]
@@ -31,9 +36,8 @@ export class LookupListComponent implements OnInit {
   currentPageReportTemplate: string = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
   // Filtering Global
-  globalFilterFields: string[] = ['code', 'name', 'parentName', 'status']; // eta input diye anbo
-
-
+  globalFilterFields: string[] = [];
+  globalFilterFieldNames: string[] = [];
 
   // Row Selection
   selectionMode: "single" | "multiple" = "multiple";
@@ -67,7 +71,12 @@ export class LookupListComponent implements OnInit {
   parentList: any[] = [];
   statusList: any[] = [];
 
-  selectedValue: any;
+  selectedValue0: any;
+  selectedValue1: any;
+  selectedValue2: any;
+  selectedValue3: any;
+  selectedValue4: any;
+
 
 
   @ViewChild('dt') table: Table;
@@ -92,13 +101,13 @@ export class LookupListComponent implements OnInit {
     // this.loadData({first: 1, rows: this.rows})
 
 
-    // this.getParentSelectList();
+    this.getParentSelectList();
     this.statusList = this.getStatusSelectList();
 
   }
 
-  get hasDropdownOrDateType(): boolean{
-    return this.dataFields.some(col => col.dataType === 'dropdown');
+  get hasSelectOrDateType(): boolean{
+    return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
   }
 
   loadData(event: TableLazyLoadEvent) {
@@ -121,15 +130,21 @@ export class LookupListComponent implements OnInit {
 
     this.lookupsClient.getLookups(lookupQuery).subscribe({
       next: (res) => {
+        console.log(res);
         this.items = res.items;
         this.totalRecords = res.totalCount;
         this.totalPages = res.totalPages;
         this.totalRecords = res.totalCount;
         this.pageNumber = res.pageNumber;
         this.dataFields = res.dataFields;
+        this.filters = res.filters;
+
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
-          .map(x => x.dbField);
+          .map(x => x.field);
+        this.globalFilterFieldNames = res.dataFields
+          .filter(x => x.isGlobalFilterable)
+          .map(x => x.header);
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
@@ -141,6 +156,9 @@ export class LookupListComponent implements OnInit {
     });
   }
 
+  get globalfiltersTooltip(): string{
+    return this.globalFilterFieldNames?.toString();
+  }
 
   onSearchInput(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value;
