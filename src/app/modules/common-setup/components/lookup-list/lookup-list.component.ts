@@ -1,5 +1,6 @@
+import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FilterMetadata, LazyLoadEvent, MessageService } from 'primeng/api';
+import { FilterMatchMode, FilterMetadata, LazyLoadEvent, MessageService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
@@ -9,11 +10,12 @@ import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, Lo
   selector: 'app-lookup-list',
   templateUrl: './lookup-list.component.html',
   styleUrl: './lookup-list.component.scss',
-  providers: [MessageService, LookupsClient, SelectListsClient]
+  providers: [MessageService, LookupsClient, SelectListsClient, DatePipe]
 })
 export class LookupListComponent implements OnInit {
 
   FieldType = FieldType;
+  FilterMatchMode = FilterMatchMode;
 
   // Table Settings //
   responsiveLayout = 'scroll';
@@ -21,10 +23,9 @@ export class LookupListComponent implements OnInit {
   dataFields: DataFieldModel[] = [];
   filters: DataFilterModel[] = [];
 
-
   // Lazy Loading
   lazyLoading: boolean = true;
-  
+
   // Pagination
   paginator: boolean = true;
   rowsPerPageOptions: number[] = [5, 10, 20, 30, 50]
@@ -47,11 +48,20 @@ export class LookupListComponent implements OnInit {
 
   // Others
   dataKey: string = 'id';
+ 
+  // Dropdown DataSources
+  parentList: any[] = [];
+  statusList: any[] = [];
+
+  // Dropdwon Selected value
+  selectedParent: any;
+  selectedStatus: any;
+
   caption: string = 'Manage Lookup';
+  optionsDataSources: any;
 
-  statuses: any[] = [];
 
-  // Dialog
+  // Dialog ---------------------
   itemDialog: boolean = false;
   submitted: boolean = false;
   dialogWidth: number = 650;
@@ -67,18 +77,6 @@ export class LookupListComponent implements OnInit {
   loading: boolean = false;
 
 
-  // Dropdown
-  parentList: any[] = [];
-  statusList: any[] = [];
-
-  selectedValue0: any;
-  selectedValue1: any;
-  selectedValue2: any;
-  selectedValue3: any;
-  selectedValue4: any;
-
-
-
   @ViewChild('dt') table: Table;
   @ViewChild('globalSearchInput') globalSearchInput: ElementRef;
   debounceTimeout: number = 500;
@@ -87,7 +85,8 @@ export class LookupListComponent implements OnInit {
   constructor(
     private messageService: MessageService,
     private lookupsClient: LookupsClient,
-    private selectListClient: SelectListsClient) {
+    private selectListClient: SelectListsClient,
+    private datePipe: DatePipe) {
 
     this.searchSubject.pipe(
       debounceTime(this.debounceTimeout)
@@ -106,7 +105,7 @@ export class LookupListComponent implements OnInit {
 
   }
 
-  get hasSelectOrDateType(): boolean{
+  get hasSelectOrDateType(): boolean {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
   }
 
@@ -124,7 +123,11 @@ export class LookupListComponent implements OnInit {
     lookupQuery.sortField = this.getSortedField(event);
     lookupQuery.sortOrder = event.sortOrder;
     lookupQuery.globalFilterValue = this.getGlobalFilterValue(event);
-    lookupQuery.filters = this.mapToDataFilterModel(event.filters);
+    // lookupQuery.filters = this.mapToDataFilterModel(event.filters);
+
+    this.mapAndSetToDataFilterModel(event.filters);
+    lookupQuery.filters = this.filters;
+    console.log(this.filters);
 
     console.log(lookupQuery)
 
@@ -138,7 +141,7 @@ export class LookupListComponent implements OnInit {
         this.pageNumber = res.pageNumber;
         this.dataFields = res.dataFields;
         this.filters = res.filters;
-
+        this.optionsDataSources = res.optionsDataSources;
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
           .map(x => x.field);
@@ -156,9 +159,25 @@ export class LookupListComponent implements OnInit {
     });
   }
 
-  get globalfiltersTooltip(): string{
-    return this.globalFilterFieldNames?.toString();
+  get globalfiltersTooltip(): string {
+    return this.globalFilterFieldNames?.join(', ');
   }
+
+  // private setDataSources(filters: DataFilterModel[], optionsDataSource: any): DataFilterModel[] {
+  //   filters.filter(x => x.dsName).forEach(filter => {
+  //     const matchingDataSource = optionsDataSource[filter.dsName];
+  //     if (matchingDataSource) {
+  //       filter.dataSource = matchingDataSource;
+  //     }
+  //   });
+  //   return filters;
+  // }
+
+  getFilterValue(field: string) {
+    const filter = this.filters.find(f => f.field === field);
+    return filter ? filter.value : null;
+  }
+
 
   onSearchInput(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value;
@@ -196,37 +215,73 @@ export class LookupListComponent implements OnInit {
     return '';
   }
 
-
-  mapToDataFilterModel(filters: FilterDictionary): DataFilterModel[] {
-    const dataFilterList: DataFilterModel[] = [];
-
+  mapAndSetToDataFilterModel(filters: FilterDictionary) {
     for (const field in filters) {
 
-      if(field === 'global') continue;
+      if (field === 'global') continue;
 
+      // to ensure that properties are not being accessed from the prototype chain unintentionally
       if (Object.prototype.hasOwnProperty.call(filters, field)) {
-        const filterMetadata = filters[field];
-        if (Array.isArray(filterMetadata)) {
-          for (const filter of filterMetadata) {
-            const dataFilter = new DataFilterModel();
-            dataFilter.field = field;
-            dataFilter.value = filter.value !== null ? filter.value.toString() : '';
-            dataFilter.matchMode = filter.matchMode || '';
-            dataFilter.operator = filter.operator || '';
 
-            dataFilterList.push(dataFilter);
+        // existingFilter is exist
+        const existingFilter = this.filters.find(x => x.field === field);
+
+        if (!existingFilter) continue;
+
+        const filterMetadata = filters[field];
+
+        if (Array.isArray(filterMetadata)) {
+          let isFirstFilterMetaData = true;
+          for (const filter of filterMetadata) {
+
+            if (existingFilter && existingFilter.fieldType == FieldType.date) {
+              if (isFirstFilterMetaData) {
+                existingFilter.value = this.getTranformValue(existingFilter, filter);
+                existingFilter.matchMode = filter.matchMode || '';
+                existingFilter.operator = filter.operator || '';
+                isFirstFilterMetaData = false;
+              } else {
+                const newFilter = new DataFilterModel();
+                newFilter.field = field;
+                newFilter.fieldType = existingFilter.fieldType;
+                newFilter.value = this.getTranformValue(existingFilter, filter);
+                newFilter.matchMode = filter.matchMode || '';
+                newFilter.operator = filter.operator || '';
+                newFilter.dsName = existingFilter.dsName;
+                newFilter.dataSource = existingFilter.dataSource;
+                this.filters.push(newFilter);
+              }
+            }
+            else if (existingFilter) {
+              existingFilter.value = this.getTranformValue(existingFilter, filter);
+              existingFilter.matchMode = filter.matchMode || '';
+              existingFilter.operator = filter.operator || '';
+            }
           }
-        } else {
-          const dataFilter = new DataFilterModel();
-          dataFilter.field = field;
-          dataFilter.value = filterMetadata.value !== null ? filterMetadata.value.toString() : '';
-          dataFilter.matchMode = filterMetadata.matchMode || '';
-          dataFilter.operator = filterMetadata.operator || '';
-          dataFilterList.push(dataFilter);
+        } else if (typeof filterMetadata === 'object' && filterMetadata !== null && !Array.isArray(filterMetadata)) {
+          if (existingFilter) {
+            existingFilter.value = this.getTranformValue(filterMetadata.value, filterMetadata);
+            existingFilter.matchMode = filterMetadata.matchMode || '';
+            existingFilter.operator = filterMetadata.operator || '';
+          }
         }
       }
     }
-    return dataFilterList;
+  }
+
+  private getTranformValue(filter: DataFilterModel, filterMetadata: FilterMetadata): string {
+    if (Array.isArray(filterMetadata.value)) {
+      return filterMetadata.value.map(item => `'${item.id}'`).join(', ');
+    }
+    else if (filter.fieldType == FieldType.string) {
+      return filterMetadata.value !== null ? filterMetadata.value.toString() : '';
+    }
+    else if (filter.fieldType == FieldType.date) {
+      return filterMetadata.value ? this.datePipe.transform(filterMetadata.value, 'yyyy/MM/dd') : '';
+    }
+    else {
+      return '';
+    }
   }
 
   private getParentSelectList() {
@@ -257,48 +312,48 @@ export class LookupListComponent implements OnInit {
   }
 
 
-    ///  --------------------------------
+  ///  --------------------------------
 
 
-    openNew() {
-      this.item = new LookupResponse();
-      this.item.status = true;
-      this.itemDialog = true;
-    }
+  openNew() {
+    this.item = new LookupResponse();
+    this.item.status = true;
+    this.itemDialog = true;
+  }
 
-    saveitem() {
-      this.submitted = true;
+  saveitem() {
+    this.submitted = true;
 
-      const createLookupCommand = { ...this.item }
-      this.lookupsClient.createLookup(createLookupCommand).subscribe({
-        next: (res) => {
-          console.log(res + 'res from create')
-          if (res) {
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Lookup Created', life: 3000 });
-            this.itemDialog = false;
+    const createLookupCommand = { ...this.item }
+    this.lookupsClient.createLookup(createLookupCommand).subscribe({
+      next: (res) => {
+        console.log(res + 'res from create')
+        if (res) {
+          this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Lookup Created', life: 3000 });
+          this.itemDialog = false;
 
-          }
-          else {
-            this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
-
-          }
-        },
-        error: (error) => {
-          this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
         }
-      });
-      console.log(this.item)
+        else {
+          this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
 
-    }
+        }
+      },
+      error: (error) => {
+        this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
+      }
+    });
+    console.log(this.item)
 
-    deleteSelectedItems() {
+  }
 
-    }
+  deleteSelectedItems() {
 
-    // other commmon
-    hideDialog() {
+  }
 
-    }
+  // other commmon
+  hideDialog() {
+
+  }
 
 
 }

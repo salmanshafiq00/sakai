@@ -8,7 +8,7 @@ export class LoggingInterceptor implements HttpInterceptor {
 
     const started = Date.now();
     const correlationId = req.headers.get('X-Correlation-Id');
-    console.log(`[${correlationId}] Requesting ${req.url}`);
+    console.log(`${correlationId} --> Requesting ${req.url}`);
 
     // Combine request headers and body into a single JSON object
     const requestLog = {

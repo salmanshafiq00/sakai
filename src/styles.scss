@@ -13,9 +13,3 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/demo/styles/badges.scss";
 @import "assets/demo/styles/code.scss";
 
-
-host ::ng-deep {
-  .custom-tooltip.p-tooltip{
-    font-size: 10px;
-  }
-}

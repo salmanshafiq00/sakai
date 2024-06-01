@@ -74,13 +74,17 @@
                             <input 
                                 pInputText 
                                 #globalSearchInput 
-                                [pTooltip]="globalfiltersTooltip"
+                                [pTooltip]="toolTipContent"
                                 tooltipPosition="top"
-                                tooltipStyleClass="custom-tooltip"
                                 type="text" 
                                 (input)="onSearchInput($event)" 
                                 placeholder="Search..."  
                                 class="w-full sm:w-auto"/>
+                                <ng-template #toolTipContent>
+                                    <div class="flex align-items-center text-xs">
+                                        <span> {{globalfiltersTooltip}}</span>
+                                    </div>
+                                </ng-template>
                             <p-button 
                                 label="Clear" 
                                 class="ml-3" 
@@ -103,6 +107,7 @@
                                 [pSortableColumn]="col.isSortable ? col.field : ''" 
                             >
                             
+                            <!-- FieldType.string -->
                             <p-columnFilter 
                                 type="text" 
                                 *ngIf="col.isFilterable && col.fieldType === FieldType.string" 
@@ -110,7 +115,75 @@
                                 display="menu" 
                                 [showAddButton]="false" 
                                 [showClearButton]="true"  />
-                                                   
+
+                            <!-- FieldType.select -->
+                            <p-columnFilter 
+                                *ngIf="col.isFilterable && col.fieldType === FieldType.select" 
+                                [field]="col.field" 
+                                [showMenu]="true"
+                                [matchMode]="FilterMatchMode.EQUALS"
+                                display="menu"
+                                [showMatchModes]="false"
+                                [showOperator]="false"
+                                [showAddButton]="false"
+                                >
+                                <ng-template 
+                                    pTemplate="filter" 
+                                    let-value let-filter="filterCallback">
+                                    <p-dropdown 
+                                        [(ngModel)]="selectedStatus"
+                                        [options]="statusList" 
+                                        (onChange)="filter($event.value?.id)" 
+                                        placeholder="Select One"
+                                        [optionLabel]="'name'" 
+                                        [showClear]="true">
+                                            <ng-template let-option pTemplate="item">
+                                                <p-tag 
+                                                    [value]="option.name" 
+                                                    [severity]="option.severity" />
+                                            </ng-template>
+                                    </p-dropdown>
+                                </ng-template>
+                            </p-columnFilter>   
+
+                            <!-- FieldType.multiSelect -->
+                            <p-columnFilter 
+                                *ngIf="col.isFilterable && col.fieldType === FieldType.multiSelect" 
+                                [field]="col.field" 
+                                [showMenu]="true"
+                                [matchMode]="FilterMatchMode.IN"
+                                display="menu"
+                                [showMatchModes]="false"
+                                [showOperator]="false"
+                                [showAddButton]="false"
+                                >
+                                <ng-template 
+                                    pTemplate="filter" 
+                                    let-value let-filter="filterCallback">
+                                    <p-multiSelect 
+                                        [(ngModel)]="selectedParent" 
+                                        [options]="parentList" 
+                                        placeholder="Select Any" 
+                                        (onChange)="filter($event.value)" 
+                                        optionLabel="name"
+                                        [showClear]="true">
+                                            <ng-template let-option pTemplate="item">
+                                                <div class="inline-block vertical-align-middle">
+                                                    <span class="ml-1 mt-1">{{ option.name }}</span>
+                                                </div>
+                                            </ng-template>
+                                    </p-multiSelect>
+                                </ng-template>
+                            </p-columnFilter>  
+
+                            <!-- FieldType.date -->
+                            <p-columnFilter 
+                                *ngIf="col.isFilterable && col.fieldType === FieldType.date"
+                                type="date" 
+                                [field]="col.field" 
+                                display="menu">
+                            </p-columnFilter>
+                                                                               
                             {{col.header}}
 
                             <p-sortIcon 
@@ -120,59 +193,8 @@
                         </th>
                         </ng-container>
                     </tr>
-                    <tr *ngIf="hasSelectOrDateType">
-                        <ng-container *ngFor="let col of columns; let i = index;">   
-                                <th  *ngIf="col.visible">  
-                                <p-columnFilter 
-                                    *ngIf="col.isFilterable && col.fieldType === FieldType.select" 
-                                    [field]="col.field" 
-                                    matchMode="equals" 
-                                    [showMenu]="true"
-                                    >
-                                    <ng-template 
-                                        pTemplate="filter" 
-                                        let-value let-filter="filterCallback">
-                                        <p-dropdown 
-                                            [(ngModel)]="selectedValue0"
-                                            [options]="statusList" 
-                                            (onChange)="filter($event.value.id)" 
-                                            placeholder="Select One"
-                                            [optionLabel]="'name'" 
-                                            [showClear]="true">
-                                                <ng-template let-option pTemplate="item">
-                                                    <p-tag 
-                                                        [value]="option.name" 
-                                                        [severity]="option.severity" />
-                                                </ng-template>
-                                        </p-dropdown>
-                                    </ng-template>
-                                </p-columnFilter>   
-                                <p-columnFilter 
-                                    *ngIf="col.isFilterable && col.fieldType === FieldType.multiSelect" 
-                                    [field]="col.field" 
-                                    matchMode="in" 
-                                    [showMenu]="false">
-                                    <ng-template 
-                                        pTemplate="filter" 
-                                        let-value let-filter="filterCallback">
-                                        <p-multiSelect 
-                                            [(ngModel)]="selectedValue1" 
-                                            [options]="parentList" 
-                                            placeholder="Select Any" 
-                                            (onChange)="filter($event.value)" 
-                                            optionLabel="name">
-                                                <ng-template let-option pTemplate="item">
-                                                    <div class="inline-block vertical-align-middle">
-                                                        <span class="ml-1 mt-1">{{ option.name }}</span>
-                                                    </div>
-                                                </ng-template>
-                                        </p-multiSelect>
-                                    </ng-template>
-                                </p-columnFilter>  
-                              
-                            </th>
-                        </ng-container>
-                    </tr>
+
+
                 </ng-template>
                 <ng-template pTemplate="body" let-items let-columns="columns">
                     <tr >
@@ -180,8 +202,11 @@
                             <p-tableCheckbox [value]="items"></p-tableCheckbox>
                         </td> -->
                         <ng-container *ngFor="let col of columns">
-                            <td *ngIf="col.visible">
+                            <td *ngIf="col.visible && col.fieldType !== FieldType.date">
                                 {{items[col.field]}}
+                            </td>
+                            <td *ngIf="col.visible && col.fieldType === FieldType.date">
+                                {{items[col.field] | date: 'dd/MM/yyyy'}}
                             </td>
                         </ng-container>
 

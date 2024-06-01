@@ -1405,6 +1405,7 @@ export class PaginatedResponseOfLookupDetailResponse {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
+    optionsDataSources?: any;
 
     init(_data?: any) {
         if (_data) {
@@ -1428,6 +1429,7 @@ export class PaginatedResponseOfLookupDetailResponse {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
+            this.optionsDataSources = _data["optionsDataSources"];
         }
     }
 
@@ -1460,6 +1462,7 @@ export class PaginatedResponseOfLookupDetailResponse {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
+        data["optionsDataSources"] = this.optionsDataSources;
         return data;
     }
 }
@@ -1563,6 +1566,7 @@ export class DataFieldModel {
 
 export class DataFilterModel {
     field?: string;
+    fieldType?: string;
     value?: string;
     matchMode?: string;
     operator?: string;
@@ -1572,6 +1576,7 @@ export class DataFilterModel {
     init(_data?: any) {
         if (_data) {
             this.field = _data["field"];
+            this.fieldType = _data["fieldType"];
             this.value = _data["value"];
             this.matchMode = _data["matchMode"];
             this.operator = _data["operator"];
@@ -1594,6 +1599,7 @@ export class DataFilterModel {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["field"] = this.field;
+        data["fieldType"] = this.fieldType;
         data["value"] = this.value;
         data["matchMode"] = this.matchMode;
         data["operator"] = this.operator;
@@ -1856,6 +1862,7 @@ export class PaginatedResponseOfLookupResponse {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
+    optionsDataSources?: any;
 
     init(_data?: any) {
         if (_data) {
@@ -1879,6 +1886,7 @@ export class PaginatedResponseOfLookupResponse {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
+            this.optionsDataSources = _data["optionsDataSources"];
         }
     }
 
@@ -1911,6 +1919,7 @@ export class PaginatedResponseOfLookupResponse {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
+        data["optionsDataSources"] = this.optionsDataSources;
         return data;
     }
 }
@@ -1924,7 +1933,7 @@ export class LookupResponse {
     statusName?: string;
     parentId?: string | undefined;
     parentName?: string;
-    dataSources?: any;
+    created?: Date;
 
     init(_data?: any) {
         if (_data) {
@@ -1936,7 +1945,7 @@ export class LookupResponse {
             this.statusName = _data["statusName"];
             this.parentId = _data["parentId"];
             this.parentName = _data["parentName"];
-            this.dataSources = _data["dataSources"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
         }
     }
 
@@ -1957,7 +1966,7 @@ export class LookupResponse {
         data["statusName"] = this.statusName;
         data["parentId"] = this.parentId;
         data["parentName"] = this.parentName;
-        data["dataSources"] = this.dataSources;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         return data;
     }
 }
