@@ -196,7 +196,7 @@ export class LookupListComponent implements OnInit {
   private getGlobalFilterValue(event: TableLazyLoadEvent): string {
     if (typeof event.globalFilter === 'string') {
       // If event.globalFilter is already a string, directly assign it to lookupQuery.globalFilterValue
-      return event.globalFilter;
+      return event.globalFilter.trim();
     } else if (Array.isArray(event.globalFilter)) {
       // If event.globalFilter is an array of strings, join the array elements into a single string
       return event.globalFilter.join(', '); // or any other delimiter you prefer
