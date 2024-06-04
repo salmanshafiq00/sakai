@@ -1,6 +1,7 @@
 import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { LookupListComponent } from "./components/lookup-list/lookup-list.component";
+import { LookupDetailComponent } from "./components/lookup-detail/lookup-detail.component";
 
 const routes: Routes = [
   {path: 'lookup', component: LookupListComponent}
@@ -13,5 +14,6 @@ const routes: Routes = [
 export class CommonSetupRoutingModule{}
 
 export const CommonSetupRoutingComponents = [
-  LookupListComponent
+  LookupListComponent,
+  LookupDetailComponent
 ]

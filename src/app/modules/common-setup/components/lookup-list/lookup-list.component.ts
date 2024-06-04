@@ -1,16 +1,18 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FilterMatchMode, FilterMetadata, LazyLoadEvent, MessageService } from 'primeng/api';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
 import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, LookupsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
+import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component';
 
 @Component({
   selector: 'app-lookup-list',
   templateUrl: './lookup-list.component.html',
   styleUrl: './lookup-list.component.scss',
-  providers: [MessageService, LookupsClient, SelectListsClient, DatePipe]
+  providers: [MessageService, LookupsClient, SelectListsClient, DatePipe, DialogService]
 })
 export class LookupListComponent implements OnInit {
 
@@ -40,6 +42,13 @@ export class LookupListComponent implements OnInit {
   globalFilterFields: string[] = [];
   globalFilterFieldNames: string[] = [];
 
+  // Global filters
+  @ViewChild('dt') table: Table;
+  @ViewChild('globalSearchInput') globalSearchInput: ElementRef;
+  debounceTimeout: number = 500;
+  private searchSubject: Subject<string> = new Subject();
+
+
   // Row Selection
   selectionMode: "single" | "multiple" = "multiple";
 
@@ -60,33 +69,31 @@ export class LookupListComponent implements OnInit {
   caption: string = 'Manage Lookup';
   optionsDataSources: any;
 
-
-  // Dialog ---------------------
-  itemDialog: boolean = false;
-  submitted: boolean = false;
-  dialogWidth: number = 650;
-
-  item: any = {};
-
-  // LOOKUP
-  items: any[] = [];
-  selectedItems: any[] = [];
-
-
   //loading
   loading: boolean = false;
 
 
-  @ViewChild('dt') table: Table;
-  @ViewChild('globalSearchInput') globalSearchInput: ElementRef;
-  debounceTimeout: number = 500;
-  private searchSubject: Subject<string> = new Subject();
+    // Dialog ---------------------
+    itemDialog: boolean = false;
+    submitted: boolean = false;
+    dialogWidth: number = 650;
+  
+    item: any = {};
+  
+    // LOOKUP
+    items: any[] = [];
+    selectedItems: any[] = [];
+  
+
+    ref: DynamicDialogRef | undefined;
+
 
   constructor(
     private messageService: MessageService,
     private lookupsClient: LookupsClient,
     private selectListClient: SelectListsClient,
-    private datePipe: DatePipe) {
+    private datePipe: DatePipe,
+    public dialogService: DialogService) {
 
     this.searchSubject.pipe(
       debounceTime(this.debounceTimeout)
@@ -312,7 +319,23 @@ export class LookupListComponent implements OnInit {
   }
 
 
-  ///  --------------------------------
+  ///  -------------  Dialog -------------------
+
+  show(){
+    this.item = new LookupResponse();
+    this.item.status = true;
+    this.ref = this.dialogService.open(LookupDetailComponent, {
+      data: this.item,
+      header: 'Create or Edit',
+      width: '50vw',
+      modal: true,
+      resizable: true,
+      breakpoints: {
+        '960px': '75vw',
+        '640px': '90vw'
+      }
+    })
+  }
 
 
   openNew() {

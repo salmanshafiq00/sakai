@@ -14,7 +14,12 @@
   /* Or position: absolute; if you want it relative to a container */
 }
 
+:host ::ng-deep .p-dropdown-panel {
+  z-index: 1050 !important;
+}
 
 
-
+.custom-panel-dropdown {
+  background-color: red;
+}
 

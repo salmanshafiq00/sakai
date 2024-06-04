@@ -11,7 +11,7 @@
                             label="New" 
                             icon="pi pi-plus" 
                             class="p-button-success mr-2" 
-                            (click)="openNew()">
+                            (click)="show()">
                         </button>
                         <button 
                             pButton 
@@ -266,7 +266,9 @@
                             [filter]="true"
                             [disabled]="false"
                             filterBy="name" 
-                            placeholder="Select">
+                            placeholder="Select"
+                            panelStyleClass="custom-panel-dropdown"
+                            >
                         </p-dropdown>
                     </div>
 

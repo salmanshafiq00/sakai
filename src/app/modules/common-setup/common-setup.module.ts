@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CommonSetupRoutingComponents, CommonSetupRoutingModule } from './common-setup-routing.module';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { DropdownModule } from 'primeng/dropdown';
@@ -21,6 +21,8 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 import { TagModule } from 'primeng/tag';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { TooltipModule } from 'primeng/tooltip';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { CalendarModule } from 'primeng/calendar';
 
 
 
@@ -48,7 +50,10 @@ import { TooltipModule } from 'primeng/tooltip';
     InputSwitchModule,
     TagModule,
     MultiSelectModule,
-    TooltipModule
+    TooltipModule,
+    DynamicDialogModule,
+    ReactiveFormsModule,
+    CalendarModule 
   ],
   providers: [
    {provide: API_BASE_URL, useValue: environment.API_BASE_URL}

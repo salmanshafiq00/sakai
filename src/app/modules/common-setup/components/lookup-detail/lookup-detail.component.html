@@ -1,1 +1,48 @@
-<p>lookup-detail works!</p>
+<div class="col-12">
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-6">
+                <label htmlFor="code">Code</label>
+                <input type="text" pInputText id="code" formControlName="code" autofocus
+                    [ngClass]="{'ng-invalid ng-dirty' : !item.code}" />
+                <small>
+                    {{VMsg.required}}
+                </small>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label htmlFor="name">Name</label>
+                <input type="text" pInputText id="name" formControlName="name" autofocus
+                    [ngClass]="{'ng-invalid ng-dirty' : !item.name}" />
+                <small>
+                    {{VMsg.required}}
+                </small>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label htmlFor="status">Parent Name</label>
+                <p-dropdown formControlName="parentId" inputId="parentId" optionValue="id" optionLabel="name"
+                    [options]="parentList" [showClear]="true" [filter]="true" filterBy="name"
+                    placeholder="Select one">
+                </p-dropdown>
+            </div>
+            <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4" >
+                <div class="flex align-items-center">
+                    <label class="input-switch-label" htmlFor="status">Status</label>
+                    <p-inputSwitch class="input-switch ml-2" formControlName="status" />
+                </div>
+            </div>
+            <div class="field col-12 md:col-6">
+                <label htmlFor="state">Created</label>
+                <p-calendar formControlName="created" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy"
+                    [iconDisplay]="'input'" [showIcon]="true" [showButtonBar]="true" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <label for="description">Description</label>
+                <textarea pInputTextarea id="description" formControlName="description" rows="3" cols="20"></textarea>
+            </div>
+        </div>
+        <div class="mt-3 p-dialog-footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="onSubmit()"></button>
+                <button pButton pRipple label="Save" type="submit" icon="pi pi-check" class="p-button-text"></button>    
+        </div>
+    </form>
+</div>

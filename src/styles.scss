@@ -13,3 +13,6 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/demo/styles/badges.scss";
 @import "assets/demo/styles/code.scss";
 
+::ng-deep .p-dropdown-panel {
+  z-index: 10000 !important;
+}
