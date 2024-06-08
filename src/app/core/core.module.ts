@@ -8,6 +8,7 @@ import { API_BASE_URL, AccountsClient } from './auth/services/auth-client.servic
 import { environment } from 'src/environments/environment';
 import { CorrelationIdInterceptor } from './interceptors/correlation-id.interceptor';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { MessageService } from 'primeng/api';
 
 
 @NgModule({

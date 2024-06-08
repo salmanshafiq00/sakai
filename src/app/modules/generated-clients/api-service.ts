@@ -1697,13 +1697,11 @@ export abstract class DataGridModel {
 
 export class GetLookupDetailListQuery extends DataGridModel {
     cacheKey?: string;
-    expiration?: string | undefined;
 
     override init(_data?: any) {
         super.init(_data);
         if (_data) {
             this.cacheKey = _data["cacheKey"];
-            this.expiration = _data["expiration"];
         }
     }
 
@@ -1717,7 +1715,6 @@ export class GetLookupDetailListQuery extends DataGridModel {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["cacheKey"] = this.cacheKey;
-        data["expiration"] = this.expiration;
         super.toJSON(data);
         return data;
     }
@@ -1972,13 +1969,9 @@ export class LookupResponse {
 }
 
 export class GetLookupListQuery extends DataGridModel {
-    expiration?: string | undefined;
 
     override init(_data?: any) {
         super.init(_data);
-        if (_data) {
-            this.expiration = _data["expiration"];
-        }
     }
 
     static override fromJS(data: any): GetLookupListQuery {
@@ -1990,7 +1983,6 @@ export class GetLookupListQuery extends DataGridModel {
 
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["expiration"] = this.expiration;
         super.toJSON(data);
         return data;
     }
@@ -2002,7 +1994,6 @@ export class CreateLookupCommand {
     description?: string;
     status?: boolean;
     parentId?: string | undefined;
-    cacheKey?: string;
 
     init(_data?: any) {
         if (_data) {
@@ -2011,7 +2002,6 @@ export class CreateLookupCommand {
             this.description = _data["description"];
             this.status = _data["status"];
             this.parentId = _data["parentId"];
-            this.cacheKey = _data["cacheKey"];
         }
     }
 
@@ -2029,7 +2019,6 @@ export class CreateLookupCommand {
         data["description"] = this.description;
         data["status"] = this.status;
         data["parentId"] = this.parentId;
-        data["cacheKey"] = this.cacheKey;
         return data;
     }
 }

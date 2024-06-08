@@ -1,57 +1,133 @@
-import { Component, inject } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { MessageService } from 'primeng/api';
-import { CommonMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { LookupResponse, SelectListModel, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
+import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonConstants } from 'src/app/core/contants/common';
+import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
+import { CreateLookupCommand, LookupResponse, LookupsClient, SelectListModel, SelectListsClient, UpdateLookupCommand } from 'src/app/modules/generated-clients/api-service';
+import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
   selector: 'app-lookup-detail',
   templateUrl: './lookup-detail.component.html',
   styleUrl: './lookup-detail.component.scss',
-  providers: [SelectListsClient, MessageService]
+  encapsulation: ViewEncapsulation.None
+  // providers: [ToastService]
 })
 export class LookupDetailComponent {
 
-  VMsg = CommonMessage;
+  submitted: boolean = true;
+
+  VMsg = CommonValidationMessage;
+  comConst = CommonConstants;
 
   form: FormGroup;
 
+  id: string = '';
   item: LookupResponse = new LookupResponse();
 
   parentList: SelectListModel[] = [];
 
-  selectListClient: SelectListsClient = inject(SelectListsClient);
-  messageService: MessageService = inject(MessageService);
-  fb: FormBuilder = inject(FormBuilder);
+  get f() {
+    return this.form.controls;
+  }
 
-  ngOnInit(){
+  private customDialogService: CustomDialogService = inject(CustomDialogService);
+  private toast: ToastService = inject(ToastService);
+  private fb: FormBuilder = inject(FormBuilder);
+
+  private selectListClient: SelectListsClient = inject(SelectListsClient);
+  private lookupsClient: LookupsClient = inject(LookupsClient);
+
+
+
+  ngOnInit() {
+
+    this.id = this.customDialogService.getConfigData(); // get the passed data (id)
     this.initializeFormGroup();
+
+    if (this.id && this.id !== this.comConst.EmptyGuid) {
+      this.getById(this.id);
+    }
+
     this.getParentSelectList();
   }
 
-  onSubmit(){
-    console.log(this.form)
+
+
+  onSubmit() {
+    if (!this.id || this.id === this.comConst.EmptyGuid) {
+      this.save();
+    } else {
+      this.update();
+    }
+  }
+
+
+  cancel() {
+    this.customDialogService.close(false);
+  }
+
+  private save() {
+    this.submitted = true;
+    let createLookupCommand = new CreateLookupCommand();
+    createLookupCommand = { ...this.form.value }
+
+    this.lookupsClient.createLookup(createLookupCommand).subscribe({
+      next: () => {
+        this.toast.created()
+        this.customDialogService.close(true);
+      },
+      error: (error) => {
+        this.toast.showError(error.errors[0]?.description)
+        console.log(error);
+      }
+    });
+
+  }
+
+  private update() {
+    this.submitted = true;
+    let updateLookupCommand = new UpdateLookupCommand();
+    updateLookupCommand = { ...this.form.value }
+
+    this.lookupsClient.updateLookup(updateLookupCommand).subscribe({
+      next: () => {
+        this.toast.updated()
+        this.customDialogService.close(true);
+      },
+      error: (error) => {
+        this.toast.showError(error.errors[0]?.description)
+        console.log(error);
+      }
+    });
   }
 
   private getParentSelectList() {
     this.selectListClient.getLookupSelectList(true).subscribe({
       next: (res) => {
         this.parentList = res;
-      },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Parent Dropdown not found', life: 3000 })
       }
     });
   }
 
-  private initializeFormGroup(){
+  private getById(id: string) {
+    this.lookupsClient.getLookup(id).subscribe({
+      next: (res: LookupResponse) => {
+        this.item = res;
+        console.log(res);
+        this.form.patchValue(this.item);
+      }
+    });
+  }
+
+  private initializeFormGroup() {
     this.form = this.fb.group({
       id: [''],
-      name: [''],
-      code: [''],
+      name: ['', Validators.required],
+      code: ['', Validators.required],
       description: [''],
       status: [false],
-      parentId: [''],
+      parentId: [null],
       created: [null]
     });
   }

@@ -20,7 +20,7 @@ import { CoreModule } from './core/core.module';
     imports: [
         AppRoutingModule, 
         AppLayoutModule,
-        CoreModule
+        CoreModule,
     ],
     providers: [
         { provide: LocationStrategy, useClass: PathLocationStrategy },

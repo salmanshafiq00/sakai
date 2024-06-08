@@ -8,58 +8,68 @@ export class LoggingInterceptor implements HttpInterceptor {
 
     const started = Date.now();
     const correlationId = req.headers.get('X-Correlation-Id');
-    console.log(`${correlationId} --> Requesting ${req.url}`);
 
     // Combine request headers and body into a single JSON object
     const requestLog = {
       headers: Object.fromEntries(req.headers.keys().map(key => [key, req.headers.get(key)])),
-      body: req.body
+      body: JSON.parse(req.body)
     };
 
     // Log the combined request object
-    console.log(`Request (${this.apiPostfix(req.url)}):`, requestLog);
+    console.log(`Requesting to --> ${correlationId} -->  ${req.url}:`, requestLog);
 
     return next.handle(req).pipe(
       tap((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
           const elapsed = Date.now() - started;
-          // console.log(`Response from ${req.url} took ${elapsed} ms`);
 
           // Check if the response is a Blob
           if (event.body instanceof Blob) {
-            this.readBlobContent(event.body, correlationId, req.url);
+            this.readBlobContent(event.body)
+            .then((responseData) => {
+              console.log(`Response from --> ${this.apiPostfix(req.url)} --> ${correlationId} -> after ${elapsed} ms:`, responseData);
+            });
           } else {
-            console.log(`${this.apiPostfix(req.url)} --> [${correlationId}] Response body:`, event.body);
+            console.log(`Response from --> ${this.apiPostfix(req.url)} --> [${correlationId}] -> after ${elapsed} ms:`, event.body);
           }
         }
       }),
       catchError((error) => {
         const elapsed = Date.now() - started;
         console.error(`Request to ${req.url} failed after ${elapsed} ms:`, error);
+        if(error?.error instanceof Blob){
+          this.readBlobContent(error.error)
+          .then((jsonError) => {
+            console.log(`Problem Details: `, jsonError)
+          });
+        } else {
+          console.log(`Problem Details: `, error.error)
+        }
         return throwError(() => error);
       })
     );
   }
 
-  private readBlobContent(blob: Blob, correlationId: string, url: string) {
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const contentType = blob.type;
-      let responseData: any;
+  private readBlobContent(blob: Blob) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const contentType = blob.type;
+          if(contentType === 'application/json' || contentType === 'application/problem+json'){
+            resolve(JSON.parse(reader.result as string));
+          } else {
+            resolve(reader.result)
+          }
 
-      // Handle different content types
-      if (contentType === 'application/json') {
-        responseData = JSON.parse(reader.result as string);
-      } else {
-        // For other content types (e.g., plain text), you can directly use the result
-        responseData = reader.result;
-      }
+        } catch (error) {
+          reject(error)
+        }
+      };
+      reader.onerror = reject;
+      reader.readAsText(blob);
 
-      console.log(`${this.apiPostfix(url)} --> [${correlationId}] Response body (Blob):`, responseData);
-    };
-
-    // Read the Blob content as text
-    reader.readAsText(blob);
+    });
   }
 
   private apiPostfix(url: string): string {

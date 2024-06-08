@@ -1,18 +1,21 @@
 import { DatePipe } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FilterMatchMode, FilterMetadata, LazyLoadEvent, MessageService } from 'primeng/api';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { Component, ElementRef, OnInit, Type, ViewChild, inject } from '@angular/core';
+import { FilterMatchMode, FilterMetadata } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
 import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, LookupsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
 import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component';
+import { ToastService } from 'src/app/shared/services/toast.service';
+import { ConfirmDialogService } from 'src/app/shared/services/confirm-dialog.service';
+import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 
 @Component({
   selector: 'app-lookup-list',
   templateUrl: './lookup-list.component.html',
   styleUrl: './lookup-list.component.scss',
-  providers: [MessageService, LookupsClient, SelectListsClient, DatePipe, DialogService]
+  providers: [ToastService, ConfirmDialogService, CustomDialogService, LookupsClient, SelectListsClient, DatePipe, DialogService]
 })
 export class LookupListComponent implements OnInit {
 
@@ -35,6 +38,7 @@ export class LookupListComponent implements OnInit {
   totalRecords: number = 0;
   totalPages: number = 0;
   pageNumber: number = 1;
+  first: number = 0;
   rows: number = 10;
   currentPageReportTemplate: string = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
@@ -57,7 +61,7 @@ export class LookupListComponent implements OnInit {
 
   // Others
   dataKey: string = 'id';
- 
+
   // Dropdown DataSources
   parentList: any[] = [];
   statusList: any[] = [];
@@ -72,80 +76,72 @@ export class LookupListComponent implements OnInit {
   //loading
   loading: boolean = false;
 
+  items: any[] = [];
+  selectedItems: any[] = [];
 
-    // Dialog ---------------------
-    itemDialog: boolean = false;
-    submitted: boolean = false;
-    dialogWidth: number = 650;
+
+  // Dialog ---------------------
   
-    item: any = {};
   
-    // LOOKUP
-    items: any[] = [];
-    selectedItems: any[] = [];
-  
+  private toast: ToastService = inject(ToastService);
+  private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
+  private lookupsClient: LookupsClient = inject(LookupsClient);
+  private selectListClient: SelectListsClient = inject(SelectListsClient);
+  private datePipe: DatePipe = inject(DatePipe);
+  private customDialogService: CustomDialogService = inject(CustomDialogService);
 
-    ref: DynamicDialogRef | undefined;
 
-
-  constructor(
-    private messageService: MessageService,
-    private lookupsClient: LookupsClient,
-    private selectListClient: SelectListsClient,
-    private datePipe: DatePipe,
-    public dialogService: DialogService) {
+  constructor() {
 
     this.searchSubject.pipe(
       debounceTime(this.debounceTimeout)
     ).subscribe((searchText) => {
       this.onGlobalFilter(searchText);
     })
+
   }
 
   ngOnInit() {
-
-    // this.loadData({first: 1, rows: this.rows})
-
-
+    this.loadData({ first: this.first, rows: this.rows }, true)
     this.getParentSelectList();
     this.statusList = this.getStatusSelectList();
-
   }
 
   get hasSelectOrDateType(): boolean {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
   }
 
-  loadData(event: TableLazyLoadEvent) {
+  loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
 
     this.loading = true;
 
-    console.log(event)
+    this.first = event.first;
+    this.rows = event.rows;
 
-    // 
-    const lookupQuery = new GetLookupListQuery();
-    lookupQuery.offset = event.first;
-    lookupQuery.pageSize = event.rows;
-    lookupQuery.allowCache = false;
-    lookupQuery.sortField = this.getSortedField(event);
-    lookupQuery.sortOrder = event.sortOrder;
-    lookupQuery.globalFilterValue = this.getGlobalFilterValue(event);
-    // lookupQuery.filters = this.mapToDataFilterModel(event.filters);
+    const query = new GetLookupListQuery();
+    query.offset = this.first;
+    query.pageSize = this.rows;
+    query.allowCache = !!allowCache;
+    query.sortField = this.getSortedField(event);
+    query.sortOrder = event.sortOrder;
+    query.globalFilterValue = this.getGlobalFilterValue(event);
+    // query.filters = this.mapToDataFilterModel(event.filters);
 
     this.mapAndSetToDataFilterModel(event.filters);
-    lookupQuery.filters = this.filters;
-    console.log(this.filters);
+    query.filters = this.filters;
 
-    console.log(lookupQuery)
+    if(query.sortField 
+      || query.globalFilterValue 
+      || query.filters.length !== 0){
+      query.allowCache = false;
+    }
 
-    this.lookupsClient.getLookups(lookupQuery).subscribe({
+    this.lookupsClient.getLookups(query).subscribe({
       next: (res) => {
-        console.log(res);
         this.items = res.items;
+        this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
         this.totalPages = res.totalPages;
-        this.totalRecords = res.totalCount;
-        this.pageNumber = res.pageNumber;
         this.dataFields = res.dataFields;
         this.filters = res.filters;
         this.optionsDataSources = res.optionsDataSources;
@@ -200,9 +196,24 @@ export class LookupListComponent implements OnInit {
     this.globalSearchInput.nativeElement.value = '';
   }
 
+  edit(item: any) {
+    console.log(item);
+    this.openDialog(item.id);
+  }
+
+  delete(item: any) {
+
+    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
+      if(confirmed){
+        this.deleteItem(item.id);
+        this.toast.created()
+      }
+    });
+  }
+
   private getGlobalFilterValue(event: TableLazyLoadEvent): string {
     if (typeof event.globalFilter === 'string') {
-      // If event.globalFilter is already a string, directly assign it to lookupQuery.globalFilterValue
+      // If event.globalFilter is already a string, directly assign it to query.globalFilterValue
       return event.globalFilter.trim();
     } else if (Array.isArray(event.globalFilter)) {
       // If event.globalFilter is an array of strings, join the array elements into a single string
@@ -222,7 +233,7 @@ export class LookupListComponent implements OnInit {
     return '';
   }
 
-  mapAndSetToDataFilterModel(filters: FilterDictionary) {
+  private mapAndSetToDataFilterModel(filters: FilterDictionary) {
     for (const field in filters) {
 
       if (field === 'global') continue;
@@ -291,13 +302,21 @@ export class LookupListComponent implements OnInit {
     }
   }
 
+  private deleteItem(id: string) {
+    this.lookupsClient.deleteLookup(id).subscribe({
+      next: () => {
+        this.toast.deleted();
+        this.loadData({ first: this.first, rows: this.rows }, false)
+      },
+      error: (error) => {
+        this.toast.showError('Fail to delete.')
+      }
+    });
+  }
   private getParentSelectList() {
     this.selectListClient.getLookupSelectList(true).subscribe({
       next: (res) => {
         this.parentList = res;
-      },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Parent Dropdown not found', life: 3000 })
       }
     });
   }
@@ -321,60 +340,22 @@ export class LookupListComponent implements OnInit {
 
   ///  -------------  Dialog -------------------
 
-  show(){
-    this.item = new LookupResponse();
-    this.item.status = true;
-    this.ref = this.dialogService.open(LookupDetailComponent, {
-      data: this.item,
-      header: 'Create or Edit',
-      width: '50vw',
-      modal: true,
-      resizable: true,
-      breakpoints: {
-        '960px': '75vw',
-        '640px': '90vw'
-      }
-    })
-  }
 
-
-  openNew() {
-    this.item = new LookupResponse();
-    this.item.status = true;
-    this.itemDialog = true;
-  }
-
-  saveitem() {
-    this.submitted = true;
-
-    const createLookupCommand = { ...this.item }
-    this.lookupsClient.createLookup(createLookupCommand).subscribe({
-      next: (res) => {
-        console.log(res + 'res from create')
-        if (res) {
-          this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Lookup Created', life: 3000 });
-          this.itemDialog = false;
-
-        }
-        else {
-          this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
-
-        }
-      },
-      error: (error) => {
-        this.messageService.add({ severity: 'error', summary: 'Error!', detail: 'Lookup Created Failed', life: 3000 });
+  
+  openDialog(data: any) {
+    this.customDialogService.open<string>(
+      LookupDetailComponent,
+      data,
+      'Create or Edit'
+    )
+    .subscribe((isSucceed: boolean) => {
+      if (isSucceed) {
+          this.loadData({first: this.first, rows: this.rows})
       }
     });
-    console.log(this.item)
-
   }
 
   deleteSelectedItems() {
-
-  }
-
-  // other commmon
-  hideDialog() {
 
   }
 

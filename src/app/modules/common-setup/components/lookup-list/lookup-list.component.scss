@@ -1,25 +1,17 @@
+::ng-deep {
+  .p-datatable .p-datatable-header {
+    padding: .5rem 1rem;
+  }
 
-.input-switch-label{
-  margin-right: 1.5rem;
+  .p-datatable .p-datatable-tbody>tr>td {
+    padding: .2rem .5rem;
+  }
+
+  .p-datatable .p-datatable-thead>tr>th {
+    padding: .5rem .5rem;
+  }
+
+  .p-paginator {
+    margin-top: 1rem;
+  }
 }
-
-/* Adjust the z-index of the dropdown options tray */
-.ui-dropdown-panel {
-  z-index: 1001; /* Ensure it's stacked above other elements */
-}
-
-/* Adjust the positioning of the dropdown options tray */
-.ui-dropdown-panel {
-  position: fixed; /* Position it relative to the viewport */
-  /* Or position: absolute; if you want it relative to a container */
-}
-
-:host ::ng-deep .p-dropdown-panel {
-  z-index: 1050 !important;
-}
-
-
-.custom-panel-dropdown {
-  background-color: red;
-}
-

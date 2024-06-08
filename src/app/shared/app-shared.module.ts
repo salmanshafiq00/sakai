@@ -1,42 +1,34 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { TableModule } from 'primeng/table';
-import { RatingModule } from 'primeng/rating';
-import { ButtonModule } from 'primeng/button';
-import { SliderModule } from 'primeng/slider';
-import { InputTextModule } from 'primeng/inputtext';
-import { ToggleButtonModule } from 'primeng/togglebutton';
-import { RippleModule } from 'primeng/ripple';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { DropdownModule } from 'primeng/dropdown';
-import { ProgressBarModule } from 'primeng/progressbar';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { ToastComponent } from './components/toast/toast.component';
 import { ToastModule } from 'primeng/toast';
-import { SfsGridComponent } from './components/sfs-grid/sfs-grid.component';
+import { DialogService } from 'primeng/dynamicdialog';
 
 
 
 @NgModule({
   declarations: [
-    SfsGridComponent
+		ConfirmDialogComponent,
+		ToastComponent
   ],
   imports: [
     CommonModule,
-    FormsModule,
-		TableModule,
-		RatingModule,
-		ButtonModule,
-		SliderModule,
-		InputTextModule,
-		ToggleButtonModule,
-		RippleModule,
-		MultiSelectModule,
-		DropdownModule,
-		ProgressBarModule,
-		ToastModule
+
+		// PrimeNg Modules //
+		ToastModule,
+		ConfirmDialogModule
   ],
-  exports: [
-    SfsGridComponent
+	providers: [
+		MessageService,
+		ConfirmationService,
+		DialogService
+	],
+	exports: [
+		ConfirmDialogComponent,
+		ToastComponent
   ]
 })
 export class AppSharedModule { }
