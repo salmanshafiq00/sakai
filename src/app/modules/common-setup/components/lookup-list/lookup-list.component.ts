@@ -1,21 +1,21 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, Type, ViewChild, inject } from '@angular/core';
 import { FilterMatchMode, FilterMetadata } from 'primeng/api';
-import { DialogService } from 'primeng/dynamicdialog';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
 import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupResponse, LookupsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
 import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component';
 import { ToastService } from 'src/app/shared/services/toast.service';
 import { ConfirmDialogService } from 'src/app/shared/services/confirm-dialog.service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
+import { BackoffService } from 'src/app/shared/services/backoff.service';
 
 @Component({
   selector: 'app-lookup-list',
   templateUrl: './lookup-list.component.html',
   styleUrl: './lookup-list.component.scss',
-  providers: [ToastService, ConfirmDialogService, CustomDialogService, LookupsClient, SelectListsClient, DatePipe, DialogService]
+  providers: [ToastService, BackoffService, ConfirmDialogService, CustomDialogService, LookupsClient, SelectListsClient, DatePipe]
 })
 export class LookupListComponent implements OnInit {
 
@@ -81,8 +81,8 @@ export class LookupListComponent implements OnInit {
 
 
   // Dialog ---------------------
-  
-  
+
+  private backoffService: BackoffService = inject(BackoffService);
   private toast: ToastService = inject(ToastService);
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
   private lookupsClient: LookupsClient = inject(LookupsClient);
@@ -130,9 +130,9 @@ export class LookupListComponent implements OnInit {
     this.mapAndSetToDataFilterModel(event.filters);
     query.filters = this.filters;
 
-    if(query.sortField 
-      || query.globalFilterValue 
-      || query.filters.length !== 0){
+    if (query.sortField
+      || query.globalFilterValue
+      || query.filters.length !== 0) {
       query.allowCache = false;
     }
 
@@ -176,6 +176,18 @@ export class LookupListComponent implements OnInit {
   //   return filters;
   // }
 
+  refreshGrid() {
+    this.loading = true;
+
+    const delay = this.backoffService.getDelay();
+    console.log(`Applying delay: ${delay}ms`);
+    timer(delay).subscribe(() => {
+      this.loadData({ first: this.first, rows: this.rows }, false);
+      // this.backoffService.resetDelay();
+    });
+
+  }
+
   getFilterValue(field: string) {
     const filter = this.filters.find(f => f.field === field);
     return filter ? filter.value : null;
@@ -204,7 +216,7 @@ export class LookupListComponent implements OnInit {
   delete(item: any) {
 
     this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
-      if(confirmed){
+      if (confirmed) {
         this.deleteItem(item.id);
         this.toast.created()
       }
@@ -341,18 +353,18 @@ export class LookupListComponent implements OnInit {
   ///  -------------  Dialog -------------------
 
 
-  
+
   openDialog(data: any) {
     this.customDialogService.open<string>(
       LookupDetailComponent,
       data,
       'Create or Edit'
     )
-    .subscribe((isSucceed: boolean) => {
-      if (isSucceed) {
-          this.loadData({first: this.first, rows: this.rows})
-      }
-    });
+      .subscribe((isSucceed: boolean) => {
+        if (isSucceed) {
+          this.loadData({ first: this.first, rows: this.rows })
+        }
+      });
   }
 
   deleteSelectedItems() {

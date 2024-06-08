@@ -8,23 +8,36 @@
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div >
-                        <button 
-                            pButton 
+                        <p-button 
                             pRipple 
+                            [raised]="true"
+                            severity="success"
                             label="New" 
                             icon="pi pi-plus" 
-                            class="p-button-success mr-2" 
+                            class="mr-2" 
                             (click)="openDialog('')">
-                        </button>
-                        <button 
-                            pButton 
+                        </p-button>                       
+                        <p-button 
+                            pRipple
+                            [raised]="true"
+                            severity="help" 
+                            label="Refresh" 
+                            icon="pi pi-sync" 
+                            class="mr-2" 
+                            [loading]="loading" 
+                            [disabled]="loading"
+                            (click)="refreshGrid()">
+                        </p-button>
+                        <p-button 
                             pRipple 
+                            [raised]="true"
+                            severity="danger" 
                             label="Delete" 
                             icon="pi pi-trash" 
-                            class="p-button-danger" 
+                            class="mr-2" 
                             (click)="deleteSelectedItems()" 
                             [disabled]="!selectedItems || !selectedItems.length">
-                        </button>
+                        </p-button>
                     </div>
                 </ng-template>
 
@@ -37,14 +50,15 @@
                         chooseLabel="Import" 
                         class="mr-2 inline-block">
                     </p-fileUpload>
-                    <button 
-                        pButton 
+                    <p-button 
                         pRipple 
+                        [raised]="true"
+                        severity="help" 
                         label="Export" 
                         icon="pi pi-upload" 
                         class="p-button-help" 
                         (click)="dt.exportCSV()">
-                    </button>
+                    </p-button>
                 </ng-template>
             </p-toolbar>
 
