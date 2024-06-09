@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, Type, ViewChild, inject } from '@angular/core';
-import { FilterMatchMode, FilterMetadata } from 'primeng/api';
+import { FilterMatchMode, FilterMetadata, MenuItem } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime, timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
@@ -76,6 +76,9 @@ export class LookupListComponent implements OnInit {
   //loading
   loading: boolean = false;
 
+  // breadcrumb
+  menuItems: MenuItem[] | undefined;
+
   items: any[] = [];
   selectedItems: any[] = [];
 
@@ -102,6 +105,8 @@ export class LookupListComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    
     this.loadData({ first: this.first, rows: this.rows }, true)
     this.getParentSelectList();
     this.statusList = this.getStatusSelectList();

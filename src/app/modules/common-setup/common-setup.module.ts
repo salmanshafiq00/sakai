@@ -23,6 +23,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { CalendarModule } from 'primeng/calendar';
 import { AppSharedModule } from 'src/app/shared/app-shared.module';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 
 
 
@@ -63,7 +64,6 @@ import { AppSharedModule } from 'src/app/shared/app-shared.module';
     ToolbarModule,
     RatingModule,
     TagModule,
-
 
     // Dialog 
     DialogModule,

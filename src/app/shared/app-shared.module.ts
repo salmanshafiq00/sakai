@@ -6,20 +6,24 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { ToastComponent } from './components/toast/toast.component';
 import { ToastModule } from 'primeng/toast';
 import { DialogService } from 'primeng/dynamicdialog';
+import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
 
 
 
 @NgModule({
   declarations: [
 		ConfirmDialogComponent,
-		ToastComponent
+		ToastComponent,
+		BreadcrumbComponent
   ],
   imports: [
     CommonModule,
 
 		// PrimeNg Modules //
 		ToastModule,
-		ConfirmDialogModule
+		ConfirmDialogModule,
+		BreadcrumbModule
   ],
 	providers: [
 		MessageService,
@@ -28,7 +32,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 	],
 	exports: [
 		ConfirmDialogComponent,
-		ToastComponent
+		ToastComponent,
+		BreadcrumbComponent
   ]
 })
 export class AppSharedModule { }
