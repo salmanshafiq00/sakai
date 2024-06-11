@@ -10,8 +10,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
   selector: 'app-lookup-detail',
   templateUrl: './lookup-detail.component.html',
   styleUrl: './lookup-detail.component.scss',
-  encapsulation: ViewEncapsulation.None
-  // providers: [ToastService]
+  providers: [ToastService]
 })
 export class LookupDetailComponent {
 

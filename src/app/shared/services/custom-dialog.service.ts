@@ -40,7 +40,12 @@ export class CustomDialogService {
     // });
 
     // return onClose$.asObservable();
-    return this.ref.onClose as Observable<boolean>
+    if (this.ref) {
+      return this.ref.onClose as Observable<boolean>;
+    } else {
+      console.error('Dialog reference is undefined.');
+      return new Observable<boolean>(); // return an empty observable if ref is undefined
+    }
   }
 
   getConfigData<T>(): T {
@@ -48,7 +53,12 @@ export class CustomDialogService {
   }
 
   close(succeeded: boolean) {
-    if(this.ref)
+    if(this.ref){
       this.ref.close(succeeded);
+    }
+    else {
+      console.error('Dialog reference is undefined.');
+    }
   }
+  
 }

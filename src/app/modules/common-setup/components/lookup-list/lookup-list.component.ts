@@ -15,13 +15,14 @@ import { BackoffService } from 'src/app/shared/services/backoff.service';
   selector: 'app-lookup-list',
   templateUrl: './lookup-list.component.html',
   styleUrl: './lookup-list.component.scss',
-  providers: [ToastService, BackoffService, ConfirmDialogService, CustomDialogService, LookupsClient, SelectListsClient, DatePipe]
+  providers: [ToastService, BackoffService, ConfirmDialogService, LookupsClient, DatePipe]
 })
 export class LookupListComponent implements OnInit {
 
   FieldType = FieldType;
   FilterMatchMode = FilterMatchMode;
-
+  isInitialLoaded: boolean = false;
+  optionDataSources = {};
   // Table Settings //
   responsiveLayout = 'scroll';
   cols: any[] = []; // eta input diye anbo
@@ -62,9 +63,7 @@ export class LookupListComponent implements OnInit {
   // Others
   dataKey: string = 'id';
 
-  // Dropdown DataSources
-  parentList: any[] = [];
-  statusList: any[] = [];
+  statusList = [];
 
   // Dropdwon Selected value
   selectedParent: any;
@@ -89,7 +88,6 @@ export class LookupListComponent implements OnInit {
   private toast: ToastService = inject(ToastService);
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
   private lookupsClient: LookupsClient = inject(LookupsClient);
-  private selectListClient: SelectListsClient = inject(SelectListsClient);
   private datePipe: DatePipe = inject(DatePipe);
   private customDialogService: CustomDialogService = inject(CustomDialogService);
 
@@ -106,9 +104,9 @@ export class LookupListComponent implements OnInit {
 
   ngOnInit() {
 
-    
+
     this.loadData({ first: this.first, rows: this.rows }, true)
-    this.getParentSelectList();
+    // this.getParentSelectList();
     this.statusList = this.getStatusSelectList();
   }
 
@@ -118,6 +116,7 @@ export class LookupListComponent implements OnInit {
 
   loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
 
+    console.log(event)
     this.loading = true;
 
     this.first = event.first;
@@ -130,6 +129,7 @@ export class LookupListComponent implements OnInit {
     query.sortField = this.getSortedField(event);
     query.sortOrder = event.sortOrder;
     query.globalFilterValue = this.getGlobalFilterValue(event);
+    query.isInitialLoaded = this.isInitialLoaded;
     // query.filters = this.mapToDataFilterModel(event.filters);
 
     this.mapAndSetToDataFilterModel(event.filters);
@@ -140,6 +140,8 @@ export class LookupListComponent implements OnInit {
       || query.filters.length !== 0) {
       query.allowCache = false;
     }
+
+    console.log(query)
 
     this.lookupsClient.getLookups(query).subscribe({
       next: (res) => {
@@ -159,7 +161,13 @@ export class LookupListComponent implements OnInit {
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
-        this.loading = false;
+        // option datasource
+        if(!this.isInitialLoaded){
+          this.optionDataSources = res.optionsDataSources;
+          this.isInitialLoaded = true;
+        }
+
+          this.loading = false;
       },
       error: (error) => {
         console.error(error, 'Error while fetching lookups')
@@ -311,6 +319,9 @@ export class LookupListComponent implements OnInit {
     else if (filter.fieldType == FieldType.string) {
       return filterMetadata.value !== null ? filterMetadata.value.toString() : '';
     }
+    else if (filter.fieldType == FieldType.select) {
+      return filterMetadata.value !== null ? filterMetadata.value.toString() : '';
+    }
     else if (filter.fieldType == FieldType.date) {
       return filterMetadata.value ? this.datePipe.transform(filterMetadata.value, 'yyyy/MM/dd') : '';
     }
@@ -330,13 +341,6 @@ export class LookupListComponent implements OnInit {
       }
     });
   }
-  private getParentSelectList() {
-    this.selectListClient.getLookupSelectList(true).subscribe({
-      next: (res) => {
-        this.parentList = res;
-      }
-    });
-  }
 
   private getStatusSelectList() {
     const statusSelectList = [];
@@ -353,6 +357,8 @@ export class LookupListComponent implements OnInit {
 
     return statusSelectList;
   }
+
+
 
 
   ///  -------------  Dialog -------------------

@@ -8,6 +8,7 @@ import { ToastModule } from 'primeng/toast';
 import { DialogService } from 'primeng/dynamicdialog';
 import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { CustomDialogService } from './services/custom-dialog.service';
 
 
 
@@ -28,7 +29,8 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 	providers: [
 		MessageService,
 		ConfirmationService,
-		DialogService
+		DialogService,
+		CustomDialogService
 	],
 	exports: [
 		ConfirmDialogComponent,

@@ -153,8 +153,8 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
-                                        [(ngModel)]="selectedStatus"
-                                        [options]="statusList" 
+                                        [ngModel]="selectedStatus"
+                                        [options]="optionDataSources[col?.dsName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
                                         [optionLabel]="'name'" 
@@ -183,8 +183,8 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
-                                        [(ngModel)]="selectedParent" 
-                                        [options]="parentList" 
+                                        [ngModel]="selectedParent" 
+                                        [options]="optionDataSources[col?.dsName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
                                         optionLabel="name"

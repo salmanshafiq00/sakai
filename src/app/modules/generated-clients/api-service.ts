@@ -1405,7 +1405,7 @@ export class PaginatedResponseOfLookupDetailResponse {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: any;
+    optionsDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -1429,7 +1429,13 @@ export class PaginatedResponseOfLookupDetailResponse {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            this.optionsDataSources = _data["optionsDataSources"];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
         }
     }
 
@@ -1462,7 +1468,13 @@ export class PaginatedResponseOfLookupDetailResponse {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        data["optionsDataSources"] = this.optionsDataSources;
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
         return data;
     }
 }
@@ -1617,12 +1629,14 @@ export class SelectListModel {
     id?: string;
     name?: string;
     isDefault?: boolean;
+    severity?: string;
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
             this.isDefault = _data["isDefault"];
+            this.severity = _data["severity"];
         }
     }
 
@@ -1638,11 +1652,13 @@ export class SelectListModel {
         data["id"] = this.id;
         data["name"] = this.name;
         data["isDefault"] = this.isDefault;
+        data["severity"] = this.severity;
         return data;
     }
 }
 
 export abstract class DataGridModel {
+    isInitialLoaded?: boolean;
     allowCache?: boolean | undefined;
     pageNumber?: number;
     pageSize?: number;
@@ -1655,6 +1671,7 @@ export abstract class DataGridModel {
 
     init(_data?: any) {
         if (_data) {
+            this.isInitialLoaded = _data["isInitialLoaded"];
             this.allowCache = _data["allowCache"];
             this.pageNumber = _data["pageNumber"];
             this.pageSize = _data["pageSize"];
@@ -1678,6 +1695,7 @@ export abstract class DataGridModel {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
+        data["isInitialLoaded"] = this.isInitialLoaded;
         data["allowCache"] = this.allowCache;
         data["pageNumber"] = this.pageNumber;
         data["pageSize"] = this.pageSize;
@@ -1859,7 +1877,7 @@ export class PaginatedResponseOfLookupResponse {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: any;
+    optionsDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -1883,7 +1901,13 @@ export class PaginatedResponseOfLookupResponse {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            this.optionsDataSources = _data["optionsDataSources"];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
         }
     }
 
@@ -1916,7 +1940,13 @@ export class PaginatedResponseOfLookupResponse {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        data["optionsDataSources"] = this.optionsDataSources;
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
         return data;
     }
 }
