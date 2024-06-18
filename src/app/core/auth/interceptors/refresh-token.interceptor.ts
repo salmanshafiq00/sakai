@@ -12,33 +12,6 @@ export class RefreshTokenInterceptor implements HttpInterceptor{
 
 authService: AuthService = inject(AuthService);
 
-  // intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-  //   return next.handle(req).pipe(
-  //     catchError((error: HttpErrorResponse) => {
-  //       if(error.status === 401){
-  //         return this.authService.refreshToken().pipe(
-  //           switchMap((newToken: string) => {
-  //             this.authService.setAccessToken(newToken);
-  //             const clonedRequest = req.clone({
-  //               setHeaders: {
-  //                 Authorization: `Bearer ${newToken}`
-  //               }
-  //             });
-  //             return next.handle(clonedRequest);
-  //           }),
-  //           catchError(err => {
-  //             this.authService.clearAccessToken();
-  //             return throwError(() => err);
-  //           })
-  //         )
-  //       }
-  //       else {
-  //         return throwError(error);
-  //       }
-  //     })
-  //   );
-  // }
-
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
       catchError(error => {

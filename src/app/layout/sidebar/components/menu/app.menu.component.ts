@@ -47,6 +47,32 @@ export class AppMenuComponent implements OnInit {
                 ]
             },
             {
+                label: 'Admin',
+                items: [
+                    {
+                        label: 'Admin', icon: 'pi pi-fw pi-bookmark',
+                        items: [
+                            { label: 'User', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/users'] },
+                            { label: 'Role', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/roles'] },
+                            {
+                                label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
+                                items: [
+                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
+                                ]
+                            },
+                            {
+                                label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
+                                items: [
+                                    { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }
+                                ]
+                            },
+                        ]
+                    }
+                ]
+            },
+            {
                 label: 'UI Components',
                 items: [
                     { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', routerLink: ['/uikit/formlayout'] },

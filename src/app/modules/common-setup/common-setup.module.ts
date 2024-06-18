@@ -23,7 +23,6 @@ import { TooltipModule } from 'primeng/tooltip';
 import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { CalendarModule } from 'primeng/calendar';
 import { AppSharedModule } from 'src/app/shared/app-shared.module';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 
 
 
@@ -41,13 +40,9 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 
   // PrimeNg Modules //
     TableModule,
-
-    // Button Modules
     ButtonModule,
     RippleModule,
     MultiSelectModule,
-
-    // Form Modules
     InputTextModule,
     InputTextareaModule,
     DropdownModule,
@@ -55,17 +50,11 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
     InputNumberModule,
     InputSwitchModule,
     CalendarModule,
-
-    // Notification 
     TooltipModule,
-
-    // Other
     FileUploadModule,
     ToolbarModule,
     RatingModule,
     TagModule,
-
-    // Dialog 
     DialogModule,
     DynamicDialogModule,
 

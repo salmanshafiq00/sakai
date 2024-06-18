@@ -1,8 +1,8 @@
-import { Component, ViewEncapsulation, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { CreateLookupCommand, LookupResponse, LookupsClient, SelectListModel, SelectListsClient, UpdateLookupCommand } from 'src/app/modules/generated-clients/api-service';
+import { CreateLookupCommand, LookupModel, LookupsClient, SelectListModel, SelectListsClient, UpdateLookupCommand } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
@@ -22,7 +22,7 @@ export class LookupDetailComponent {
   form: FormGroup;
 
   id: string = '';
-  item: LookupResponse = new LookupResponse();
+  item: LookupModel = new LookupModel();
 
   parentList: SelectListModel[] = [];
 
@@ -102,7 +102,7 @@ export class LookupDetailComponent {
   }
 
   private getParentSelectList() {
-    this.selectListClient.getLookupSelectList(true).subscribe({
+    this.selectListClient.getLookupSelectList(false).subscribe({
       next: (res) => {
         this.parentList = res;
       }
@@ -111,7 +111,7 @@ export class LookupDetailComponent {
 
   private getById(id: string) {
     this.lookupsClient.getLookup(id).subscribe({
-      next: (res: LookupResponse) => {
+      next: (res: LookupModel) => {
         this.item = res;
         console.log(res);
         this.form.patchValue(this.item);

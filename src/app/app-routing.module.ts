@@ -13,7 +13,8 @@ const routes: Routes = [
             { path: 'documentation', loadChildren: () => import('./demo/components/documentation/documentation.module').then(m => m.DocumentationModule) },
             { path: 'blocks', loadChildren: () => import('./demo/components/primeblocks/primeblocks.module').then(m => m.PrimeBlocksModule) },
             { path: 'pages', loadChildren: () => import('./demo/components/pages/pages.module').then(m => m.PagesModule) },
-            { path: 'setup', loadChildren: () => import('./modules/common-setup/common-setup.module').then(m => m.CommonSetupModule) }
+            { path: 'setup', loadChildren: () => import('./modules/common-setup/common-setup.module').then(m => m.CommonSetupModule) },
+            { path: 'admin', loadChildren: () => import('./modules/admin/admin.module').then(m => m.AdminModule) }
         ]
     },
     { path: 'auth', loadChildren: () => import('./modules/auth/auth.module').then(m => m.AuthModule) },

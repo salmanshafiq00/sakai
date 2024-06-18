@@ -1,23 +1,24 @@
 import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
-import { FilterMatchMode, FilterMetadata, MenuItem } from 'primeng/api';
+import { FilterMatchMode, FilterMetadata } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime, timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { DataFieldModel, DataFilterModel, GetLookupListQuery, LookupsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
-import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component';
-import { ToastService } from 'src/app/shared/services/toast.service';
+import { DataFieldModel, DataFilterModel, GetRoleListQuery, RolesClient } from 'src/app/modules/generated-clients/api-service';
+import { BackoffService } from 'src/app/shared/services/backoff.service';
 import { ConfirmDialogService } from 'src/app/shared/services/confirm-dialog.service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
-import { BackoffService } from 'src/app/shared/services/backoff.service';
+import { ToastService } from 'src/app/shared/services/toast.service';
+import { RoleDetailComponent } from '../role-detail/role-detail.component';
 
 @Component({
-  selector: 'app-lookup-list',
-  templateUrl: './lookup-list.component.html',
-  styleUrl: './lookup-list.component.scss',
-  providers: [ToastService, BackoffService, ConfirmDialogService, LookupsClient, DatePipe]
+  selector: 'app-role-list',
+  templateUrl: './role-list.component.html',
+  styleUrl: './role-list.component.scss',
+  providers: [ToastService, BackoffService, ConfirmDialogService, RolesClient, DatePipe]
+
 })
-export class LookupListComponent implements OnInit {
+export class RoleListComponent implements OnInit {
 
   FieldType = FieldType;
   FilterMatchModes = FilterMatchMode;
@@ -54,7 +55,7 @@ export class LookupListComponent implements OnInit {
     { label: 'Date is after', value: FilterMatchMode.DATE_AFTER },
     { label: 'Date is or before', value: FilterMatchMode.DATE_IS_OR_BEFORE },
     { label: 'Date is or after', value: FilterMatchMode.DATE_IS_OR_AFTER }
-];
+  ];
 
 
   // Global filters
@@ -84,9 +85,7 @@ export class LookupListComponent implements OnInit {
 
   //loading
   loading: boolean = false;
-
-  // breadcrumb
-  menuItems: MenuItem[] | undefined;
+  refreshLoading: boolean = false;
 
   items: any[] = [];
   selectedItems: any[] = [];
@@ -97,9 +96,9 @@ export class LookupListComponent implements OnInit {
   private backoffService: BackoffService = inject(BackoffService);
   private toast: ToastService = inject(ToastService);
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-  private lookupsClient: LookupsClient = inject(LookupsClient);
   private datePipe: DatePipe = inject(DatePipe);
   private customDialogService: CustomDialogService = inject(CustomDialogService);
+  private entityClient: RolesClient = inject(RolesClient);
 
 
   constructor() {
@@ -113,11 +112,7 @@ export class LookupListComponent implements OnInit {
   }
 
   ngOnInit() {
-
-
     this.loadData({ first: this.first, rows: this.rows }, true)
-    // this.getParentSelectList();
-    this.statusList = this.getStatusSelectList();
   }
 
   get hasSelectOrDateType(): boolean {
@@ -132,7 +127,7 @@ export class LookupListComponent implements OnInit {
     this.first = event.first;
     this.rows = event.rows;
 
-    const query = new GetLookupListQuery();
+    const query = new GetRoleListQuery();
     query.offset = this.first;
     query.pageSize = this.rows;
     query.allowCache = !!allowCache;
@@ -153,8 +148,9 @@ export class LookupListComponent implements OnInit {
 
     console.log(query)
 
-    this.lookupsClient.getLookups(query).subscribe({
+    this.entityClient.getRoles(query).subscribe({
       next: (res) => {
+        console.log(res)
         this.items = res.items;
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
@@ -178,6 +174,7 @@ export class LookupListComponent implements OnInit {
         }
       },
       error: (error) => {
+        this.loading = false;
         console.error(error, 'Error while fetching data')
       },
       complete: () => {
@@ -192,12 +189,13 @@ export class LookupListComponent implements OnInit {
 
   refreshGrid() {
     this.loading = true;
-
+    this.refreshLoading = true;
     const delay = this.backoffService.getDelay();
     console.log(`Applying delay: ${delay}ms`);
     timer(delay).subscribe(() => {
       this.loadData({ first: this.first, rows: this.rows }, false);
       // this.backoffService.resetDelay();
+      this.refreshLoading = false;
     });
 
   }
@@ -332,32 +330,17 @@ export class LookupListComponent implements OnInit {
   }
 
   private deleteItem(id: string) {
-    this.lookupsClient.deleteLookup(id).subscribe({
-      next: () => {
-        this.toast.deleted();
-        this.loadData({ first: this.first, rows: this.rows }, false)
-      },
-      error: (error) => {
-        this.toast.showError('Fail to delete.')
-      }
-    });
+    // this.usersClient.deleteLookup(id).subscribe({
+    //   next: () => {
+    //     this.toast.deleted();
+    //     this.loadData({ first: this.first, rows: this.rows }, false)
+    //   },
+    //   error: (error) => {
+    //     this.toast.showError('Fail to delete.')
+    //   }
+    // });
   }
 
-  private getStatusSelectList() {
-    const statusSelectList = [];
-    statusSelectList.push({
-      id: 1,
-      name: 'Active',
-      severity: 'success'
-    })
-    statusSelectList.push({
-      id: 0,
-      name: 'Inactive',
-      serverity: 'danger'
-    })
-
-    return statusSelectList;
-  }
 
 
 
@@ -368,7 +351,7 @@ export class LookupListComponent implements OnInit {
 
   openDialog(data: any) {
     this.customDialogService.open<string>(
-      LookupDetailComponent,
+      RoleDetailComponent,
       data,
       'Create or Edit'
     )

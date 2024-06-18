@@ -26,7 +26,7 @@
                             icon="pi pi-sync" 
                             class="mr-2" 
                             styleClass="p-button-sm"
-                            [loading]="loading" 
+                            [loading]="refreshLoading" 
                             [disabled]="loading"
                             (click)="refreshGrid()">
                         </p-button>
@@ -258,7 +258,6 @@
 
     </div>
 </div>
-
 
 
 

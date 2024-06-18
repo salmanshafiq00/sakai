@@ -16,8 +16,8 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ILookupDetailsClient {
-    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailResponse>;
-    getLookupDetail(id: string): Observable<LookupDetailResponse>;
+    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel>;
+    getLookupDetail(id: string): Observable<LookupDetailModel>;
     deleteLookupDetail(id: string): Observable<void>;
     createLookupDetail(command: CreateLookupDetailCommand): Observable<string>;
     updateLookupDetail(command: UpdateLookupDetailCommand): Observable<void>;
@@ -34,7 +34,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailResponse> {
+    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel> {
         let url_ = this.baseUrl + "/api/LookupDetails/GetLookupDetails";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -58,14 +58,14 @@ export class LookupDetailsClient implements ILookupDetailsClient {
                 try {
                     return this.processGetLookupDetails(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupDetailResponse>;
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupDetailModel>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginatedResponseOfLookupDetailResponse>;
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfLookupDetailModel>;
         }));
     }
 
-    protected processGetLookupDetails(response: HttpResponseBase): Observable<PaginatedResponseOfLookupDetailResponse> {
+    protected processGetLookupDetails(response: HttpResponseBase): Observable<PaginatedResponseOfLookupDetailModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -76,7 +76,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedResponseOfLookupDetailResponse.fromJS(resultData200);
+            result200 = PaginatedResponseOfLookupDetailModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -87,7 +87,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         return _observableOf(null as any);
     }
 
-    getLookupDetail(id: string): Observable<LookupDetailResponse> {
+    getLookupDetail(id: string): Observable<LookupDetailModel> {
         let url_ = this.baseUrl + "/api/LookupDetails/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -110,14 +110,14 @@ export class LookupDetailsClient implements ILookupDetailsClient {
                 try {
                     return this.processGetLookupDetail(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<LookupDetailResponse>;
+                    return _observableThrow(e) as any as Observable<LookupDetailModel>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<LookupDetailResponse>;
+                return _observableThrow(response_) as any as Observable<LookupDetailModel>;
         }));
     }
 
-    protected processGetLookupDetail(response: HttpResponseBase): Observable<LookupDetailResponse> {
+    protected processGetLookupDetail(response: HttpResponseBase): Observable<LookupDetailModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -128,7 +128,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LookupDetailResponse.fromJS(resultData200);
+            result200 = LookupDetailModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -317,8 +317,8 @@ export class LookupDetailsClient implements ILookupDetailsClient {
 }
 
 export interface ILookupsClient {
-    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupResponse>;
-    getLookup(id: string): Observable<LookupResponse>;
+    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel>;
+    getLookup(id: string): Observable<LookupModel>;
     deleteLookup(id: string): Observable<void>;
     createLookup(command: CreateLookupCommand): Observable<string>;
     updateLookup(command: UpdateLookupCommand): Observable<void>;
@@ -335,7 +335,7 @@ export class LookupsClient implements ILookupsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupResponse> {
+    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel> {
         let url_ = this.baseUrl + "/api/Lookups/GetLookups";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -359,14 +359,14 @@ export class LookupsClient implements ILookupsClient {
                 try {
                     return this.processGetLookups(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupResponse>;
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupModel>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginatedResponseOfLookupResponse>;
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfLookupModel>;
         }));
     }
 
-    protected processGetLookups(response: HttpResponseBase): Observable<PaginatedResponseOfLookupResponse> {
+    protected processGetLookups(response: HttpResponseBase): Observable<PaginatedResponseOfLookupModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -377,7 +377,7 @@ export class LookupsClient implements ILookupsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedResponseOfLookupResponse.fromJS(resultData200);
+            result200 = PaginatedResponseOfLookupModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -388,7 +388,7 @@ export class LookupsClient implements ILookupsClient {
         return _observableOf(null as any);
     }
 
-    getLookup(id: string): Observable<LookupResponse> {
+    getLookup(id: string): Observable<LookupModel> {
         let url_ = this.baseUrl + "/api/Lookups/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -411,14 +411,14 @@ export class LookupsClient implements ILookupsClient {
                 try {
                     return this.processGetLookup(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<LookupResponse>;
+                    return _observableThrow(e) as any as Observable<LookupModel>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<LookupResponse>;
+                return _observableThrow(response_) as any as Observable<LookupModel>;
         }));
     }
 
-    protected processGetLookup(response: HttpResponseBase): Observable<LookupResponse> {
+    protected processGetLookup(response: HttpResponseBase): Observable<LookupModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -429,7 +429,7 @@ export class LookupsClient implements ILookupsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = LookupResponse.fromJS(resultData200);
+            result200 = LookupModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -620,6 +620,7 @@ export class LookupsClient implements ILookupsClient {
 export interface ISelectListsClient {
     getLookupSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
     getLookupDetailSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
+    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModelOfString[]>;
 }
 
 @Injectable()
@@ -748,41 +749,11 @@ export class SelectListsClient implements ISelectListsClient {
         }
         return _observableOf(null as any);
     }
-}
 
-export interface ITodoItemsClient {
-    getTodoItemsWithPagination(listId: string, pageNumber: number, pageSize: number): Observable<PaginatedListOfTodoItemBriefDto>;
-    createTodoItem(command: CreateTodoItemCommand): Observable<string>;
-    updateTodoItem(id: string, command: UpdateTodoItemCommand): Observable<void>;
-    deleteTodoItem(id: string): Observable<void>;
-    updateTodoItemDetail(id: string, command: UpdateTodoItemDetailCommand): Observable<void>;
-}
-
-@Injectable()
-export class TodoItemsClient implements ITodoItemsClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    getTodoItemsWithPagination(listId: string, pageNumber: number, pageSize: number): Observable<PaginatedListOfTodoItemBriefDto> {
-        let url_ = this.baseUrl + "/api/TodoItems?";
-        if (listId === undefined || listId === null)
-            throw new Error("The parameter 'listId' must be defined and cannot be null.");
-        else
-            url_ += "ListId=" + encodeURIComponent("" + listId) + "&";
-        if (pageNumber === undefined || pageNumber === null)
-            throw new Error("The parameter 'pageNumber' must be defined and cannot be null.");
-        else
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === undefined || pageSize === null)
-            throw new Error("The parameter 'pageSize' must be defined and cannot be null.");
-        else
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModelOfString[]> {
+        let url_ = this.baseUrl + "/api/SelectLists/GetRoleSelectList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -795,20 +766,20 @@ export class TodoItemsClient implements ITodoItemsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetTodoItemsWithPagination(response_);
+            return this.processGetRoleSelectList(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetTodoItemsWithPagination(response_ as any);
+                    return this.processGetRoleSelectList(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<PaginatedListOfTodoItemBriefDto>;
+                    return _observableThrow(e) as any as Observable<SelectListModelOfString[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<PaginatedListOfTodoItemBriefDto>;
+                return _observableThrow(response_) as any as Observable<SelectListModelOfString[]>;
         }));
     }
 
-    protected processGetTodoItemsWithPagination(response: HttpResponseBase): Observable<PaginatedListOfTodoItemBriefDto> {
+    protected processGetRoleSelectList(response: HttpResponseBase): Observable<SelectListModelOfString[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -819,7 +790,161 @@ export class TodoItemsClient implements ITodoItemsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedListOfTodoItemBriefDto.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SelectListModelOfString.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface ITreeNodeListsClient {
+    getAllPermissionNodeList(allowCache: boolean | null | undefined): Observable<TreeNodeModel[]>;
+}
+
+@Injectable()
+export class TreeNodeListsClient implements ITreeNodeListsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getAllPermissionNodeList(allowCache: boolean | null | undefined): Observable<TreeNodeModel[]> {
+        let url_ = this.baseUrl + "/api/TreeNodeLists/GetAllPermissionNodeList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllPermissionNodeList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllPermissionNodeList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<TreeNodeModel[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<TreeNodeModel[]>;
+        }));
+    }
+
+    protected processGetAllPermissionNodeList(response: HttpResponseBase): Observable<TreeNodeModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TreeNodeModel.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IRolesClient {
+    getRoles(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel>;
+    getRole(id: string): Observable<RoleModel>;
+    create(command: CreateRoleCommand): Observable<string>;
+    updateRole(command: UpdateRoleCommand): Observable<void>;
+    getRolePermissions(id: string): Observable<TreeNodeModelOfGuid[]>;
+}
+
+@Injectable()
+export class RolesClient implements IRolesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getRoles(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel> {
+        let url_ = this.baseUrl + "/api/Roles";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(query);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRoles(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRoles(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfRoleModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfRoleModel>;
+        }));
+    }
+
+    protected processGetRoles(response: HttpResponseBase): Observable<PaginatedResponseOfRoleModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedResponseOfRoleModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -830,8 +955,67 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf(null as any);
     }
 
-    createTodoItem(command: CreateTodoItemCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/TodoItems";
+    getRole(id: string): Observable<RoleModel> {
+        let url_ = this.baseUrl + "/api/Roles/GetRole/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRole(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRole(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<RoleModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<RoleModel>;
+        }));
+    }
+
+    protected processGetRole(response: HttpResponseBase): Observable<RoleModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RoleModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    create(command: CreateRoleCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/Roles/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -848,11 +1032,11 @@ export class TodoItemsClient implements ITodoItemsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateTodoItem(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateTodoItem(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -861,20 +1045,27 @@ export class TodoItemsClient implements ITodoItemsClient {
         }));
     }
 
-    protected processCreateTodoItem(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result201 = resultData201 !== undefined ? resultData201 : <any>null;
     
-            return _observableOf(result200);
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -884,11 +1075,8 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf(null as any);
     }
 
-    updateTodoItem(id: string, command: UpdateTodoItemCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    updateRole(command: UpdateRoleCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Roles/UpdateRole";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -904,11 +1092,11 @@ export class TodoItemsClient implements ITodoItemsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateTodoItem(response_);
+            return this.processUpdateRole(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateTodoItem(response_ as any);
+                    return this.processUpdateRole(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -917,16 +1105,23 @@ export class TodoItemsClient implements ITodoItemsClient {
         }));
     }
 
-    protected processUpdateTodoItem(response: HttpResponseBase): Observable<void> {
+    protected processUpdateRole(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -936,127 +1131,11 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf(null as any);
     }
 
-    deleteTodoItem(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/{id}";
+    getRolePermissions(id: string): Observable<TreeNodeModelOfGuid[]> {
+        let url_ = this.baseUrl + "/api/Roles/GetRolePermissions/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteTodoItem(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteTodoItem(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processDeleteTodoItem(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    updateTodoItemDetail(id: string, command: UpdateTodoItemDetailCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/TodoItems/UpdateDetail/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateTodoItemDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateTodoItemDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processUpdateTodoItemDetail(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-}
-
-export interface ITodoListsClient {
-    getTodoLists(): Observable<TodosVm>;
-    createTodoList(command: CreateTodoListCommand): Observable<string>;
-    updateTodoList(id: string, command: UpdateTodoListCommand): Observable<void>;
-    deleteTodoList(id: string): Observable<void>;
-}
-
-@Injectable()
-export class TodoListsClient implements ITodoListsClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl ?? "";
-    }
-
-    getTodoLists(): Observable<TodosVm> {
-        let url_ = this.baseUrl + "/api/TodoLists";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1069,20 +1148,20 @@ export class TodoListsClient implements ITodoListsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetTodoLists(response_);
+            return this.processGetRolePermissions(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetTodoLists(response_ as any);
+                    return this.processGetRolePermissions(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TodosVm>;
+                    return _observableThrow(e) as any as Observable<TreeNodeModelOfGuid[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TodosVm>;
+                return _observableThrow(response_) as any as Observable<TreeNodeModelOfGuid[]>;
         }));
     }
 
-    protected processGetTodoLists(response: HttpResponseBase): Observable<TodosVm> {
+    protected processGetRolePermissions(response: HttpResponseBase): Observable<TreeNodeModelOfGuid[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1093,7 +1172,94 @@ export class TodoListsClient implements ITodoListsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = TodosVm.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TreeNodeModelOfGuid.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IUsersClient {
+    getUsers(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel>;
+    getUser(id: string): Observable<AppUserModel>;
+    createUser(command: CreateAppUserCommand): Observable<string>;
+    updateUser(command: UpdateAppUserCommand): Observable<void>;
+    addToRoles(command: AddToRolesCommand): Observable<void>;
+}
+
+@Injectable()
+export class UsersClient implements IUsersClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getUsers(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel> {
+        let url_ = this.baseUrl + "/api/Users";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(query);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUsers(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUsers(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfAppUserModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfAppUserModel>;
+        }));
+    }
+
+    protected processGetUsers(response: HttpResponseBase): Observable<PaginatedResponseOfAppUserModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedResponseOfAppUserModel.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1104,8 +1270,67 @@ export class TodoListsClient implements ITodoListsClient {
         return _observableOf(null as any);
     }
 
-    createTodoList(command: CreateTodoListCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/TodoLists";
+    getUser(id: string): Observable<AppUserModel> {
+        let url_ = this.baseUrl + "/api/Users/GetUser/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetUser(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetUser(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AppUserModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AppUserModel>;
+        }));
+    }
+
+    protected processGetUser(response: HttpResponseBase): Observable<AppUserModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AppUserModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    createUser(command: CreateAppUserCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/Users/CreateUser";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1122,11 +1347,11 @@ export class TodoListsClient implements ITodoListsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateTodoList(response_);
+            return this.processCreateUser(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateTodoList(response_ as any);
+                    return this.processCreateUser(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -1135,7 +1360,7 @@ export class TodoListsClient implements ITodoListsClient {
         }));
     }
 
-    protected processCreateTodoList(response: HttpResponseBase): Observable<string> {
+    protected processCreateUser(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1150,6 +1375,13 @@ export class TodoListsClient implements ITodoListsClient {
     
             return _observableOf(result200);
             }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1158,11 +1390,8 @@ export class TodoListsClient implements ITodoListsClient {
         return _observableOf(null as any);
     }
 
-    updateTodoList(id: string, command: UpdateTodoListCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/TodoLists/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    updateUser(command: UpdateAppUserCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Users/UpdateUser";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1178,11 +1407,11 @@ export class TodoListsClient implements ITodoListsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateTodoList(response_);
+            return this.processUpdateUser(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateTodoList(response_ as any);
+                    return this.processUpdateUser(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1191,16 +1420,23 @@ export class TodoListsClient implements ITodoListsClient {
         }));
     }
 
-    protected processUpdateTodoList(response: HttpResponseBase): Observable<void> {
+    protected processUpdateUser(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1210,27 +1446,28 @@ export class TodoListsClient implements ITodoListsClient {
         return _observableOf(null as any);
     }
 
-    deleteTodoList(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/TodoLists/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    addToRoles(command: AddToRolesCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Users/AddToRoles";
         url_ = url_.replace(/[?&]$/, "");
 
+        const content_ = JSON.stringify(command);
+
         let options_ : any = {
+            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
             headers: new HttpHeaders({
+                "Content-Type": "application/json",
             })
         };
 
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteTodoList(response_);
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAddToRoles(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processDeleteTodoList(response_ as any);
+                    return this.processAddToRoles(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1239,16 +1476,23 @@ export class TodoListsClient implements ITodoListsClient {
         }));
     }
 
-    protected processDeleteTodoList(response: HttpResponseBase): Observable<void> {
+    protected processAddToRoles(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (response as any).error instanceof Blob ? (response as any).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1396,8 +1640,8 @@ export class AccountsClient implements IAccountsClient {
     }
 }
 
-export class PaginatedResponseOfLookupDetailResponse {
-    items?: LookupDetailResponse[];
+export class PaginatedResponseOfLookupDetailModel {
+    items?: LookupDetailModel[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
@@ -1412,7 +1656,7 @@ export class PaginatedResponseOfLookupDetailResponse {
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(LookupDetailResponse.fromJS(item));
+                    this.items!.push(LookupDetailModel.fromJS(item));
             }
             this.pageNumber = _data["pageNumber"];
             this.totalPages = _data["totalPages"];
@@ -1439,9 +1683,9 @@ export class PaginatedResponseOfLookupDetailResponse {
         }
     }
 
-    static fromJS(data: any): PaginatedResponseOfLookupDetailResponse {
+    static fromJS(data: any): PaginatedResponseOfLookupDetailModel {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginatedResponseOfLookupDetailResponse();
+        let result = new PaginatedResponseOfLookupDetailModel();
         result.init(data);
         return result;
     }
@@ -1479,7 +1723,7 @@ export class PaginatedResponseOfLookupDetailResponse {
     }
 }
 
-export class LookupDetailResponse {
+export class LookupDetailModel {
     id?: string;
     name?: string;
     code?: string;
@@ -1506,9 +1750,9 @@ export class LookupDetailResponse {
         }
     }
 
-    static fromJS(data: any): LookupDetailResponse {
+    static fromJS(data: any): LookupDetailModel {
         data = typeof data === 'object' ? data : {};
-        let result = new LookupDetailResponse();
+        let result = new LookupDetailModel();
         result.init(data);
         return result;
     }
@@ -1625,7 +1869,7 @@ export class DataFilterModel {
     }
 }
 
-export class SelectListModel {
+export class SelectListModelOfGuid {
     id?: string;
     name?: string;
     isDefault?: boolean;
@@ -1640,9 +1884,9 @@ export class SelectListModel {
         }
     }
 
-    static fromJS(data: any): SelectListModel {
+    static fromJS(data: any): SelectListModelOfGuid {
         data = typeof data === 'object' ? data : {};
-        let result = new SelectListModel();
+        let result = new SelectListModelOfGuid();
         result.init(data);
         return result;
     }
@@ -1653,6 +1897,26 @@ export class SelectListModel {
         data["name"] = this.name;
         data["isDefault"] = this.isDefault;
         data["severity"] = this.severity;
+        return data;
+    }
+}
+
+export class SelectListModel extends SelectListModelOfGuid {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): SelectListModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListModel();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
         return data;
     }
 }
@@ -1868,8 +2132,8 @@ export class UpdateLookupDetailCommand {
     }
 }
 
-export class PaginatedResponseOfLookupResponse {
-    items?: LookupResponse[];
+export class PaginatedResponseOfLookupModel {
+    items?: LookupModel[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
@@ -1884,7 +2148,7 @@ export class PaginatedResponseOfLookupResponse {
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(LookupResponse.fromJS(item));
+                    this.items!.push(LookupModel.fromJS(item));
             }
             this.pageNumber = _data["pageNumber"];
             this.totalPages = _data["totalPages"];
@@ -1911,9 +2175,9 @@ export class PaginatedResponseOfLookupResponse {
         }
     }
 
-    static fromJS(data: any): PaginatedResponseOfLookupResponse {
+    static fromJS(data: any): PaginatedResponseOfLookupModel {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginatedResponseOfLookupResponse();
+        let result = new PaginatedResponseOfLookupModel();
         result.init(data);
         return result;
     }
@@ -1951,7 +2215,7 @@ export class PaginatedResponseOfLookupResponse {
     }
 }
 
-export class LookupResponse {
+export class LookupModel {
     id?: string;
     name?: string;
     code?: string;
@@ -1976,9 +2240,9 @@ export class LookupResponse {
         }
     }
 
-    static fromJS(data: any): LookupResponse {
+    static fromJS(data: any): LookupModel {
         data = typeof data === 'object' ? data : {};
-        let result = new LookupResponse();
+        let result = new LookupModel();
         result.init(data);
         return result;
     }
@@ -2094,32 +2358,165 @@ export class UpdateLookupCommand {
     }
 }
 
-export class PaginatedListOfTodoItemBriefDto {
-    items?: TodoItemBriefDto[];
+export class SelectListModelOfString {
+    id?: string | undefined;
+    name?: string;
+    isDefault?: boolean;
+    severity?: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.isDefault = _data["isDefault"];
+            this.severity = _data["severity"];
+        }
+    }
+
+    static fromJS(data: any): SelectListModelOfString {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListModelOfString();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["isDefault"] = this.isDefault;
+        data["severity"] = this.severity;
+        return data;
+    }
+}
+
+export class TreeNodeModelOfGuid {
+    key?: string;
+    label?: string;
+    icon?: string;
+    parentId?: string;
+    disabledCheckbox?: boolean;
+    disabed?: boolean;
+    visible?: boolean;
+    isActive?: boolean;
+    partialSelected?: boolean;
+    leaf?: boolean;
+    children?: TreeNodeModelOfGuid[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.key = _data["key"];
+            this.label = _data["label"];
+            this.icon = _data["icon"];
+            this.parentId = _data["parentId"];
+            this.disabledCheckbox = _data["disabledCheckbox"];
+            this.disabed = _data["disabed"];
+            this.visible = _data["visible"];
+            this.isActive = _data["isActive"];
+            this.partialSelected = _data["partialSelected"];
+            this.leaf = _data["leaf"];
+            if (Array.isArray(_data["children"])) {
+                this.children = [] as any;
+                for (let item of _data["children"])
+                    this.children!.push(TreeNodeModelOfGuid.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): TreeNodeModelOfGuid {
+        data = typeof data === 'object' ? data : {};
+        let result = new TreeNodeModelOfGuid();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["key"] = this.key;
+        data["label"] = this.label;
+        data["icon"] = this.icon;
+        data["parentId"] = this.parentId;
+        data["disabledCheckbox"] = this.disabledCheckbox;
+        data["disabed"] = this.disabed;
+        data["visible"] = this.visible;
+        data["isActive"] = this.isActive;
+        data["partialSelected"] = this.partialSelected;
+        data["leaf"] = this.leaf;
+        if (Array.isArray(this.children)) {
+            data["children"] = [];
+            for (let item of this.children)
+                data["children"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
+export class TreeNodeModel extends TreeNodeModelOfGuid {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): TreeNodeModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new TreeNodeModel();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class PaginatedResponseOfRoleModel {
+    items?: RoleModel[];
     pageNumber?: number;
     totalPages?: number;
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionsDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(TodoItemBriefDto.fromJS(item));
+                    this.items!.push(RoleModel.fromJS(item));
             }
             this.pageNumber = _data["pageNumber"];
             this.totalPages = _data["totalPages"];
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
+            }
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
         }
     }
 
-    static fromJS(data: any): PaginatedListOfTodoItemBriefDto {
+    static fromJS(data: any): PaginatedResponseOfRoleModel {
         data = typeof data === 'object' ? data : {};
-        let result = new PaginatedListOfTodoItemBriefDto();
+        let result = new PaginatedResponseOfRoleModel();
         result.init(data);
         return result;
     }
@@ -2136,192 +2533,55 @@ export class PaginatedListOfTodoItemBriefDto {
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        return data;
-    }
-}
-
-export class TodoItemBriefDto {
-    id?: string;
-    listId?: string;
-    title?: string | undefined;
-    done?: boolean;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.title = _data["title"];
-            this.done = _data["done"];
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
         }
-    }
-
-    static fromJS(data: any): TodoItemBriefDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new TodoItemBriefDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        return data;
-    }
-}
-
-export class CreateTodoItemCommand {
-    listId?: string;
-    title!: string | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            this.listId = _data["listId"];
-            this.title = _data["title"];
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
         }
-    }
-
-    static fromJS(data: any): CreateTodoItemCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateTodoItemCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        return data;
-    }
-}
-
-export class UpdateTodoItemCommand {
-    id?: string;
-    title!: string | undefined;
-    done?: boolean;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-            this.done = _data["done"];
-        }
-    }
-
-    static fromJS(data: any): UpdateTodoItemCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoItemCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        return data;
-    }
-}
-
-export class UpdateTodoItemDetailCommand {
-    id?: string;
-    listId?: string;
-    priority?: PriorityLevel;
-    note?: string | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.priority = _data["priority"];
-            this.note = _data["note"];
-        }
-    }
-
-    static fromJS(data: any): UpdateTodoItemDetailCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoItemDetailCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["priority"] = this.priority;
-        data["note"] = this.note;
-        return data;
-    }
-}
-
-export enum PriorityLevel {
-    None = 0,
-    Low = 1,
-    Medium = 2,
-    High = 3,
-}
-
-export class TodosVm {
-    priorityLevels?: LookupDto[];
-    lists?: TodoListDto[];
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["priorityLevels"])) {
-                this.priorityLevels = [] as any;
-                for (let item of _data["priorityLevels"])
-                    this.priorityLevels!.push(LookupDto.fromJS(item));
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
-            if (Array.isArray(_data["lists"])) {
-                this.lists = [] as any;
-                for (let item of _data["lists"])
-                    this.lists!.push(TodoListDto.fromJS(item));
+        }
+        return data;
+    }
+}
+
+export class RoleModel {
+    id?: string;
+    name?: string;
+    permissions?: string[];
+    optionsDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["permissions"])) {
+                this.permissions = [] as any;
+                for (let item of _data["permissions"])
+                    this.permissions!.push(item);
+            }
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
             }
         }
     }
 
-    static fromJS(data: any): TodosVm {
+    static fromJS(data: any): RoleModel {
         data = typeof data === 'object' ? data : {};
-        let result = new TodosVm();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.priorityLevels)) {
-            data["priorityLevels"] = [];
-            for (let item of this.priorityLevels)
-                data["priorityLevels"].push(item.toJSON());
-        }
-        if (Array.isArray(this.lists)) {
-            data["lists"] = [];
-            for (let item of this.lists)
-                data["lists"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export class LookupDto {
-    id?: string;
-    title?: string | undefined;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-        }
-    }
-
-    static fromJS(data: any): LookupDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new LookupDto();
+        let result = new RoleModel();
         result.init(data);
         return result;
     }
@@ -2329,73 +2589,243 @@ export class LookupDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
+        data["name"] = this.name;
+        if (Array.isArray(this.permissions)) {
+            data["permissions"] = [];
+            for (let item of this.permissions)
+                data["permissions"].push(item);
+        }
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
         return data;
     }
 }
 
-export class TodoListDto {
+export class GetRoleListQuery extends DataGridModel {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetRoleListQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetRoleListQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class CreateRoleCommand {
+    name?: string;
+    permissions?: string[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.name = _data["name"];
+            if (Array.isArray(_data["permissions"])) {
+                this.permissions = [] as any;
+                for (let item of _data["permissions"])
+                    this.permissions!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateRoleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateRoleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["name"] = this.name;
+        if (Array.isArray(this.permissions)) {
+            data["permissions"] = [];
+            for (let item of this.permissions)
+                data["permissions"].push(item);
+        }
+        return data;
+    }
+}
+
+export class UpdateRoleCommand {
     id?: string;
-    title?: string | undefined;
-    colour?: string | undefined;
-    items?: TodoItemDto[];
+    name?: string;
+    permissions?: string[];
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
-            this.colour = _data["colour"];
+            this.name = _data["name"];
+            if (Array.isArray(_data["permissions"])) {
+                this.permissions = [] as any;
+                for (let item of _data["permissions"])
+                    this.permissions!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateRoleCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateRoleCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        if (Array.isArray(this.permissions)) {
+            data["permissions"] = [];
+            for (let item of this.permissions)
+                data["permissions"].push(item);
+        }
+        return data;
+    }
+}
+
+export class PaginatedResponseOfAppUserModel {
+    items?: AppUserModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionsDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
             if (Array.isArray(_data["items"])) {
                 this.items = [] as any;
                 for (let item of _data["items"])
-                    this.items!.push(TodoItemDto.fromJS(item));
+                    this.items!.push(AppUserModel.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
+            }
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
             }
         }
     }
 
-    static fromJS(data: any): TodoListDto {
+    static fromJS(data: any): PaginatedResponseOfAppUserModel {
         data = typeof data === 'object' ? data : {};
-        let result = new TodoListDto();
+        let result = new PaginatedResponseOfAppUserModel();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["colour"] = this.colour;
         if (Array.isArray(this.items)) {
             data["items"] = [];
             for (let item of this.items)
                 data["items"].push(item.toJSON());
         }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
+        }
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
+        }
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
         return data;
     }
 }
 
-export class TodoItemDto {
+export class AppUserModel {
     id?: string;
-    listId?: string;
-    title?: string | undefined;
-    done?: boolean;
-    priority?: number;
-    note?: string | undefined;
+    username?: string;
+    password?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string | undefined;
+    photoUrl?: string | undefined;
+    isActive?: boolean;
+    status?: string;
+    assignedRoles?: string;
+    optionsDataSources?: { [key: string]: any; };
+    roles?: string[] | undefined;
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.listId = _data["listId"];
-            this.title = _data["title"];
-            this.done = _data["done"];
-            this.priority = _data["priority"];
-            this.note = _data["note"];
+            this.username = _data["username"];
+            this.password = _data["password"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.photoUrl = _data["photoUrl"];
+            this.isActive = _data["isActive"];
+            this.status = _data["status"];
+            this.assignedRoles = _data["assignedRoles"];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
         }
     }
 
-    static fromJS(data: any): TodoItemDto {
+    static fromJS(data: any): AppUserModel {
         data = typeof data === 'object' ? data : {};
-        let result = new TodoItemDto();
+        let result = new AppUserModel();
         result.init(data);
         return result;
     }
@@ -2403,52 +2833,139 @@ export class TodoItemDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["listId"] = this.listId;
-        data["title"] = this.title;
-        data["done"] = this.done;
-        data["priority"] = this.priority;
-        data["note"] = this.note;
+        data["username"] = this.username;
+        data["password"] = this.password;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["photoUrl"] = this.photoUrl;
+        data["isActive"] = this.isActive;
+        data["status"] = this.status;
+        data["assignedRoles"] = this.assignedRoles;
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
         return data;
     }
 }
 
-export class CreateTodoListCommand {
-    title!: string | undefined;
+export class GetAppUserListQuery extends DataGridModel {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetAppUserListQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAppUserListQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class CreateAppUserCommand {
+    username!: string;
+    password!: string;
+    email?: string;
+    firstName!: string;
+    lastName!: string;
+    phoneNumber?: string;
+    photoUrl?: string;
+    isActive?: boolean;
+    roles?: string[] | undefined;
 
     init(_data?: any) {
         if (_data) {
-            this.title = _data["title"];
+            this.username = _data["username"];
+            this.password = _data["password"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.photoUrl = _data["photoUrl"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
         }
     }
 
-    static fromJS(data: any): CreateTodoListCommand {
+    static fromJS(data: any): CreateAppUserCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreateTodoListCommand();
+        let result = new CreateAppUserCommand();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
+        data["username"] = this.username;
+        data["password"] = this.password;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["photoUrl"] = this.photoUrl;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
         return data;
     }
 }
 
-export class UpdateTodoListCommand {
+export class UpdateAppUserCommand {
     id?: string;
-    title!: string | undefined;
+    username?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    photoUrl?: string;
+    isActive?: boolean;
+    roles?: string[] | undefined;
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.title = _data["title"];
+            this.username = _data["username"];
+            this.email = _data["email"];
+            this.firstName = _data["firstName"];
+            this.lastName = _data["lastName"];
+            this.phoneNumber = _data["phoneNumber"];
+            this.photoUrl = _data["photoUrl"];
+            this.isActive = _data["isActive"];
+            if (Array.isArray(_data["roles"])) {
+                this.roles = [] as any;
+                for (let item of _data["roles"])
+                    this.roles!.push(item);
+            }
         }
     }
 
-    static fromJS(data: any): UpdateTodoListCommand {
+    static fromJS(data: any): UpdateAppUserCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new UpdateTodoListCommand();
+        let result = new UpdateAppUserCommand();
         result.init(data);
         return result;
     }
@@ -2456,7 +2973,52 @@ export class UpdateTodoListCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["title"] = this.title;
+        data["username"] = this.username;
+        data["email"] = this.email;
+        data["firstName"] = this.firstName;
+        data["lastName"] = this.lastName;
+        data["phoneNumber"] = this.phoneNumber;
+        data["photoUrl"] = this.photoUrl;
+        data["isActive"] = this.isActive;
+        if (Array.isArray(this.roles)) {
+            data["roles"] = [];
+            for (let item of this.roles)
+                data["roles"].push(item);
+        }
+        return data;
+    }
+}
+
+export class AddToRolesCommand {
+    id?: string;
+    roleNames?: string[];
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            if (Array.isArray(_data["roleNames"])) {
+                this.roleNames = [] as any;
+                for (let item of _data["roleNames"])
+                    this.roleNames!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): AddToRolesCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new AddToRolesCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        if (Array.isArray(this.roleNames)) {
+            data["roleNames"] = [];
+            for (let item of this.roleNames)
+                data["roleNames"].push(item);
+        }
         return data;
     }
 }
