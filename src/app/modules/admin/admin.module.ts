@@ -24,12 +24,13 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../generated-clients/api-service';
 import { environment } from 'src/environments/environment';
 import { TreeModule } from 'primeng/tree';
+import { TreeSelectModule } from 'primeng/treeselect';
 
 
 
 @NgModule({
   declarations: [
-    ...adminRoutingComponents,
+    ...adminRoutingComponents
   ],
   imports: [
     CommonModule,
@@ -57,7 +58,8 @@ import { TreeModule } from 'primeng/tree';
     TagModule,
     DialogModule,
     DynamicDialogModule,
-    TreeModule 
+    TreeModule,
+    TreeSelectModule 
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

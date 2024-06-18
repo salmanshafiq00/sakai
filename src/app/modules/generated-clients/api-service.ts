@@ -620,7 +620,7 @@ export class LookupsClient implements ILookupsClient {
 export interface ISelectListsClient {
     getLookupSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
     getLookupDetailSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
-    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModelOfString[]>;
+    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
 }
 
 @Injectable()
@@ -750,7 +750,7 @@ export class SelectListsClient implements ISelectListsClient {
         return _observableOf(null as any);
     }
 
-    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModelOfString[]> {
+    getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]> {
         let url_ = this.baseUrl + "/api/SelectLists/GetRoleSelectList?";
         if (allowCache !== undefined && allowCache !== null)
             url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
@@ -772,14 +772,14 @@ export class SelectListsClient implements ISelectListsClient {
                 try {
                     return this.processGetRoleSelectList(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<SelectListModelOfString[]>;
+                    return _observableThrow(e) as any as Observable<SelectListModel[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<SelectListModelOfString[]>;
+                return _observableThrow(response_) as any as Observable<SelectListModel[]>;
         }));
     }
 
-    protected processGetRoleSelectList(response: HttpResponseBase): Observable<SelectListModelOfString[]> {
+    protected processGetRoleSelectList(response: HttpResponseBase): Observable<SelectListModel[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -793,7 +793,7 @@ export class SelectListsClient implements ISelectListsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(SelectListModelOfString.fromJS(item));
+                    result200!.push(SelectListModel.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -811,6 +811,7 @@ export class SelectListsClient implements ISelectListsClient {
 
 export interface ITreeNodeListsClient {
     getAllPermissionNodeList(allowCache: boolean | null | undefined): Observable<TreeNodeModel[]>;
+    getAllAppMenuTreeSelectList(allowCache: boolean | null | undefined): Observable<TreeNodeModel[]>;
 }
 
 @Injectable()
@@ -881,6 +882,312 @@ export class TreeNodeListsClient implements ITreeNodeListsClient {
         }
         return _observableOf(null as any);
     }
+
+    getAllAppMenuTreeSelectList(allowCache: boolean | null | undefined): Observable<TreeNodeModel[]> {
+        let url_ = this.baseUrl + "/api/TreeNodeLists/GetAllAppMenuTreeSelectList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAllAppMenuTreeSelectList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAllAppMenuTreeSelectList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<TreeNodeModel[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<TreeNodeModel[]>;
+        }));
+    }
+
+    protected processGetAllAppMenuTreeSelectList(response: HttpResponseBase): Observable<TreeNodeModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(TreeNodeModel.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
+export interface IAppMenusClient {
+    getAppMenus(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel>;
+    getAppMenu(id: string): Observable<AppMenuModel>;
+    createMenu(command: CreateAppMenuCommand): Observable<string>;
+    updateMenu(command: UpdateAppMenuCommand): Observable<void>;
+}
+
+@Injectable()
+export class AppMenusClient implements IAppMenusClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getAppMenus(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel> {
+        let url_ = this.baseUrl + "/api/AppMenus";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(query);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAppMenus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAppMenus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfAppMenuModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfAppMenuModel>;
+        }));
+    }
+
+    protected processGetAppMenus(response: HttpResponseBase): Observable<PaginatedResponseOfAppMenuModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedResponseOfAppMenuModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getAppMenu(id: string): Observable<AppMenuModel> {
+        let url_ = this.baseUrl + "/api/AppMenus/GetMenu/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAppMenu(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAppMenu(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AppMenuModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AppMenuModel>;
+        }));
+    }
+
+    protected processGetAppMenu(response: HttpResponseBase): Observable<AppMenuModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AppMenuModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    createMenu(command: CreateAppMenuCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppMenus/CreateMenu";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateMenu(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateMenu(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processCreateMenu(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateMenu(command: UpdateAppMenuCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/AppMenus/UpdateMenu";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateMenu(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateMenu(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateMenu(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface IRolesClient {
@@ -888,7 +1195,7 @@ export interface IRolesClient {
     getRole(id: string): Observable<RoleModel>;
     create(command: CreateRoleCommand): Observable<string>;
     updateRole(command: UpdateRoleCommand): Observable<void>;
-    getRolePermissions(id: string): Observable<TreeNodeModelOfGuid[]>;
+    getRolePermissions(id: string): Observable<TreeNodeModel[]>;
 }
 
 @Injectable()
@@ -1131,7 +1438,7 @@ export class RolesClient implements IRolesClient {
         return _observableOf(null as any);
     }
 
-    getRolePermissions(id: string): Observable<TreeNodeModelOfGuid[]> {
+    getRolePermissions(id: string): Observable<TreeNodeModel[]> {
         let url_ = this.baseUrl + "/api/Roles/GetRolePermissions/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -1154,14 +1461,14 @@ export class RolesClient implements IRolesClient {
                 try {
                     return this.processGetRolePermissions(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<TreeNodeModelOfGuid[]>;
+                    return _observableThrow(e) as any as Observable<TreeNodeModel[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<TreeNodeModelOfGuid[]>;
+                return _observableThrow(response_) as any as Observable<TreeNodeModel[]>;
         }));
     }
 
-    protected processGetRolePermissions(response: HttpResponseBase): Observable<TreeNodeModelOfGuid[]> {
+    protected processGetRolePermissions(response: HttpResponseBase): Observable<TreeNodeModel[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1175,7 +1482,7 @@ export class RolesClient implements IRolesClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(TreeNodeModelOfGuid.fromJS(item));
+                    result200!.push(TreeNodeModel.fromJS(item));
             }
             else {
                 result200 = <any>null;
@@ -1869,8 +2176,8 @@ export class DataFilterModel {
     }
 }
 
-export class SelectListModelOfGuid {
-    id?: string;
+export class SelectListModel {
+    id?: any;
     name?: string;
     isDefault?: boolean;
     severity?: string;
@@ -1884,9 +2191,9 @@ export class SelectListModelOfGuid {
         }
     }
 
-    static fromJS(data: any): SelectListModelOfGuid {
+    static fromJS(data: any): SelectListModel {
         data = typeof data === 'object' ? data : {};
-        let result = new SelectListModelOfGuid();
+        let result = new SelectListModel();
         result.init(data);
         return result;
     }
@@ -1897,26 +2204,6 @@ export class SelectListModelOfGuid {
         data["name"] = this.name;
         data["isDefault"] = this.isDefault;
         data["severity"] = this.severity;
-        return data;
-    }
-}
-
-export class SelectListModel extends SelectListModelOfGuid {
-
-    override init(_data?: any) {
-        super.init(_data);
-    }
-
-    static override fromJS(data: any): SelectListModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new SelectListModel();
-        result.init(data);
-        return result;
-    }
-
-    override toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        super.toJSON(data);
         return data;
     }
 }
@@ -2358,50 +2645,19 @@ export class UpdateLookupCommand {
     }
 }
 
-export class SelectListModelOfString {
-    id?: string | undefined;
-    name?: string;
-    isDefault?: boolean;
-    severity?: string;
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.isDefault = _data["isDefault"];
-            this.severity = _data["severity"];
-        }
-    }
-
-    static fromJS(data: any): SelectListModelOfString {
-        data = typeof data === 'object' ? data : {};
-        let result = new SelectListModelOfString();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["isDefault"] = this.isDefault;
-        data["severity"] = this.severity;
-        return data;
-    }
-}
-
-export class TreeNodeModelOfGuid {
-    key?: string;
+export class TreeNodeModel {
+    key?: any;
     label?: string;
     icon?: string;
-    parentId?: string;
+    parentId?: any | undefined;
+    data?: string;
     disabledCheckbox?: boolean;
-    disabed?: boolean;
+    disabled?: boolean;
     visible?: boolean;
     isActive?: boolean;
     partialSelected?: boolean;
     leaf?: boolean;
-    children?: TreeNodeModelOfGuid[];
+    children?: TreeNodeModel[];
 
     init(_data?: any) {
         if (_data) {
@@ -2409,8 +2665,9 @@ export class TreeNodeModelOfGuid {
             this.label = _data["label"];
             this.icon = _data["icon"];
             this.parentId = _data["parentId"];
+            this.data = _data["data"];
             this.disabledCheckbox = _data["disabledCheckbox"];
-            this.disabed = _data["disabed"];
+            this.disabled = _data["disabled"];
             this.visible = _data["visible"];
             this.isActive = _data["isActive"];
             this.partialSelected = _data["partialSelected"];
@@ -2418,14 +2675,14 @@ export class TreeNodeModelOfGuid {
             if (Array.isArray(_data["children"])) {
                 this.children = [] as any;
                 for (let item of _data["children"])
-                    this.children!.push(TreeNodeModelOfGuid.fromJS(item));
+                    this.children!.push(TreeNodeModel.fromJS(item));
             }
         }
     }
 
-    static fromJS(data: any): TreeNodeModelOfGuid {
+    static fromJS(data: any): TreeNodeModel {
         data = typeof data === 'object' ? data : {};
-        let result = new TreeNodeModelOfGuid();
+        let result = new TreeNodeModel();
         result.init(data);
         return result;
     }
@@ -2436,8 +2693,9 @@ export class TreeNodeModelOfGuid {
         data["label"] = this.label;
         data["icon"] = this.icon;
         data["parentId"] = this.parentId;
+        data["data"] = this.data;
         data["disabledCheckbox"] = this.disabledCheckbox;
-        data["disabed"] = this.disabed;
+        data["disabled"] = this.disabled;
         data["visible"] = this.visible;
         data["isActive"] = this.isActive;
         data["partialSelected"] = this.partialSelected;
@@ -2451,15 +2709,172 @@ export class TreeNodeModelOfGuid {
     }
 }
 
-export class TreeNodeModel extends TreeNodeModelOfGuid {
+export class PaginatedResponseOfAppMenuModel {
+    items?: AppMenuModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionsDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AppMenuModel.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
+            }
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): PaginatedResponseOfAppMenuModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedResponseOfAppMenuModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
+        }
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
+        }
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export class AppMenuModel {
+    id?: string;
+    parentId?: string | undefined;
+    parentName?: string;
+    label?: string;
+    url?: string;
+    icon?: string;
+    tooltip?: string;
+    isActive?: boolean;
+    orderNo?: number;
+    visible?: boolean;
+    visibility?: string;
+    description?: string;
+    active?: string;
+    optionsDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.parentId = _data["parentId"];
+            this.parentName = _data["parentName"];
+            this.label = _data["label"];
+            this.url = _data["url"];
+            this.icon = _data["icon"];
+            this.tooltip = _data["tooltip"];
+            this.isActive = _data["isActive"];
+            this.orderNo = _data["orderNo"];
+            this.visible = _data["visible"];
+            this.visibility = _data["visibility"];
+            this.description = _data["description"];
+            this.active = _data["active"];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): AppMenuModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppMenuModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["parentId"] = this.parentId;
+        data["parentName"] = this.parentName;
+        data["label"] = this.label;
+        data["url"] = this.url;
+        data["icon"] = this.icon;
+        data["tooltip"] = this.tooltip;
+        data["isActive"] = this.isActive;
+        data["orderNo"] = this.orderNo;
+        data["visible"] = this.visible;
+        data["visibility"] = this.visibility;
+        data["description"] = this.description;
+        data["active"] = this.active;
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export class GetAppMenuListQuery extends DataGridModel {
 
     override init(_data?: any) {
         super.init(_data);
     }
 
-    static override fromJS(data: any): TreeNodeModel {
+    static override fromJS(data: any): GetAppMenuListQuery {
         data = typeof data === 'object' ? data : {};
-        let result = new TreeNodeModel();
+        let result = new GetAppMenuListQuery();
         result.init(data);
         return result;
     }
@@ -2467,6 +2882,106 @@ export class TreeNodeModel extends TreeNodeModelOfGuid {
     override toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         super.toJSON(data);
+        return data;
+    }
+}
+
+export class CreateAppMenuCommand {
+    label!: string;
+    url!: string;
+    icon?: string;
+    isActive?: boolean;
+    visible?: boolean;
+    orderNo?: number;
+    tooltip?: string;
+    description?: string;
+    parentId?: string | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            this.label = _data["label"];
+            this.url = _data["url"];
+            this.icon = _data["icon"];
+            this.isActive = _data["isActive"];
+            this.visible = _data["visible"];
+            this.orderNo = _data["orderNo"];
+            this.tooltip = _data["tooltip"];
+            this.description = _data["description"];
+            this.parentId = _data["parentId"];
+        }
+    }
+
+    static fromJS(data: any): CreateAppMenuCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAppMenuCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["label"] = this.label;
+        data["url"] = this.url;
+        data["icon"] = this.icon;
+        data["isActive"] = this.isActive;
+        data["visible"] = this.visible;
+        data["orderNo"] = this.orderNo;
+        data["tooltip"] = this.tooltip;
+        data["description"] = this.description;
+        data["parentId"] = this.parentId;
+        return data;
+    }
+}
+
+export class UpdateAppMenuCommand {
+    id?: string;
+    label!: string;
+    url!: string;
+    icon?: string;
+    isActive?: boolean;
+    visible?: boolean;
+    orderNo?: number;
+    tooltip?: string;
+    description?: string;
+    parentId?: string | undefined;
+    cacheKey?: string;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.label = _data["label"];
+            this.url = _data["url"];
+            this.icon = _data["icon"];
+            this.isActive = _data["isActive"];
+            this.visible = _data["visible"];
+            this.orderNo = _data["orderNo"];
+            this.tooltip = _data["tooltip"];
+            this.description = _data["description"];
+            this.parentId = _data["parentId"];
+            this.cacheKey = _data["cacheKey"];
+        }
+    }
+
+    static fromJS(data: any): UpdateAppMenuCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateAppMenuCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["label"] = this.label;
+        data["url"] = this.url;
+        data["icon"] = this.icon;
+        data["isActive"] = this.isActive;
+        data["visible"] = this.visible;
+        data["orderNo"] = this.orderNo;
+        data["tooltip"] = this.tooltip;
+        data["description"] = this.description;
+        data["parentId"] = this.parentId;
+        data["cacheKey"] = this.cacheKey;
         return data;
     }
 }

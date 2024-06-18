@@ -26,8 +26,8 @@ export class AppMenuComponent implements OnInit {
                     {
                         label: 'Common Setup', icon: 'pi pi-fw pi-bookmark',
                         items: [
-                            { label: 'Lookup', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup'] },
-                            { label: 'Lookup Detail', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup-detail'] },
+                            { label: 'Lookup', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookups'] },
+                            { label: 'Lookup Detail', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup-details'] },
                             {
                                 label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
                                 items: [
@@ -54,6 +54,7 @@ export class AppMenuComponent implements OnInit {
                         items: [
                             { label: 'User', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/users'] },
                             { label: 'Role', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/roles'] },
+                            { label: 'Menu', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/app-menus'] },
                             {
                                 label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
                                 items: [

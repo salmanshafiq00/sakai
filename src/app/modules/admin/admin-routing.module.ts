@@ -4,10 +4,13 @@ import { UserListComponent } from "./components/user-list/user-list.component";
 import { RoleListComponent } from "./components/role-list/role-list.component";
 import { UserDetailComponent } from "./components/user-detail/user-detail.component";
 import { RoleDetailComponent } from "./components/role-detail/role-detail.component";
+import { AppMenuListComponent } from "./components/app-menu-list/app-menu-list.component";
+import { AppMenuDetailComponent } from "./components/app-menu-detail/app-menu-detail.component";
 
 const routes: Routes = [
   {path: 'users', component: UserListComponent},
-  {path: 'roles', component: RoleListComponent}
+  {path: 'roles', component: RoleListComponent},
+  {path: 'app-menus', component: AppMenuListComponent},
 ]
 
 @NgModule({
@@ -23,6 +26,8 @@ export const adminRoutingComponents = [
   UserListComponent,
   UserDetailComponent,
   RoleListComponent,
-  RoleDetailComponent
+  RoleDetailComponent,
+  AppMenuListComponent,
+  AppMenuDetailComponent
 
 ]

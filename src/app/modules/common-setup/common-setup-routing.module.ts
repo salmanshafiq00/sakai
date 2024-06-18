@@ -4,7 +4,7 @@ import { LookupListComponent } from "./components/lookup-list/lookup-list.compon
 import { LookupDetailComponent } from "./components/lookup-detail/lookup-detail.component";
 
 const routes: Routes = [
-  {path: 'lookup', component: LookupListComponent, data: {breadcrumb: 'Lookup'}}
+  {path: 'lookups', component: LookupListComponent, data: {breadcrumb: 'Lookup'}}
 ]
 
 @NgModule({

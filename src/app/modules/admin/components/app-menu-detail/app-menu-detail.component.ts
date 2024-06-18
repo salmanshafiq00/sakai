@@ -1,19 +1,19 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { AppUserModel, CreateAppUserCommand, SelectListModel, SelectListsClient, UpdateAppUserCommand, UsersClient } from 'src/app/modules/generated-clients/api-service';
+import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel, TreeNodeListsClient } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
+import { PrimengIcon } from 'src/app/shared/services/primeng-icon';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
-
 @Component({
-  selector: 'app-user-detail',
-  templateUrl: './user-detail.component.html',
-  styleUrl: './user-detail.component.scss',
-  providers: [ToastService, SelectListsClient, UsersClient]
+  selector: 'app-app-menu-detail',
+  templateUrl: './app-menu-detail.component.html',
+  styleUrl: './app-menu-detail.component.scss',
+  providers: [ToastService, TreeNodeListsClient, AppMenusClient]
 })
-export class UserDetailComponent implements OnInit {
+export class AppMenuDetailComponent  implements OnInit {
   VMsg = CommonValidationMessage;
   comConst = CommonConstants;
   optionDataSources = {};
@@ -22,8 +22,6 @@ export class UserDetailComponent implements OnInit {
 
   id: string = '';
   item: AppUserModel = new AppUserModel();
-
-  roleSelectList: SelectListModel[] = [];
 
   get f() {
     return this.form.controls;
@@ -37,12 +35,14 @@ export class UserDetailComponent implements OnInit {
     return this.optionDataSources[dsName];
   }
 
+  primengIcons = PrimengIcon.primeIcons;
+
   private customDialogService: CustomDialogService = inject(CustomDialogService);
   private toast: ToastService = inject(ToastService);
   private fb: FormBuilder = inject(FormBuilder);
 
-  private selectListClient: SelectListsClient = inject(SelectListsClient);
-  private entityClient: UsersClient = inject(UsersClient);
+  private treeNodeListsClient: TreeNodeListsClient = inject(TreeNodeListsClient);
+  private entityClient: AppMenusClient = inject(AppMenusClient);
 
 
 
@@ -56,7 +56,7 @@ export class UserDetailComponent implements OnInit {
     }
 
     if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.getRoleSelectList();
+      this.GetAllAppMenuTreeSelectList();
     }
 
   }
@@ -75,11 +75,11 @@ export class UserDetailComponent implements OnInit {
 
   private save() {
     console.log(this.form.value)
-    let createCommand = new CreateAppUserCommand();
+    let createCommand = new CreateAppMenuCommand();
     createCommand = { ...this.form.value }
-    createCommand.roles = this.form.get('roles')?.value?.map((x) => x.id);
+    createCommand.parentId = this.form.get('parentId')?.value?.key;
     console.log(createCommand)
-    this.entityClient.createUser(createCommand).subscribe({
+    this.entityClient.createMenu(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -93,11 +93,11 @@ export class UserDetailComponent implements OnInit {
   }
 
   private update() {
-    let updateCommand = new UpdateAppUserCommand();
+    let updateCommand = new UpdateAppMenuCommand();
     updateCommand = { ...this.form.value };
-    updateCommand.roles = this.form.get('roles')?.value?.map((x) => x.id);
+    updateCommand.parentId = this.form.get('parentId')?.value?.key;
 
-    this.entityClient.updateUser(updateCommand).subscribe({
+    this.entityClient.updateMenu(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -110,15 +110,16 @@ export class UserDetailComponent implements OnInit {
   }
 
   private getById(id: string) {
-    this.entityClient.getUser(id).subscribe({
-      next: (res: AppUserModel) => {
+    this.entityClient.getAppMenu(id).subscribe({
+      next: (res: AppMenuModel) => {
         this.item = res;
         console.log(res);
          this.optionDataSources = res.optionsDataSources;
-        const assignedRoles = this.optionDataSources['roleSelectList'].filter(role => res.roles.includes(role.name));
+        const selectedParent = this.optionDataSources['parentTreeSelectList'].find(x => x.key?.toLowerCase() == res.parentId?.toLowerCase());
+        // const selectedIcon = this.primengIcons.find(x => x.value?.toLowerCase() == res.icon?.toLowerCase());
         this.form.patchValue({
           ...this.item,
-          roles: assignedRoles
+          parentId: selectedParent
         });
       }
     });
@@ -127,25 +128,25 @@ export class UserDetailComponent implements OnInit {
   private initializeFormGroup() {
     this.form = this.fb.group({
       id: [''],
-      firstName: ['', Validators.required],
-      lastName: [''],
-      username: ['', Validators.required],
-      email: [''],
-      phoneNumber: [''],
+      label: ['', Validators.required],
+      url: ['', Validators.required],
+      icon: [null],
+      tooltip: [''],
+      description: [''],
       isActive: [true],
-      password: [''],
-      confirmPassword: [''],
-      roles: [null]
+      visible: [true],
+      orderNo: [''],
+      parentId: [null]
     });
 
   }
 
 
 
-  private getRoleSelectList() {
-    this.selectListClient.getRoleSelectList(false).subscribe({
+  private GetAllAppMenuTreeSelectList() {
+    this.treeNodeListsClient.getAllAppMenuTreeSelectList(false).subscribe({
       next: (res) => {
-        this.roleSelectList = res;
+        this.optionDataSources['parentTreeSelectList'] = res;
       },
       error: (error) => {
           console.log(error)
