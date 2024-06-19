@@ -3072,6 +3072,7 @@ export class PaginatedResponseOfRoleModel {
 export class RoleModel {
     id?: string;
     name?: string;
+    roleMenus?: string[];
     permissions?: string[];
     optionsDataSources?: { [key: string]: any; };
 
@@ -3079,6 +3080,11 @@ export class RoleModel {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            if (Array.isArray(_data["roleMenus"])) {
+                this.roleMenus = [] as any;
+                for (let item of _data["roleMenus"])
+                    this.roleMenus!.push(item);
+            }
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
@@ -3105,6 +3111,11 @@ export class RoleModel {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        if (Array.isArray(this.roleMenus)) {
+            data["roleMenus"] = [];
+            for (let item of this.roleMenus)
+                data["roleMenus"].push(item);
+        }
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)
@@ -3143,11 +3154,17 @@ export class GetRoleListQuery extends DataGridModel {
 
 export class CreateRoleCommand {
     name?: string;
+    rolemenus?: string[];
     permissions?: string[];
 
     init(_data?: any) {
         if (_data) {
             this.name = _data["name"];
+            if (Array.isArray(_data["rolemenus"])) {
+                this.rolemenus = [] as any;
+                for (let item of _data["rolemenus"])
+                    this.rolemenus!.push(item);
+            }
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
@@ -3166,6 +3183,11 @@ export class CreateRoleCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["name"] = this.name;
+        if (Array.isArray(this.rolemenus)) {
+            data["rolemenus"] = [];
+            for (let item of this.rolemenus)
+                data["rolemenus"].push(item);
+        }
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)
@@ -3178,12 +3200,18 @@ export class CreateRoleCommand {
 export class UpdateRoleCommand {
     id?: string;
     name?: string;
+    rolemenus?: string[];
     permissions?: string[];
 
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
             this.name = _data["name"];
+            if (Array.isArray(_data["rolemenus"])) {
+                this.rolemenus = [] as any;
+                for (let item of _data["rolemenus"])
+                    this.rolemenus!.push(item);
+            }
             if (Array.isArray(_data["permissions"])) {
                 this.permissions = [] as any;
                 for (let item of _data["permissions"])
@@ -3203,6 +3231,11 @@ export class UpdateRoleCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["name"] = this.name;
+        if (Array.isArray(this.rolemenus)) {
+            data["rolemenus"] = [];
+            for (let item of this.rolemenus)
+                data["rolemenus"].push(item);
+        }
         if (Array.isArray(this.permissions)) {
             data["permissions"] = [];
             for (let item of this.permissions)

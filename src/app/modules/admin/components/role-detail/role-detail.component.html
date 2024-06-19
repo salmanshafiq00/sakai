@@ -9,6 +9,16 @@
           *ngIf="f['name'].errors?.['required'] && f['name']?.touched">{{VMsg.required}}</small>
       </div>
       <div class="field col-12 md:col-12">
+        <label class="" htmlFor="roles">App Menus</label>
+          <p-tree 
+          [value]="optionDataSources['appMenuTreeList']" 
+          selectionMode="checkbox" 
+          class="w-full md:w-30rem" 
+          [(selection)]="selectedAppMenus"
+          [propagateSelectionUp]="true"
+          [propagateSelectionDown]="true" />
+      </div>
+      <div class="field col-12 md:col-12">
         <label class="" htmlFor="roles">Permissions</label>
           <p-tree 
           [value]="optionDataSources['permissionNodeList']" 
