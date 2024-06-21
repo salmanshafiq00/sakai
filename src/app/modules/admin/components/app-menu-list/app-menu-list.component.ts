@@ -157,7 +157,7 @@ export class AppMenuListComponent implements OnInit {
         this.totalPages = res.totalPages;
         this.dataFields = res.dataFields;
         this.filters = res.filters;
-        this.optionsDataSources = res.optionsDataSources;
+        this.optionsDataSources = res.optionDataSources;
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
           .map(x => x.field);
@@ -169,7 +169,7 @@ export class AppMenuListComponent implements OnInit {
 
         // option datasource
         if (!this.isInitialLoaded) {
-          this.optionDataSources = res.optionsDataSources;
+          this.optionDataSources = res.optionDataSources;
           this.isInitialLoaded = true;
         }
       },

@@ -97,9 +97,9 @@ export class LookupListComponent implements OnInit {
   private backoffService: BackoffService = inject(BackoffService);
   private toast: ToastService = inject(ToastService);
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-  private lookupsClient: LookupsClient = inject(LookupsClient);
   private datePipe: DatePipe = inject(DatePipe);
   private customDialogService: CustomDialogService = inject(CustomDialogService);
+  private entityClient: LookupsClient = inject(LookupsClient);
 
 
   constructor() {
@@ -153,7 +153,7 @@ export class LookupListComponent implements OnInit {
 
     console.log(query)
 
-    this.lookupsClient.getLookups(query).subscribe({
+    this.entityClient.getLookups(query).subscribe({
       next: (res) => {
         this.items = res.items;
         this.pageNumber = res.pageNumber;
@@ -161,7 +161,7 @@ export class LookupListComponent implements OnInit {
         this.totalPages = res.totalPages;
         this.dataFields = res.dataFields;
         this.filters = res.filters;
-        this.optionsDataSources = res.optionsDataSources;
+        this.optionsDataSources = res.optionDataSources;
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
           .map(x => x.field);
@@ -173,7 +173,7 @@ export class LookupListComponent implements OnInit {
 
         // option datasource
         if (!this.isInitialLoaded) {
-          this.optionDataSources = res.optionsDataSources;
+          this.optionDataSources = res.optionDataSources;
           this.isInitialLoaded = true;
         }
       },
@@ -332,7 +332,7 @@ export class LookupListComponent implements OnInit {
   }
 
   private deleteItem(id: string) {
-    this.lookupsClient.deleteLookup(id).subscribe({
+    this.entityClient.deleteLookup(id).subscribe({
       next: () => {
         this.toast.deleted();
         this.loadData({ first: this.first, rows: this.rows }, false)

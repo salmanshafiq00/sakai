@@ -1,18 +1,18 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { CreateLookupCommand, LookupModel, LookupsClient, SelectListsClient, UpdateLookupCommand } from 'src/app/modules/generated-clients/api-service';
+import { LookupModel, SelectListsClient, LookupDetailsClient, CreateLookupDetailCommand, UpdateLookupDetailCommand, LookupDetailModel } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
-  selector: 'app-lookup-detail',
-  templateUrl: './lookup-detail.component.html',
-  styleUrl: './lookup-detail.component.scss',
-  providers: [ToastService]
+  selector: 'app-lookup-detail-detail',
+  templateUrl: './lookup-detail-detail.component.html',
+  styleUrl: './lookup-detail-detail.component.scss',
+  providers: [ToastService, LookupDetailsClient, SelectListsClient]
 })
-export class LookupDetailComponent implements OnInit {
+export class LookupDetailDetailComponent  implements OnInit {
 
   submitted: boolean = true;
 
@@ -34,7 +34,7 @@ export class LookupDetailComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
 
   private selectListClient: SelectListsClient = inject(SelectListsClient);
-  private lookupsClient: LookupsClient = inject(LookupsClient);
+  private entityClient: LookupDetailsClient = inject(LookupDetailsClient);
 
 
 
@@ -49,6 +49,7 @@ export class LookupDetailComponent implements OnInit {
 
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       this.getParentSelectList();
+      this.getLookupSelectList();
     }
 
   }
@@ -70,10 +71,10 @@ export class LookupDetailComponent implements OnInit {
 
   private save() {
     this.submitted = true;
-    let createLookupCommand = new CreateLookupCommand();
+    let createLookupCommand = new CreateLookupDetailCommand();
     createLookupCommand = { ...this.form.value }
 
-    this.lookupsClient.createLookup(createLookupCommand).subscribe({
+    this.entityClient.createLookupDetail(createLookupCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -88,10 +89,10 @@ export class LookupDetailComponent implements OnInit {
 
   private update() {
     this.submitted = true;
-    let updateLookupCommand = new UpdateLookupCommand();
+    let updateLookupCommand = new UpdateLookupDetailCommand();
     updateLookupCommand = { ...this.form.value }
 
-    this.lookupsClient.updateLookup(updateLookupCommand).subscribe({
+    this.entityClient.updateLookupDetail(updateLookupCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -104,16 +105,26 @@ export class LookupDetailComponent implements OnInit {
   }
 
   private getParentSelectList() {
-    this.selectListClient.getLookupSelectList(false).subscribe({
+    this.selectListClient.getLookupDetailSelectList(false).subscribe({
       next: (res) => {
         this.optionDataSources['parentSelectList'] = res;
+        console.log(this.optionDataSources);
+      }
+    });
+  }
+
+  private getLookupSelectList() {
+    this.selectListClient.getLookupSelectList(false).subscribe({
+      next: (res) => {
+        this.optionDataSources['lookupSelectList'] = res;
+        console.log(this.optionDataSources);
       }
     });
   }
 
   private getById(id: string) {
-    this.lookupsClient.getLookup(id).subscribe({
-      next: (res: LookupModel) => {
+    this.entityClient.getLookupDetail(id).subscribe({
+      next: (res: LookupDetailModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;
         console.log(res);
@@ -130,6 +141,7 @@ export class LookupDetailComponent implements OnInit {
       description: [''],
       status: [false],
       parentId: [null],
+      lookupId: [null],
       created: [null]
     });
   }

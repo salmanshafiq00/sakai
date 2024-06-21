@@ -9,11 +9,11 @@
           *ngIf="f['label'].errors?.['required'] && f['label']?.touched">{{VMsg.required}}</small>
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="url">URL</label>
-        <input type="text" pInputText formControlName="url"
-          [ngClass]="{'ng-invalid ng-dirty': f['url']?.invalid && f['url']?.touched}" />
+        <label htmlFor="routerLink">RouterLink</label>
+        <input type="text" pInputText formControlName="routerLink"
+          [ngClass]="{'ng-invalid ng-dirty': f['routerLink']?.invalid && f['routerLink']?.touched}" />
         <small class="validation-msg"
-          *ngIf="f['url'].errors?.['required'] && f['url']?.touched">{{VMsg.required}}</small>
+          *ngIf="f['routerLink'].errors?.['required'] && f['routerLink']?.touched">{{VMsg.required}}</small>
       </div>
       <div class="field col-12 md:col-6">
         <label htmlFor="parentId">Parent Name</label>
@@ -21,6 +21,13 @@
           [showClear]="true" placeholder="Select one" appendTo="body">
         </p-treeSelect>
       </div>
+
+      <div class="field col-12 md:col-6">
+        <label htmlFor="status">Menu Type</label>
+        <p-dropdown formControlName="menuTypeId" inputId="menuTypeId" optionValue="id" optionLabel="name" 
+            [options]="optionDataSources['menuTypeSelectList']" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
+        </p-dropdown>
+    </div>
 
       <div class="field col-12 md:col-6">
         <label for="icon">Icon</label>

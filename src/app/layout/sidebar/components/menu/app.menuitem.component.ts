@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { MenuService } from './app.menu.service';
 import { LayoutService } from '../../../service/app.layout.service';
+import { AppMenuService } from '../../app-menu.service';
 
 @Component({
     // eslint-disable-next-line @angular-eslint/component-selector
@@ -65,7 +66,13 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
 
     key: string = "";
 
-    constructor(public layoutService: LayoutService, private cd: ChangeDetectorRef, public router: Router, private menuService: MenuService) {
+    constructor(
+        public layoutService: LayoutService, 
+        private cd: ChangeDetectorRef,
+        public router: Router, 
+        private menuService: MenuService,
+        private appMenuService: AppMenuService
+    ) {
         this.menuSourceSubscription = this.menuService.menuSource$.subscribe(value => {
             Promise.resolve(null).then(() => {
                 if (value.routeEvent) {
@@ -125,6 +132,10 @@ export class AppMenuitemComponent implements OnInit, OnDestroy {
         }
 
         this.menuService.onMenuStateChange({ key: this.key });
+
+        if(this.item && !this.item?.items){
+            this.appMenuService.setSelectedMenu(this.item);
+        }
     }
 
     get submenuAnimation() {

@@ -1,37 +1,51 @@
 import { OnInit } from '@angular/core';
 import { Component } from '@angular/core';
 import { LayoutService } from '../../../service/app.layout.service';
+import { AppMenusClient, SidebarMenuModel } from 'src/app/modules/generated-clients/api-service';
+import { AppMenuService } from '../../app-menu.service';
 
 @Component({
     selector: 'app-menu',
     templateUrl: './app.menu.component.html'
+
 })
 export class AppMenuComponent implements OnInit {
 
     model: any[] = [];
+    model2: any[] = [];
 
-    constructor(public layoutService: LayoutService) { }
+    constructor(public layoutService: LayoutService,
+        private appMenuClient: AppMenusClient,
+        private appMenuService: AppMenuService,
+
+    ) { }
 
     ngOnInit() {
+
+        this.appMenuClient.getSidebarMenus().subscribe({
+            next: (res) => {
+                const transformedMenu = this.transformMenuData(res);
+                this.model2.push({
+                    items: transformedMenu
+                });
+                this.appMenuService.setSidebarMenus(transformedMenu);
+            },
+            error: (error) => {
+                console.log(error);
+            }
+        });
+
         this.model = [
             {
-                label: 'Home',
-                items: [
-                    { label: 'Dashboard', icon: 'pi pi-fw pi-home', routerLink: ['/'] }
-                ]
-            },
-            {
-                label: 'Common Setup',
+                label: 'Hierarchy',
                 items: [
                     {
-                        label: 'Common Setup', icon: 'pi pi-fw pi-bookmark',
+                        label: 'Submenu 1', icon: 'pi pi-fw pi-bookmark',
                         items: [
-                            { label: 'Lookup', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookups'] },
-                            { label: 'Lookup Detail', icon: 'pi pi-fw pi-bookmark', routerLink: ['/setup/lookup-details'] },
                             {
                                 label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
                                 items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark', parentName: 'salman' },
                                     { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
                                     { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
                                 ]
@@ -43,30 +57,21 @@ export class AppMenuComponent implements OnInit {
                                 ]
                             },
                         ]
-                    }
-                ]
-            },
-            {
-                label: 'Admin',
-                items: [
+                    },
                     {
-                        label: 'Admin', icon: 'pi pi-fw pi-bookmark',
+                        label: 'Submenu 2', icon: 'pi pi-fw pi-bookmark',
                         items: [
-                            { label: 'User', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/users'] },
-                            { label: 'Role', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/roles'] },
-                            { label: 'Menu', icon: 'pi pi-fw pi-bookmark', routerLink: ['/admin/app-menus'] },
                             {
-                                label: 'Submenu 1.1', icon: 'pi pi-fw pi-bookmark',
+                                label: 'Submenu 2.1', icon: 'pi pi-fw pi-bookmark',
                                 items: [
-                                    { label: 'Submenu 1.1.1', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.2', icon: 'pi pi-fw pi-bookmark' },
-                                    { label: 'Submenu 1.1.3', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 2.1.1', icon: 'pi pi-fw pi-bookmark' },
+                                    { label: 'Submenu 2.1.2', icon: 'pi pi-fw pi-bookmark' },
                                 ]
                             },
                             {
-                                label: 'Submenu 1.2', icon: 'pi pi-fw pi-bookmark',
+                                label: 'Submenu 2.2', icon: 'pi pi-fw pi-bookmark',
                                 items: [
-                                    { label: 'Submenu 1.2.1', icon: 'pi pi-fw pi-bookmark' }
+                                    { label: 'Submenu 2.2.1', icon: 'pi pi-fw pi-bookmark' },
                                 ]
                             },
                         ]
@@ -201,18 +206,38 @@ export class AppMenuComponent implements OnInit {
                         ]
                     }
                 ]
-            },
-            {
-                label: 'Get Started',
-                items: [
-                    {
-                        label: 'Documentation', icon: 'pi pi-fw pi-question', routerLink: ['/documentation']
-                    },
-                    {
-                        label: 'View Source', icon: 'pi pi-fw pi-search', url: ['https://github.com/primefaces/sakai-ng'], target: '_blank'
-                    }
-                ]
             }
         ];
+    }
+
+    private transformMenuData(data: SidebarMenuModel[]): any[] {
+        return data.map(item => this.mapMenuItem(item));
+    }
+
+    private mapMenuItem(item: SidebarMenuModel): any {
+
+        if (item.items && item.items.length > 0) {
+            return {
+                id: item.id,
+                label: item.label,
+                icon: item.icon,
+                routerLink: [item.routerLink],
+                parentId: item.parentId,
+                parentLabel: item.parentLabel,
+                items: item.items.map(child => this.mapMenuItem(child))
+            };
+
+        } else {
+            return {
+                id: item.id,
+                label: item.label,
+                icon: item.icon,
+                routerLink: [item.routerLink],
+                parentId: item.parentId,
+                parentLabel: item.parentLabel,
+            };
+
+        }
+
     }
 }

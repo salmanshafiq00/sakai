@@ -9,6 +9,14 @@
 .breadcrumbs{
     padding-bottom: 10px;
     margin-top: -10px;
+    min-height: 20px;
+}
+
+::ng-deep{
+    .p-breadcrumb{
+        background: none;
+        padding: 0;
+    }
 }
 
 @media screen and (max-width: 992px){

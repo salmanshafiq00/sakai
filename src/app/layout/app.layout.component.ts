@@ -1,9 +1,10 @@
-import { Component, OnDestroy, Renderer2, ViewChild } from '@angular/core';
-import { NavigationEnd, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { ActivatedRoute, ActivatedRouteSnapshot, NavigationEnd, Router } from '@angular/router';
 import { filter, Subscription } from 'rxjs';
 import { LayoutService } from "./service/app.layout.service";
 import { AppSidebarComponent } from "./sidebar/app.sidebar.component";
 import { AppTopBarComponent } from './topbar/app.topbar.component';
+import { MenuItem } from 'primeng/api';
 
 @Component({
     selector: 'app-layout',
@@ -18,11 +19,17 @@ export class AppLayoutComponent implements OnDestroy {
 
     profileMenuOutsideClickListener: any;
 
+    items: MenuItem[] | undefined;
+    home: MenuItem | undefined;
+
     @ViewChild(AppSidebarComponent) appSidebar!: AppSidebarComponent;
 
     @ViewChild(AppTopBarComponent) appTopbar!: AppTopBarComponent;
 
-    constructor(public layoutService: LayoutService, public renderer: Renderer2, public router: Router) {
+    constructor(
+        public layoutService: LayoutService, 
+        public renderer: Renderer2, 
+        public router: Router) {
         this.overlayMenuOpenSubscription = this.layoutService.overlayOpen$.subscribe(() => {
             if (!this.menuOutsideClickListener) {
                 this.menuOutsideClickListener = this.renderer.listen('document', 'click', event => {

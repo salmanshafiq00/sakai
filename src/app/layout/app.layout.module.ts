@@ -17,6 +17,11 @@ import { AppLayoutComponent } from "./app.layout.component";
 import { RouterModule } from '@angular/router';
 import { AppMenuitemComponent } from './sidebar/components/menu/app.menuitem.component';
 import { AppMenuComponent } from './sidebar/components/menu/app.menu.component';
+import { API_BASE_URL, AppMenusClient } from '../modules/generated-clients/api-service';
+import { environment } from 'src/environments/environment';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { AppMenuService } from './sidebar/app-menu.service';
+import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 
 @NgModule({
     declarations: [
@@ -26,6 +31,7 @@ import { AppMenuComponent } from './sidebar/components/menu/app.menu.component';
         AppMenuComponent,
         AppSidebarComponent,
         AppLayoutComponent,
+        BreadcrumbComponent
     ],
     imports: [
         BrowserModule,
@@ -39,7 +45,13 @@ import { AppMenuComponent } from './sidebar/components/menu/app.menu.component';
         InputSwitchModule,
         RippleModule,
         AppConfigModule,
-        RouterModule
+        RouterModule,
+        BreadcrumbModule
+    ],
+    providers: [
+        { provide: API_BASE_URL, useValue: environment.API_BASE_URL },
+        AppMenusClient,
+        AppMenuService
     ],
     exports: [AppLayoutComponent]
 })

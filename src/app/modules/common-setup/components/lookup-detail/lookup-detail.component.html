@@ -18,7 +18,7 @@
             <div class="field col-12 md:col-6">
                 <label htmlFor="status">Parent Name</label>
                 <p-dropdown formControlName="parentId" inputId="parentId" optionValue="id" optionLabel="name" 
-                    [options]="parentList" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
+                    [options]="optionDataSources['parentSelectList']" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
                 </p-dropdown>
             </div>
             <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">

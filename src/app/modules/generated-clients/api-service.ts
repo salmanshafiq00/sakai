@@ -621,6 +621,7 @@ export interface ISelectListsClient {
     getLookupSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
     getLookupDetailSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
     getRoleSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
+    getMenuTypeSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]>;
 }
 
 @Injectable()
@@ -807,6 +808,64 @@ export class SelectListsClient implements ISelectListsClient {
         }
         return _observableOf(null as any);
     }
+
+    getMenuTypeSelectList(allowCache: boolean | null | undefined): Observable<SelectListModel[]> {
+        let url_ = this.baseUrl + "/api/SelectLists/GetMenuTypeSelectList?";
+        if (allowCache !== undefined && allowCache !== null)
+            url_ += "allowCache=" + encodeURIComponent("" + allowCache) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMenuTypeSelectList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMenuTypeSelectList(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SelectListModel[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SelectListModel[]>;
+        }));
+    }
+
+    protected processGetMenuTypeSelectList(response: HttpResponseBase): Observable<SelectListModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SelectListModel.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface ITreeNodeListsClient {
@@ -944,6 +1003,7 @@ export class TreeNodeListsClient implements ITreeNodeListsClient {
 
 export interface IAppMenusClient {
     getAppMenus(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel>;
+    getSidebarMenus(): Observable<SidebarMenuModel[]>;
     getAppMenu(id: string): Observable<AppMenuModel>;
     createMenu(command: CreateAppMenuCommand): Observable<string>;
     updateMenu(command: UpdateAppMenuCommand): Observable<void>;
@@ -1004,6 +1064,69 @@ export class AppMenusClient implements IAppMenusClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PaginatedResponseOfAppMenuModel.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getSidebarMenus(): Observable<SidebarMenuModel[]> {
+        let url_ = this.baseUrl + "/api/AppMenus/GetSidebarMenus";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetSidebarMenus(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetSidebarMenus(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<SidebarMenuModel[]>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<SidebarMenuModel[]>;
+        }));
+    }
+
+    protected processGetSidebarMenus(response: HttpResponseBase): Observable<SidebarMenuModel[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(SidebarMenuModel.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1956,7 +2079,7 @@ export class PaginatedResponseOfLookupDetailModel {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: { [key: string]: any; };
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -1980,11 +2103,11 @@ export class PaginatedResponseOfLookupDetailModel {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            if (_data["optionsDataSources"]) {
-                this.optionsDataSources = {} as any;
-                for (let key in _data["optionsDataSources"]) {
-                    if (_data["optionsDataSources"].hasOwnProperty(key))
-                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
                 }
             }
         }
@@ -2019,11 +2142,11 @@ export class PaginatedResponseOfLookupDetailModel {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        if (this.optionsDataSources) {
-            data["optionsDataSources"] = {};
-            for (let key in this.optionsDataSources) {
-                if (this.optionsDataSources.hasOwnProperty(key))
-                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
             }
         }
         return data;
@@ -2041,6 +2164,7 @@ export class LookupDetailModel {
     parentName?: string;
     lookupId?: string;
     lookupName?: string;
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -2054,6 +2178,13 @@ export class LookupDetailModel {
             this.parentName = _data["parentName"];
             this.lookupId = _data["lookupId"];
             this.lookupName = _data["lookupName"];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+                }
+            }
         }
     }
 
@@ -2076,6 +2207,13 @@ export class LookupDetailModel {
         data["parentName"] = this.parentName;
         data["lookupId"] = this.lookupId;
         data["lookupName"] = this.lookupName;
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+            }
+        }
         return data;
     }
 }
@@ -2428,7 +2566,7 @@ export class PaginatedResponseOfLookupModel {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: { [key: string]: any; };
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -2452,11 +2590,11 @@ export class PaginatedResponseOfLookupModel {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            if (_data["optionsDataSources"]) {
-                this.optionsDataSources = {} as any;
-                for (let key in _data["optionsDataSources"]) {
-                    if (_data["optionsDataSources"].hasOwnProperty(key))
-                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
                 }
             }
         }
@@ -2491,11 +2629,11 @@ export class PaginatedResponseOfLookupModel {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        if (this.optionsDataSources) {
-            data["optionsDataSources"] = {};
-            for (let key in this.optionsDataSources) {
-                if (this.optionsDataSources.hasOwnProperty(key))
-                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
             }
         }
         return data;
@@ -2512,6 +2650,7 @@ export class LookupModel {
     parentId?: string | undefined;
     parentName?: string;
     created?: Date;
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -2524,6 +2663,13 @@ export class LookupModel {
             this.parentId = _data["parentId"];
             this.parentName = _data["parentName"];
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+                }
+            }
         }
     }
 
@@ -2545,6 +2691,13 @@ export class LookupModel {
         data["parentId"] = this.parentId;
         data["parentName"] = this.parentName;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+            }
+        }
         return data;
     }
 }
@@ -2718,7 +2871,7 @@ export class PaginatedResponseOfAppMenuModel {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: { [key: string]: any; };
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -2742,11 +2895,11 @@ export class PaginatedResponseOfAppMenuModel {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            if (_data["optionsDataSources"]) {
-                this.optionsDataSources = {} as any;
-                for (let key in _data["optionsDataSources"]) {
-                    if (_data["optionsDataSources"].hasOwnProperty(key))
-                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
                 }
             }
         }
@@ -2781,11 +2934,11 @@ export class PaginatedResponseOfAppMenuModel {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        if (this.optionsDataSources) {
-            data["optionsDataSources"] = {};
-            for (let key in this.optionsDataSources) {
-                if (this.optionsDataSources.hasOwnProperty(key))
-                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
             }
         }
         return data;
@@ -2797,7 +2950,7 @@ export class AppMenuModel {
     parentId?: string | undefined;
     parentName?: string;
     label?: string;
-    url?: string;
+    routerLink?: string;
     icon?: string;
     tooltip?: string;
     isActive?: boolean;
@@ -2806,6 +2959,8 @@ export class AppMenuModel {
     visibility?: string;
     description?: string;
     active?: string;
+    menuTypeId?: string;
+    menuTypeName?: string;
     optionsDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2814,7 +2969,7 @@ export class AppMenuModel {
             this.parentId = _data["parentId"];
             this.parentName = _data["parentName"];
             this.label = _data["label"];
-            this.url = _data["url"];
+            this.routerLink = _data["routerLink"];
             this.icon = _data["icon"];
             this.tooltip = _data["tooltip"];
             this.isActive = _data["isActive"];
@@ -2823,6 +2978,8 @@ export class AppMenuModel {
             this.visibility = _data["visibility"];
             this.description = _data["description"];
             this.active = _data["active"];
+            this.menuTypeId = _data["menuTypeId"];
+            this.menuTypeName = _data["menuTypeName"];
             if (_data["optionsDataSources"]) {
                 this.optionsDataSources = {} as any;
                 for (let key in _data["optionsDataSources"]) {
@@ -2846,7 +3003,7 @@ export class AppMenuModel {
         data["parentId"] = this.parentId;
         data["parentName"] = this.parentName;
         data["label"] = this.label;
-        data["url"] = this.url;
+        data["routerLink"] = this.routerLink;
         data["icon"] = this.icon;
         data["tooltip"] = this.tooltip;
         data["isActive"] = this.isActive;
@@ -2855,6 +3012,8 @@ export class AppMenuModel {
         data["visibility"] = this.visibility;
         data["description"] = this.description;
         data["active"] = this.active;
+        data["menuTypeId"] = this.menuTypeId;
+        data["menuTypeName"] = this.menuTypeName;
         if (this.optionsDataSources) {
             data["optionsDataSources"] = {};
             for (let key in this.optionsDataSources) {
@@ -2886,6 +3045,64 @@ export class GetAppMenuListQuery extends DataGridModel {
     }
 }
 
+export class SidebarMenuModel {
+    id?: string;
+    label?: string;
+    routerLink?: string;
+    icon?: string;
+    visible?: boolean;
+    tooltip?: string;
+    orderNo?: number;
+    parentId?: string | undefined;
+    parentLabel?: string;
+    items?: SidebarMenuModel[] | undefined;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.label = _data["label"];
+            this.routerLink = _data["routerLink"];
+            this.icon = _data["icon"];
+            this.visible = _data["visible"];
+            this.tooltip = _data["tooltip"];
+            this.orderNo = _data["orderNo"];
+            this.parentId = _data["parentId"];
+            this.parentLabel = _data["parentLabel"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(SidebarMenuModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SidebarMenuModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SidebarMenuModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["label"] = this.label;
+        data["routerLink"] = this.routerLink;
+        data["icon"] = this.icon;
+        data["visible"] = this.visible;
+        data["tooltip"] = this.tooltip;
+        data["orderNo"] = this.orderNo;
+        data["parentId"] = this.parentId;
+        data["parentLabel"] = this.parentLabel;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data;
+    }
+}
+
 export class CreateAppMenuCommand {
     label!: string;
     url!: string;
@@ -2895,6 +3112,7 @@ export class CreateAppMenuCommand {
     orderNo?: number;
     tooltip?: string;
     description?: string;
+    menuTypeId!: string;
     parentId?: string | undefined;
 
     init(_data?: any) {
@@ -2907,6 +3125,7 @@ export class CreateAppMenuCommand {
             this.orderNo = _data["orderNo"];
             this.tooltip = _data["tooltip"];
             this.description = _data["description"];
+            this.menuTypeId = _data["menuTypeId"];
             this.parentId = _data["parentId"];
         }
     }
@@ -2928,6 +3147,7 @@ export class CreateAppMenuCommand {
         data["orderNo"] = this.orderNo;
         data["tooltip"] = this.tooltip;
         data["description"] = this.description;
+        data["menuTypeId"] = this.menuTypeId;
         data["parentId"] = this.parentId;
         return data;
     }
@@ -2943,6 +3163,7 @@ export class UpdateAppMenuCommand {
     orderNo?: number;
     tooltip?: string;
     description?: string;
+    menuTypeId!: string;
     parentId?: string | undefined;
     cacheKey?: string;
 
@@ -2957,6 +3178,7 @@ export class UpdateAppMenuCommand {
             this.orderNo = _data["orderNo"];
             this.tooltip = _data["tooltip"];
             this.description = _data["description"];
+            this.menuTypeId = _data["menuTypeId"];
             this.parentId = _data["parentId"];
             this.cacheKey = _data["cacheKey"];
         }
@@ -2980,6 +3202,7 @@ export class UpdateAppMenuCommand {
         data["orderNo"] = this.orderNo;
         data["tooltip"] = this.tooltip;
         data["description"] = this.description;
+        data["menuTypeId"] = this.menuTypeId;
         data["parentId"] = this.parentId;
         data["cacheKey"] = this.cacheKey;
         return data;
@@ -2995,7 +3218,7 @@ export class PaginatedResponseOfRoleModel {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: { [key: string]: any; };
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -3019,11 +3242,11 @@ export class PaginatedResponseOfRoleModel {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            if (_data["optionsDataSources"]) {
-                this.optionsDataSources = {} as any;
-                for (let key in _data["optionsDataSources"]) {
-                    if (_data["optionsDataSources"].hasOwnProperty(key))
-                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
                 }
             }
         }
@@ -3058,11 +3281,11 @@ export class PaginatedResponseOfRoleModel {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        if (this.optionsDataSources) {
-            data["optionsDataSources"] = {};
-            for (let key in this.optionsDataSources) {
-                if (this.optionsDataSources.hasOwnProperty(key))
-                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
             }
         }
         return data;
@@ -3254,7 +3477,7 @@ export class PaginatedResponseOfAppUserModel {
     hasNextPage?: boolean;
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
-    optionsDataSources?: { [key: string]: any; };
+    optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
         if (_data) {
@@ -3278,11 +3501,11 @@ export class PaginatedResponseOfAppUserModel {
                 for (let item of _data["filters"])
                     this.filters!.push(DataFilterModel.fromJS(item));
             }
-            if (_data["optionsDataSources"]) {
-                this.optionsDataSources = {} as any;
-                for (let key in _data["optionsDataSources"]) {
-                    if (_data["optionsDataSources"].hasOwnProperty(key))
-                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
                 }
             }
         }
@@ -3317,11 +3540,11 @@ export class PaginatedResponseOfAppUserModel {
             for (let item of this.filters)
                 data["filters"].push(item.toJSON());
         }
-        if (this.optionsDataSources) {
-            data["optionsDataSources"] = {};
-            for (let key in this.optionsDataSources) {
-                if (this.optionsDataSources.hasOwnProperty(key))
-                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
             }
         }
         return data;

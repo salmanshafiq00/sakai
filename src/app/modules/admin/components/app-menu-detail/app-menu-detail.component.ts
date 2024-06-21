@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel, TreeNodeListsClient } from 'src/app/modules/generated-clients/api-service';
+import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel, TreeNodeListsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { PrimengIcon } from 'src/app/shared/services/primeng-icon';
 import { ToastService } from 'src/app/shared/services/toast.service';
@@ -11,7 +11,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
   selector: 'app-app-menu-detail',
   templateUrl: './app-menu-detail.component.html',
   styleUrl: './app-menu-detail.component.scss',
-  providers: [ToastService, TreeNodeListsClient, AppMenusClient]
+  providers: [ToastService, TreeNodeListsClient, SelectListsClient, AppMenusClient]
 })
 export class AppMenuDetailComponent  implements OnInit {
   VMsg = CommonValidationMessage;
@@ -42,6 +42,7 @@ export class AppMenuDetailComponent  implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
 
   private treeNodeListsClient: TreeNodeListsClient = inject(TreeNodeListsClient);
+  private selectListsClient: SelectListsClient = inject(SelectListsClient);
   private entityClient: AppMenusClient = inject(AppMenusClient);
 
 
@@ -57,6 +58,7 @@ export class AppMenuDetailComponent  implements OnInit {
 
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       this.GetAllAppMenuTreeSelectList();
+      this.getMenuTypeSelectList();
     }
 
   }
@@ -116,7 +118,6 @@ export class AppMenuDetailComponent  implements OnInit {
         console.log(res);
          this.optionDataSources = res.optionsDataSources;
         const selectedParent = this.optionDataSources['parentTreeSelectList'].find(x => x.key?.toLowerCase() == res.parentId?.toLowerCase());
-        // const selectedIcon = this.primengIcons.find(x => x.value?.toLowerCase() == res.icon?.toLowerCase());
         this.form.patchValue({
           ...this.item,
           parentId: selectedParent
@@ -129,14 +130,15 @@ export class AppMenuDetailComponent  implements OnInit {
     this.form = this.fb.group({
       id: [''],
       label: ['', Validators.required],
-      url: ['', Validators.required],
+      routerLink: ['', Validators.required],
       icon: [null],
       tooltip: [''],
       description: [''],
       isActive: [true],
       visible: [true],
       orderNo: [''],
-      parentId: [null]
+      parentId: [null],
+      menuTypeId: [null]
     });
 
   }
@@ -153,5 +155,17 @@ export class AppMenuDetailComponent  implements OnInit {
       }
     });
   }
+
+  private getMenuTypeSelectList() {
+    this.selectListsClient.getMenuTypeSelectList(false).subscribe({
+      next: (res) => {
+        this.optionDataSources['menuTypeSelectList'] = res;
+      },
+      error: (error) => {
+          console.log(error)
+      }
+    });
+  }
+
 
 }

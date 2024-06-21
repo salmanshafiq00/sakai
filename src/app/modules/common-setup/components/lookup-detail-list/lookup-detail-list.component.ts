@@ -1,23 +1,24 @@
-import { DatePipe } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
-import { FilterMatchMode, FilterMetadata } from 'primeng/api';
+import { LookupDetailDetailComponent } from '../lookup-detail-detail/lookup-detail-detail.component';
+import { DatePipe } from '@angular/common';
+import { FilterMatchMode, MenuItem, FilterMetadata } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { Subject, debounceTime, timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { DataFieldModel, DataFilterModel, GetAppUserListQuery, UsersClient } from 'src/app/modules/generated-clients/api-service';
+import { LookupDetailsClient, DataFieldModel, DataFilterModel, GetLookupListQuery } from 'src/app/modules/generated-clients/api-service';
 import { BackoffService } from 'src/app/shared/services/backoff.service';
 import { ConfirmDialogService } from 'src/app/shared/services/confirm-dialog.service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
-import { UserDetailComponent } from '../user-detail/user-detail.component';
 
 @Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss',
-  providers: [ToastService, BackoffService, ConfirmDialogService, UsersClient, DatePipe]
+  selector: 'app-lookup-detail-list',
+  templateUrl: './lookup-detail-list.component.html',
+  styleUrl: './lookup-detail-list.component.scss',
+  providers: [ToastService, BackoffService, ConfirmDialogService, LookupDetailsClient, DatePipe]
+
 })
-export class UserListComponent implements OnInit {
+export class LookupDetailListComponent implements OnInit {
 
   FieldType = FieldType;
   FilterMatchModes = FilterMatchMode;
@@ -54,7 +55,7 @@ export class UserListComponent implements OnInit {
     { label: 'Date is after', value: FilterMatchMode.DATE_AFTER },
     { label: 'Date is or before', value: FilterMatchMode.DATE_IS_OR_BEFORE },
     { label: 'Date is or after', value: FilterMatchMode.DATE_IS_OR_AFTER }
-  ];
+];
 
 
   // Global filters
@@ -79,12 +80,14 @@ export class UserListComponent implements OnInit {
   selectedParent: any;
   selectedStatus: any;
 
-  caption: string = 'Manage User';
+  caption: string = 'Manage Lookup';
   optionsDataSources: any;
 
   //loading
   loading: boolean = false;
-  refreshLoading: boolean = false;
+
+  // breadcrumb
+  menuItems: MenuItem[] | undefined;
 
   items: any[] = [];
   selectedItems: any[] = [];
@@ -97,7 +100,7 @@ export class UserListComponent implements OnInit {
   private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
   private datePipe: DatePipe = inject(DatePipe);
   private customDialogService: CustomDialogService = inject(CustomDialogService);
-  private entityClient: UsersClient = inject(UsersClient);
+  private entityClient: LookupDetailsClient = inject(LookupDetailsClient);
 
 
   constructor() {
@@ -111,7 +114,11 @@ export class UserListComponent implements OnInit {
   }
 
   ngOnInit() {
+
+
     this.loadData({ first: this.first, rows: this.rows }, true)
+    // this.getParentSelectList();
+    this.statusList = this.getStatusSelectList();
   }
 
   get hasSelectOrDateType(): boolean {
@@ -126,7 +133,7 @@ export class UserListComponent implements OnInit {
     this.first = event.first;
     this.rows = event.rows;
 
-    const query = new GetAppUserListQuery();
+    const query = new GetLookupListQuery();
     query.offset = this.first;
     query.pageSize = this.rows;
     query.allowCache = !!allowCache;
@@ -147,9 +154,8 @@ export class UserListComponent implements OnInit {
 
     console.log(query)
 
-    this.entityClient.getUsers(query).subscribe({
+    this.entityClient.getLookupDetails(query).subscribe({
       next: (res) => {
-        console.log(res)
         this.items = res.items;
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
@@ -173,7 +179,6 @@ export class UserListComponent implements OnInit {
         }
       },
       error: (error) => {
-        this.loading = false;
         console.error(error, 'Error while fetching data')
       },
       complete: () => {
@@ -188,13 +193,12 @@ export class UserListComponent implements OnInit {
 
   refreshGrid() {
     this.loading = true;
-    this.refreshLoading = true;
+
     const delay = this.backoffService.getDelay();
     console.log(`Applying delay: ${delay}ms`);
     timer(delay).subscribe(() => {
       this.loadData({ first: this.first, rows: this.rows }, false);
       // this.backoffService.resetDelay();
-      this.refreshLoading = false;
     });
 
   }
@@ -329,17 +333,32 @@ export class UserListComponent implements OnInit {
   }
 
   private deleteItem(id: string) {
-    // this.usersClient.deleteLookup(id).subscribe({
-    //   next: () => {
-    //     this.toast.deleted();
-    //     this.loadData({ first: this.first, rows: this.rows }, false)
-    //   },
-    //   error: (error) => {
-    //     this.toast.showError('Fail to delete.')
-    //   }
-    // });
+    this.entityClient.deleteLookupDetail(id).subscribe({
+      next: () => {
+        this.toast.deleted();
+        this.loadData({ first: this.first, rows: this.rows }, false)
+      },
+      error: (error) => {
+        this.toast.showError('Fail to delete.')
+      }
+    });
   }
 
+  private getStatusSelectList() {
+    const statusSelectList = [];
+    statusSelectList.push({
+      id: 1,
+      name: 'Active',
+      severity: 'success'
+    })
+    statusSelectList.push({
+      id: 0,
+      name: 'Inactive',
+      serverity: 'danger'
+    })
+
+    return statusSelectList;
+  }
 
 
 
@@ -350,7 +369,7 @@ export class UserListComponent implements OnInit {
 
   openDialog(data: any) {
     this.customDialogService.open<string>(
-      UserDetailComponent,
+      LookupDetailDetailComponent,
       data,
       'Create or Edit'
     )
