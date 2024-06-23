@@ -85,6 +85,7 @@
                 [filterDelay]="debounceTimeout"
                 [lazyLoadOnInit]="false"
                 [lazy]="lazyLoading"
+                styleClass="p-datatable-striped" 
                 (onLazyLoad)="loadData($event)">
 
                 <ng-template pTemplate="caption">
@@ -99,6 +100,7 @@
                                 tooltipPosition="top"
                                 type="text" 
                                 (input)="onSearchInput($event)" 
+                                (keyup.enter)="onSearchEnter($event)"
                                 placeholder="Search..."  
                                 class="w-10 sm:w-auto"/>
                                 <ng-template #toolTipContent>
@@ -111,12 +113,13 @@
                                 class="ml-3 hidden sm:inline" 
                                 [outlined]="true" 
                                 icon="pi pi-filter-slash" 
-                                (click)="clear(dt)" />
+                                (click)="clear()" />
                             <p-button 
                                 class="ml-3 sm:hidden" 
                                 [outlined]="true" 
                                 icon="pi pi-filter-slash" 
-                                (click)="clear(dt)" />
+                                (click)="clear()" />
+                            <!-- <i class="pi pi-filter-slash ml-2"  (click)="clear(dt)"></i> -->
                         </span>
                     </div>
                 </ng-template>
@@ -156,7 +159,7 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
-                                        [(ngModel)]="selectedStatus"
+                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
                                         [options]="optionDataSources[col?.dsName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
@@ -186,7 +189,7 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
-                                        [(ngModel)]="selectedParent" 
+                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
                                         [options]="optionDataSources[col?.dsName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
@@ -224,6 +227,9 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-items let-columns="columns">
                     <tr >
+                        <!-- <td >
+                            <p-tableCheckbox [value]="items"></p-tableCheckbox>
+                        </td> -->
                         <ng-container *ngFor="let col of columns">
                             <td *ngIf="col.visible && col.fieldType !== FieldType.date">
                                 {{items[col.field]}}
@@ -238,6 +244,11 @@
                              <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="delete(items)"></button> 
                             </div>
                         </td>
+
+
+                        <!-- <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
+                            <span [class]="'status-badge status-' + (item.statusName.toLowerCase())">{{item.statusName}}</span>
+                        </td>  -->
                     </tr>
                 </ng-template>
 
@@ -247,7 +258,6 @@
 
     </div>
 </div>
-
 
 
 

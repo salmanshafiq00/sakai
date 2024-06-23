@@ -62,8 +62,6 @@ export class BreadcrumbComponent implements OnInit {
   }
 
   private findMenuByUrl(url: string): SidebarMenuModel | undefined{
-    console.log(this.appMenus);
-    console.log(url);
     const flatMenus = this.flattenMenus(this.appMenus);
     return flatMenus?.find(menu => menu?.routerLink[0]?.toLowerCase() === url?.toLowerCase());
   }

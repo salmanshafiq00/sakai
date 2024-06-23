@@ -1,37 +1,38 @@
-import { Component, ElementRef, OnInit, ViewChild, inject } from '@angular/core';
-import { AppMenuDetailComponent } from '../app-menu-detail/app-menu-detail.component';
-import { DatePipe } from '@angular/common';
-import { FilterMatchMode, FilterMetadata } from 'primeng/api';
+import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
-import { Subject, debounceTime, timer } from 'rxjs';
+import { timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { AppMenusClient, DataFieldModel, DataFilterModel, GetAppUserListQuery } from 'src/app/modules/generated-clients/api-service';
-import { BackoffService } from 'src/app/shared/services/backoff.service';
-import { ConfirmDialogService } from 'src/app/shared/services/confirm-dialog.service';
-import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
-import { ToastService } from 'src/app/shared/services/toast.service';
+import { DataFieldModel, DataFilterModel } from 'src/app/modules/generated-clients/api-service';
+import { BackoffService } from '../../services/backoff.service';
+import { ToastService } from '../../services/toast.service';
+import { DatePipe } from '@angular/common';
+import { ConfirmDialogService } from '../../services/confirm-dialog.service';
+import { CustomDialogService } from '../../services/custom-dialog.service';
+import { AppDataGridModel } from '../../models/app-data-grid.model';
 
 @Component({
-  selector: 'app-app-menu-list',
-  templateUrl: './app-menu-list.component.html',
-  styleUrl: './app-menu-list.component.scss',
-  providers: [ToastService, BackoffService, ConfirmDialogService, AppMenusClient, DatePipe]
-
+  selector: 'app-data-grid',
+  templateUrl: './data-grid.component.html',
+  styleUrl: './data-grid.component.scss',
+  providers: [ToastService, BackoffService, ConfirmDialogService, DatePipe]
 })
-export class AppMenuListComponent implements OnInit {
+export class DataGridComponent implements OnInit, OnDestroy {
 
   FieldType = FieldType;
   FilterMatchModes = FilterMatchMode;
-  isInitialLoaded: boolean = false;
-  optionDataSources = {};
+
   // Table Settings //
+  isInitialLoaded: boolean = false;
   responsiveLayout = 'scroll';
-  cols: any[] = []; // eta input diye anbo
+  cols: any[] = [];
   dataFields: DataFieldModel[] = [];
   filters: DataFilterModel[] = [];
-
-  // Lazy Loading
   lazyLoading: boolean = true;
+  selectionMode: "single" | "multiple" = "multiple";
+  rowHover: boolean = true;
+  loading: boolean = false;
+  dataKey: string = 'id';
 
   // Pagination
   paginator: boolean = true;
@@ -48,77 +49,65 @@ export class AppMenuListComponent implements OnInit {
   globalFilterFields: string[] = [];
   globalFilterFieldNames: string[] = [];
 
-
   // Global filters
   @ViewChild('dt') table: Table;
   @ViewChild('globalSearchInput') globalSearchInput: ElementRef;
   debounceTimeout: number = 500;
-  private searchSubject: Subject<string> = new Subject();
 
 
-  // Row Selection
-  selectionMode: "single" | "multiple" = "multiple";
-
-  // Row Styles 
-  rowHover: boolean = true;
-
-  // Others
-  dataKey: string = 'id';
-
-  statusList = [];
-
-  // Dropdwon Selected value
-  selectedParent: any;
-  selectedStatus: any;
-
-  caption: string = 'Manage Application Menu';
-  optionsDataSources: any;
-
-  //loading
-  loading: boolean = false;
-  refreshLoading: boolean = false;
+  optionDataSources = {};
 
   items: any[] = [];
   selectedItems: any[] = [];
 
+  // Dropdwon Selected value
+  selectedParent: any;
+  selectedStatus: any;
+   // Centralized storage for dynamic dropdown values
+   dynamicDropdownValues: { [key: string]: any } = {};
+
+
+  // 
+  @Input() entityClient: any;
+  @Input() detailComponent: any;
+  @Input() dialogSize: any = '900px';
+  @Input() getFuncName = '';
+  @Input() caption: string = 'Entity Service';
+  @Input() listComponent: any;
+  @Input() dialogTitle: string = 'Entity Detail';
 
   // Dialog ---------------------
 
-  private backoffService: BackoffService = inject(BackoffService);
-  private toast: ToastService = inject(ToastService);
-  private confirmDialogService: ConfirmDialogService = inject(ConfirmDialogService);
-  private datePipe: DatePipe = inject(DatePipe);
-  private customDialogService: CustomDialogService = inject(CustomDialogService);
-  private entityClient: AppMenusClient = inject(AppMenusClient);
-
-
-  constructor() {
-
-    this.searchSubject.pipe(
-      debounceTime(this.debounceTimeout)
-    ).subscribe((searchText) => {
-      this.onGlobalFilter(searchText);
-    })
-
-  }
-
+  private backoffService = inject(BackoffService);
+  private toast = inject(ToastService);
+  private confirmDialogService = inject(ConfirmDialogService);
+  private datePipe = inject(DatePipe);
+  private customDialogService = inject(CustomDialogService);
   ngOnInit() {
     this.loadData({ first: this.first, rows: this.rows }, true)
+  }
+
+  ngOnDestroy() {
+    // this.searchSubject.unsubscribe();
   }
 
   get hasSelectOrDateType(): boolean {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
   }
 
+  // Function to generate unique keys for dropdowns
+  generateDropdownKey(field: string, type: 'select' | 'multiSelect'): string {
+    return `${field}_${type}`;
+}
+
   loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
 
-    console.log(event)
     this.loading = true;
 
     this.first = event.first;
     this.rows = event.rows;
 
-    const query = new GetAppUserListQuery();
+    const query = new AppDataGridModel();
     query.offset = this.first;
     query.pageSize = this.rows;
     query.allowCache = !!allowCache;
@@ -126,7 +115,6 @@ export class AppMenuListComponent implements OnInit {
     query.sortOrder = event.sortOrder;
     query.globalFilterValue = this.getGlobalFilterValue(event);
     query.isInitialLoaded = this.isInitialLoaded;
-    // query.filters = this.mapToDataFilterModel(event.filters);
 
     this.mapAndSetToDataFilterModel(event.filters);
     query.filters = this.filters;
@@ -138,17 +126,15 @@ export class AppMenuListComponent implements OnInit {
     }
 
     console.log(query)
-
-    this.entityClient.getAppMenus(query).subscribe({
+    console.log(new Date())
+    this.entityClient?.[this.getFuncName](query)?.subscribe({
       next: (res) => {
-        console.log(res)
         this.items = res.items;
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
         this.totalPages = res.totalPages;
         this.dataFields = res.dataFields;
         this.filters = res.filters;
-        this.optionsDataSources = res.optionDataSources;
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
           .map(x => x.field);
@@ -158,14 +144,13 @@ export class AppMenuListComponent implements OnInit {
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
-        // option datasource
+        // option datasource only assign initially not second time
         if (!this.isInitialLoaded) {
           this.optionDataSources = res.optionDataSources;
           this.isInitialLoaded = true;
         }
       },
       error: (error) => {
-        this.loading = false;
         console.error(error, 'Error while fetching data')
       },
       complete: () => {
@@ -180,13 +165,13 @@ export class AppMenuListComponent implements OnInit {
 
   refreshGrid() {
     this.loading = true;
-    this.refreshLoading = true;
+
     const delay = this.backoffService.getDelay();
     console.log(`Applying delay: ${delay}ms`);
     timer(delay).subscribe(() => {
+      this.clear();
       this.loadData({ first: this.first, rows: this.rows }, false);
       // this.backoffService.resetDelay();
-      this.refreshLoading = false;
     });
 
   }
@@ -199,17 +184,27 @@ export class AppMenuListComponent implements OnInit {
 
   onSearchInput(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value;
-    this.searchSubject.next(searchText);
+    this.onGlobalFilter(searchText);
   }
 
-  onGlobalFilter(searchText: string, matchMode: string = 'contains'): void {
+  onSearchEnter(event: any): void {
+    if (event.key === 'Enter') {
+      const searchText = (event.target as HTMLInputElement).value;
+      this.table.filterDelay = 0;
+      this.onGlobalFilter(searchText);
+    }
+  }
+
+  private onGlobalFilter(searchText: string, matchMode: string = 'contains'): void {
     this.table.filterGlobal(searchText, matchMode);
+    this.table.filterDelay = this.debounceTimeout;
   }
 
-  clear(table: Table) {
-    table.clear();
+  clear() {
+    this.table.clear();
     this.globalSearchInput.nativeElement.value = '';
   }
+  
 
   edit(item: any) {
     console.log(item);
@@ -321,30 +316,29 @@ export class AppMenuListComponent implements OnInit {
   }
 
   private deleteItem(id: string) {
-    // this.usersClient.deleteLookup(id).subscribe({
-    //   next: () => {
-    //     this.toast.deleted();
-    //     this.loadData({ first: this.first, rows: this.rows }, false)
-    //   },
-    //   error: (error) => {
-    //     this.toast.showError('Fail to delete.')
-    //   }
-    // });
+    this.entityClient.deleteLookup(id).subscribe({
+      next: () => {
+        this.toast.deleted();
+        this.loadData({ first: this.first, rows: this.rows }, false)
+      },
+      error: (error) => {
+        this.toast.showError('Fail to delete.')
+      }
+    });
   }
 
 
+  deleteSelectedItems() {
 
-
+  }
 
   ///  -------------  Dialog -------------------
 
-
-
   openDialog(data: any) {
     this.customDialogService.open<string>(
-      AppMenuDetailComponent,
+      this.detailComponent,
       data,
-      'Create or Edit'
+      this.dialogTitle
     )
       .subscribe((isSucceed: boolean) => {
         if (isSucceed) {
@@ -353,9 +347,7 @@ export class AppMenuListComponent implements OnInit {
       });
   }
 
-  deleteSelectedItems() {
 
-  }
 
 
 }

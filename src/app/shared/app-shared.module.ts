@@ -6,26 +6,41 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { ToastComponent } from './components/toast/toast.component';
 import { ToastModule } from 'primeng/toast';
 import { DialogService } from 'primeng/dynamicdialog';
-import { BreadcrumbComponent } from './components/breadcrumb/breadcrumb.component';
-import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { CustomDialogService } from './services/custom-dialog.service';
+import { DataGridComponent } from './components/data-grid/data-grid.component';
+import { TableModule } from 'primeng/table';
+import { ToolbarModule } from 'primeng/toolbar';
+import { FileUploadModule } from 'primeng/fileupload';
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { FormsModule } from '@angular/forms';
+import { TagModule } from 'primeng/tag';
+import { InputTextModule } from 'primeng/inputtext';
+import { TooltipModule } from 'primeng/tooltip';
 
 
 
 @NgModule({
-  declarations: [
+	declarations: [
 		ConfirmDialogComponent,
 		ToastComponent,
-		BreadcrumbComponent
-  ],
-  imports: [
-    CommonModule,
-
+		DataGridComponent
+	],
+	imports: [
+		CommonModule,
+		FormsModule,
 		// PrimeNg Modules //
 		ToastModule,
 		ConfirmDialogModule,
-		BreadcrumbModule
-  ],
+		TableModule,
+		ToolbarModule,
+		FileUploadModule,
+		DropdownModule,
+		MultiSelectModule,
+		TagModule,
+		InputTextModule,
+		TooltipModule
+	],
 	providers: [
 		MessageService,
 		ConfirmationService,
@@ -35,7 +50,7 @@ import { CustomDialogService } from './services/custom-dialog.service';
 	exports: [
 		ConfirmDialogComponent,
 		ToastComponent,
-		BreadcrumbComponent
-  ]
+		DataGridComponent
+	]
 })
 export class AppSharedModule { }
