@@ -2649,7 +2649,7 @@ export class LookupModel {
     statusName?: string;
     parentId?: string | undefined;
     parentName?: string;
-    created?: Date;
+    created?: Date | undefined;
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {

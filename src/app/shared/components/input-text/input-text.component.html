@@ -1,0 +1,17 @@
+<div *ngIf="!hidden">
+  <label class="label" *ngIf="label">{{ label }} <span class="required-star" *ngIf="required">*</span></label>
+  <input 
+    type="text" 
+    pInputText
+    [placeholder]="placeholder"
+    [disabled]="disabled" 
+    [readonly]="readonly" 
+    [autofocus]="autofocus"
+    variant="filled"
+    (input)="onInputChange($event)"
+    (change)="onInputChange($event)"
+    (blur)="onBlurEvent()"
+    [value]="value"
+  />
+</div>
+

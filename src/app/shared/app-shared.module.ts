@@ -13,10 +13,18 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { FileUploadModule } from 'primeng/fileupload';
 import { DropdownModule } from 'primeng/dropdown';
 import { MultiSelectModule } from 'primeng/multiselect';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TagModule } from 'primeng/tag';
 import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
+import { InputTextComponent } from './components/input-text/input-text.component';
+import { ValidatorMsgComponent } from './components/validator-msg/validator-msg.component';
+import { InputTextAreaComponent } from './components/input-text-area/input-text-area.component';
+import { InputTextareaModule } from 'primeng/inputtextarea';
+import { InputNumberComponent } from './components/input-number/input-number.component';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputCurrencyComponent } from './components/input-currency/input-currency.component';
+import { InputDecimalComponent } from './components/input-decimal/input-decimal.component';
 
 
 
@@ -24,11 +32,18 @@ import { TooltipModule } from 'primeng/tooltip';
 	declarations: [
 		ConfirmDialogComponent,
 		ToastComponent,
-		DataGridComponent
+		DataGridComponent,
+		InputTextComponent,
+		ValidatorMsgComponent,
+		InputTextAreaComponent,
+		InputNumberComponent,
+		InputCurrencyComponent,
+		InputDecimalComponent
 	],
 	imports: [
 		CommonModule,
 		FormsModule,
+		ReactiveFormsModule,
 		// PrimeNg Modules //
 		ToastModule,
 		ConfirmDialogModule,
@@ -39,6 +54,8 @@ import { TooltipModule } from 'primeng/tooltip';
 		MultiSelectModule,
 		TagModule,
 		InputTextModule,
+		InputTextareaModule,
+		InputNumberModule,
 		TooltipModule
 	],
 	providers: [
@@ -50,7 +67,13 @@ import { TooltipModule } from 'primeng/tooltip';
 	exports: [
 		ConfirmDialogComponent,
 		ToastComponent,
-		DataGridComponent
+		DataGridComponent,
+		InputTextComponent,
+		ValidatorMsgComponent,
+		InputTextAreaComponent,
+		InputNumberComponent,
+		InputCurrencyComponent,
+		InputDecimalComponent
 	]
 })
 export class AppSharedModule { }

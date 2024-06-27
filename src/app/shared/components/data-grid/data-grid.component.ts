@@ -21,6 +21,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   FieldType = FieldType;
   FilterMatchModes = FilterMatchMode;
+  emptyGuid = '00000000-0000-0000-0000-000000000000';
 
   // Table Settings //
   isInitialLoaded: boolean = false;
