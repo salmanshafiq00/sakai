@@ -1,19 +1,13 @@
-:host ::ng-deep {
-
-  ng-invalid.ng-touched input {
+::ng-deep {
+  app-input-currency.ng-invalid.ng-touched input {
     border: 1px solid #f19ea6;
   }
 
-  .label {
-    display: inline-block;
-    margin-bottom: 0.5rem;
+  app-input-currency.ng-invalid.ng-touched input:focus {
+    box-shadow: none;
   }
 
-  .required-star{
-    color: #f19ea6;
-  }
-
-  .digit-right .p-inputnumber-input{
+  .digit-right .p-inputnumber-input {
     width: 1%;
     text-align: right;
   }

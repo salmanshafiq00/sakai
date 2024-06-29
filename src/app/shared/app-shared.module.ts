@@ -19,12 +19,23 @@ import { InputTextModule } from 'primeng/inputtext';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextComponent } from './components/input-text/input-text.component';
 import { ValidatorMsgComponent } from './components/validator-msg/validator-msg.component';
-import { InputTextAreaComponent } from './components/input-text-area/input-text-area.component';
 import { InputTextareaModule } from 'primeng/inputtextarea';
 import { InputNumberComponent } from './components/input-number/input-number.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputCurrencyComponent } from './components/input-currency/input-currency.component';
 import { InputDecimalComponent } from './components/input-decimal/input-decimal.component';
+import { CalendarModule } from 'primeng/calendar';
+import { InputDateComponent } from './components/input-date/input-date.component';
+import { InputTimeComponent } from './components/input-time/input-time.component';
+import { InputYearComponent } from './components/input-year/input-year.component';
+import { InputTextAreaComponent } from './components/input-text-area/input-textarea.component';
+import { InputSwitchComponent } from './components/input-switch/input-switch.component';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { CheckboxModule } from 'primeng/checkbox';
+import { InputCheckboxComponent } from './components/input-checkbox/input-checkbox.component';
+import { InputSelectComponent } from './components/input-select/input-select.component';
+import { RadioButtonModule } from 'primeng/radiobutton';
+import { InputRadioComponent } from './components/input-radio/input-radio.component';
 
 
 
@@ -38,12 +49,20 @@ import { InputDecimalComponent } from './components/input-decimal/input-decimal.
 		InputTextAreaComponent,
 		InputNumberComponent,
 		InputCurrencyComponent,
-		InputDecimalComponent
+		InputDecimalComponent,
+		InputDateComponent,
+		InputTimeComponent,
+		InputYearComponent,
+		InputSwitchComponent,
+		InputCheckboxComponent,
+		InputSelectComponent,
+		InputRadioComponent
 	],
 	imports: [
 		CommonModule,
 		FormsModule,
 		ReactiveFormsModule,
+
 		// PrimeNg Modules //
 		ToastModule,
 		ConfirmDialogModule,
@@ -56,7 +75,11 @@ import { InputDecimalComponent } from './components/input-decimal/input-decimal.
 		InputTextModule,
 		InputTextareaModule,
 		InputNumberModule,
-		TooltipModule
+		InputSwitchModule, 
+		TooltipModule,
+		CalendarModule,
+		CheckboxModule ,
+		RadioButtonModule 
 	],
 	providers: [
 		MessageService,
@@ -73,7 +96,14 @@ import { InputDecimalComponent } from './components/input-decimal/input-decimal.
 		InputTextAreaComponent,
 		InputNumberComponent,
 		InputCurrencyComponent,
-		InputDecimalComponent
+		InputDecimalComponent,
+		InputDateComponent,
+		InputTimeComponent,
+		InputYearComponent,
+		InputSwitchComponent,
+		InputCheckboxComponent,
+		InputSelectComponent,
+		InputRadioComponent
 	]
 })
 export class AppSharedModule { }

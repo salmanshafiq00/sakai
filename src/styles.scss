@@ -13,5 +13,11 @@ $gutter: 1rem; //for primeflex grid system
 @import "assets/demo/styles/badges.scss";
 @import "assets/demo/styles/code.scss";
 
+.cust-field .label {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+}
 
-
+.cust-field .required-star{
+  color: #f19ea6;
+}

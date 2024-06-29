@@ -2,9 +2,9 @@ import { Component, Input } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
 
 @Component({
-  selector: 'app-input-text-area',
-  templateUrl: './input-text-area.component.html',
-  styleUrl: './input-text-area.component.scss',
+  selector: 'app-input-textarea',
+  templateUrl: './input-textarea.component.html',
+  styleUrl: './input-textarea.component.scss',
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -58,6 +58,12 @@ export class InputTextAreaComponent implements ControlValueAccessor, Validator {
       return { required: true };
     }
     return null;
+  }
+
+  ngAfterViewInit(): void {
+    if (this.value) {
+      this.onChangeFn(this.value);
+    }
   }
 
   onInputChange(event: any): void {

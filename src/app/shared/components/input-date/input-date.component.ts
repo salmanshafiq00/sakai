@@ -2,50 +2,50 @@ import { Component, Input, forwardRef } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors } from '@angular/forms';
 
 @Component({
-  selector: 'app-input-number',
-  templateUrl: './input-number.component.html',
-  styleUrls: ['./input-number.component.scss'],
+  selector: 'app-input-date',
+  templateUrl: './input-date.component.html',
+  styleUrls: ['./input-date.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => InputNumberComponent),
+      useExisting: forwardRef(() => InputDateComponent),
       multi: true
     },
     {
       provide: NG_VALIDATORS,
-      useExisting: forwardRef(() => InputNumberComponent),
+      useExisting: forwardRef(() => InputDateComponent),
       multi: true
     }
   ]
 })
-export class InputNumberComponent implements ControlValueAccessor, Validator {
+export class InputDateComponent implements ControlValueAccessor, Validator {
   @Input() label: string = '';
-  @Input() placeholder: string = '';
+  @Input() placeholder: string = 'dd/mm/yyyy';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
   @Input() hidden: boolean = false;
   @Input() variant: 'outlined' | 'filled' = 'outlined';
   @Input() autofocus: boolean = false;
-  @Input() inputId: string = 'integeronly';
-  @Input() min: number = null;
-  @Input() max: number = null;
-  @Input() locale?: string;
-  @Input() prefix: string = '';
-  @Input() suffix: string = '';
-  @Input() showButtons: boolean = false;
-  @Input() buttonLayout: string = 'stacked';
-  // @Input() spinnerMode: string = 'stacked';
-  @Input() useGrouping: boolean = false;
-  @Input() step: number = 1;
-  @Input() decrementButtonClass: string = 'p-button-danger';
-  @Input() incrementButtonClass: string = 'p-button-success';
-  @Input() incrementButtonIcon: string = 'pi pi-plus';
-  @Input() decrementButtonIcon: string = 'pi pi-minus';
+  @Input() dateFormat: string = 'dd/mm/yy';
+  @Input() showIcon: boolean = true;
+  @Input() showOnFocus: boolean = true;
+  @Input() iconDisplay: 'input' | 'button' = 'input';
+  @Input() readonlyInput: boolean = false;
+  @Input() selectionMode: 'single' | 'multiple' | 'range' = 'single';
+  @Input() minDate?: Date;
+  @Input() maxDate?: Date;
+  @Input() showButtonBar: boolean = true;
+  @Input() showTime: boolean = false;
+  @Input() hourFormat: '12' | '24' = '12';
+  @Input() disabledDates: Date[];
+  @Input() disabledDays: number[];
+  @Input() showSeconds: boolean = false;
+  @Input() inputStyle: { [key: string]: string } = {};
 
-  value: number | null = null;
-  onTouched: any = () => {};
-  onChangeFn: any = (_: any) => {};
+  value: Date | null = null;
+  onTouched: any = () => { };
+  onChangeFn: any = (_: any) => { };
 
   writeValue(value: any): void {
     this.value = value;
@@ -71,7 +71,7 @@ export class InputNumberComponent implements ControlValueAccessor, Validator {
   }
 
   onInputChange(event: any): void {
-    this.value = event ? parseFloat(event) : null;
+    this.value = event ? new Date(event) : null;
     this.onChangeFn(this.value);
   }
 

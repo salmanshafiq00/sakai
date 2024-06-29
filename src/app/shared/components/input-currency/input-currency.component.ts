@@ -43,11 +43,10 @@ export class InputCurrencyComponent implements ControlValueAccessor, Validator {
   // @Input() spinnerMode: string = 'stacked';
   @Input() useGrouping: boolean = false;
   @Input() step: number = 1;
-  @Input() decrementButtonClass: string = '';
-  @Input() incrementButtonClass: string = '';
-  @Input() incrementButtonIcon: string = '';
-  @Input() decrementButtonIcon: string = '';
-
+  @Input() decrementButtonClass: string = 'p-button-danger';
+  @Input() incrementButtonClass: string = 'p-button-success';
+  @Input() incrementButtonIcon: string = 'pi pi-plus';
+  @Input() decrementButtonIcon: string = 'pi pi-minus';
   value: number | null = null;
   onTouched: any = () => {};
   onChangeFn: any = (_: any) => {};

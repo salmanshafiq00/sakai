@@ -2,13 +2,8 @@
   border: 1px solid #f19ea6;
 }
 
-:host .label {
-  display: inline-block;
-  margin-bottom: 0.5rem;
-}
-
-:host .required-star{
-  color: #f19ea6;
+:host.ng-invalid.ng-touched textarea:focus{
+  box-shadow: none;
 }
 
 .textarea-container {
@@ -25,4 +20,3 @@
   padding: 0 0.5rem;
   border-radius: 3px;
 }
-

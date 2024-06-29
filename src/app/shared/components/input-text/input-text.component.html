@@ -1,4 +1,4 @@
-<div *ngIf="!hidden">
+<div *ngIf="!hidden" class="cust-field">
   <label class="label" *ngIf="label">{{ label }} <span class="required-star" *ngIf="required">*</span></label>
   <input 
     type="text" 
@@ -11,7 +11,7 @@
     (input)="onInputChange($event)"
     (change)="onInputChange($event)"
     (blur)="onBlurEvent()"
-    [value]="value"
+    [(ngModel)]="value"
   />
 </div>
 

@@ -17,25 +17,33 @@
                     [readonly]="false" />
                     <app-validator-msg [control]="f['name']"></app-validator-msg>
             </div>
-            <div class="field col-12 md:col-6">
+            <!-- <div class="field col-12 md:col-6">
                 <label htmlFor="status">Parent Name</label>
                 <p-dropdown formControlName="parentId" inputId="parentId" optionValue="id" optionLabel="name" 
                     [options]="optionDataSources['parentSelectList']" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
                 </p-dropdown>
-            </div>
+            </div> -->
+            <!-- <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4"> -->
             <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
-                <div class="flex align-items-center">
-                    <label class="input-switch-label" htmlFor="status">Status</label>
-                    <p-inputSwitch class="input-switch ml-2" formControlName="status"  />
-                </div>
+                <!-- <div class="flex align-items-center"> -->
+                    <app-input-switch label="Status" formControlName="status" />
+                <!-- </div> -->
+            </div>
+            <div class="field col-12 md:col-6 d-flex ">
+                <app-input-date label="Created Date" formControlName="createdDate" [required]="true" />
             </div>
             <div class="field col-12 md:col-6">
-                <label htmlFor="state">Created</label>
-                <p-calendar formControlName="created" dateFormat="dd/mm/yy" placeholder="dd/mm/yyyy"
-                    [iconDisplay]="'input'" [showIcon]="true" [showButtonBar]="true" appendTo="body" />
+                <app-input-date label="Created DateTime" formControlName="created" [showTime]="true" />
             </div>
             <div class="field col-12 md:col-6">
-                <app-input-text-area 
+                <app-input-time label="Created Time" formControlName="createdTime" [required]="true" />
+                <app-validator-msg [control]="f['createdTime']"></app-validator-msg>
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-year label="Created Year" formControlName="createdYear" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-textarea 
                     label="Description" 
                     formControlName="description" 
                     [required]="true"
@@ -48,7 +56,46 @@
                     label="Balance"
                     formControlName="balance"
                     [textRight]="true"
-                    [showButtons]="false" />
+                    [showButtons]="false"
+                    [required]="true" />
+                    <app-validator-msg [control]="f['balance']"></app-validator-msg>
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-number
+                    label="Round"
+                    formControlName="round"
+                    [showButtons]="false"
+                    [required]="true" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-currency
+                    label="Tk"
+                    formControlName="tk"
+                    [showButtons]="false"
+                    [required]="true" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-checkbox
+                    label="Select Subject"
+                    formControlName="subjects"
+                    [optionDataSource]="optionDataSources['subjectSelectList']"
+                    [required]="true" />
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <app-input-radio
+                    label="Choose Subject"
+                    formControlName="subjectRadio"
+                    [optionDataSource]="optionDataSources['subjectRadioSelectList']"
+                    [required]="true" />
+            </div>
+
+            <div class="field col-12 md:col-6">
+                <app-input-select
+                    label="Select Parent"
+                    formControlName="parentId"
+                    [optionDataSource]="optionDataSources['parentSelectList']"
+                    [required]="true" />
             </div>
         </div>
         <div class="mt-3 p-dialog-footer">

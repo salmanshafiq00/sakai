@@ -2650,6 +2650,11 @@ export class LookupModel {
     parentId?: string | undefined;
     parentName?: string;
     created?: Date | undefined;
+    createdDate?: Date | undefined;
+    createdTime?: string | undefined;
+    createdYear?: number | undefined;
+    subjects?: string[];
+    subjectRadio?: string;
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2663,6 +2668,15 @@ export class LookupModel {
             this.parentId = _data["parentId"];
             this.parentName = _data["parentName"];
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.createdTime = _data["createdTime"];
+            this.createdYear = _data["createdYear"];
+            if (Array.isArray(_data["subjects"])) {
+                this.subjects = [] as any;
+                for (let item of _data["subjects"])
+                    this.subjects!.push(item);
+            }
+            this.subjectRadio = _data["subjectRadio"];
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2691,6 +2705,15 @@ export class LookupModel {
         data["parentId"] = this.parentId;
         data["parentName"] = this.parentName;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdDate"] = this.createdDate ? formatDate(this.createdDate) : <any>undefined;
+        data["createdTime"] = this.createdTime;
+        data["createdYear"] = this.createdYear;
+        if (Array.isArray(this.subjects)) {
+            data["subjects"] = [];
+            for (let item of this.subjects)
+                data["subjects"].push(item);
+        }
+        data["subjectRadio"] = this.subjectRadio;
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -2727,6 +2750,12 @@ export class CreateLookupCommand {
     code!: string;
     description?: string;
     status?: boolean;
+    createdDate?: Date;
+    createdTime?: string;
+    created?: Date;
+    createdYear?: number;
+    subjects?: string[];
+    subjectRadio?: string;
     parentId?: string | undefined;
 
     init(_data?: any) {
@@ -2735,6 +2764,16 @@ export class CreateLookupCommand {
             this.code = _data["code"];
             this.description = _data["description"];
             this.status = _data["status"];
+            this.createdDate = _data["createdDate"] ? new Date(_data["createdDate"].toString()) : <any>undefined;
+            this.createdTime = _data["createdTime"];
+            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
+            this.createdYear = _data["createdYear"];
+            if (Array.isArray(_data["subjects"])) {
+                this.subjects = [] as any;
+                for (let item of _data["subjects"])
+                    this.subjects!.push(item);
+            }
+            this.subjectRadio = _data["subjectRadio"];
             this.parentId = _data["parentId"];
         }
     }
@@ -2752,6 +2791,16 @@ export class CreateLookupCommand {
         data["code"] = this.code;
         data["description"] = this.description;
         data["status"] = this.status;
+        data["createdDate"] = this.createdDate ? formatDate(this.createdDate) : <any>undefined;
+        data["createdTime"] = this.createdTime;
+        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
+        data["createdYear"] = this.createdYear;
+        if (Array.isArray(this.subjects)) {
+            data["subjects"] = [];
+            for (let item of this.subjects)
+                data["subjects"].push(item);
+        }
+        data["subjectRadio"] = this.subjectRadio;
         data["parentId"] = this.parentId;
         return data;
     }
@@ -3856,6 +3905,12 @@ export class LoginRequestCommand {
         data["isRemember"] = this.isRemember;
         return data;
     }
+}
+
+function formatDate(d: Date) {
+    return d.getFullYear() + '-' + 
+        (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
+        (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
 }
 
 export class LMSException extends Error {

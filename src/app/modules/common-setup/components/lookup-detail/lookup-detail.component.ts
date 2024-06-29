@@ -48,7 +48,7 @@ export class LookupDetailComponent implements OnInit {
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       console.log(this.form.value)
-      // this.save();
+      this.save();
     } else {
       this.update();
     }
@@ -56,7 +56,9 @@ export class LookupDetailComponent implements OnInit {
 
   private save() {
     let createLookupCommand = new CreateLookupCommand();
-    createLookupCommand = { ...this.form.value }
+    const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
+    const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
+    createLookupCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
     this.entityClient.createLookup(createLookupCommand).subscribe({
       next: () => {
         this.toast.created()
@@ -89,6 +91,9 @@ export class LookupDetailComponent implements OnInit {
       next: (res: LookupModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;
+        this.item.subjects = this.optionDataSources['subjectSelectList']?.filter(x => this.item.subjects.includes(x.id));
+        this.item.subjectRadio = this.optionDataSources['subjectRadioSelectList']?.find(x => this.item.subjectRadio === x.id);
+        console.log(this.item)
         this.form.patchValue(this.item);
       },
       error: (error) => {
@@ -105,10 +110,18 @@ export class LookupDetailComponent implements OnInit {
       code: ['codes', [Validators.required]],
       description: ['', Validators.required],
       status: [false],
-      parentId: [null],
-      created: [null],
-      balance: [null]
+      parentId: [null, Validators.required],
+      createdDate: [null, Validators.required],
+      createdTime: [null, Validators.required],
+      created: [null, Validators.required],
+      createdYear: [null],
+      balance: [null, Validators.required],
+      round: [null, Validators.required],
+      tk: [null, Validators.required],
+      subjects: [null, Validators.required],
+      subjectRadio: [null, Validators.required],
     });
   }
+
 
 }
