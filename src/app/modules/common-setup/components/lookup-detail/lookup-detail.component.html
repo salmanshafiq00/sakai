@@ -97,6 +97,13 @@
                     [optionDataSource]="optionDataSources['parentSelectList']"
                     [required]="true" />
             </div>
+            <div class="field col-12 md:col-6">
+                <app-input-multiselect
+                    label="Select Multi Parent"
+                    formControlName="multiParent"
+                    [optionDataSource]="optionDataSources['multiParentSelectList']"
+                    [required]="true" />
+            </div>
         </div>
         <div class="mt-3 p-dialog-footer">
             <button pButton pRipple label="Cancel" type="button" icon="pi pi-times" class="p-button-text"

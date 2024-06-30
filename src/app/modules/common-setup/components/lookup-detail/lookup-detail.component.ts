@@ -48,7 +48,7 @@ export class LookupDetailComponent implements OnInit {
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       console.log(this.form.value)
-      this.save();
+      // this.save();
     } else {
       this.update();
     }
@@ -120,6 +120,7 @@ export class LookupDetailComponent implements OnInit {
       tk: [null, Validators.required],
       subjects: [null, Validators.required],
       subjectRadio: [null, Validators.required],
+      multiParent: [null, Validators.required],
     });
   }
 

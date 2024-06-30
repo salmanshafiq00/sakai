@@ -36,6 +36,7 @@ import { InputCheckboxComponent } from './components/input-checkbox/input-checkb
 import { InputSelectComponent } from './components/input-select/input-select.component';
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputRadioComponent } from './components/input-radio/input-radio.component';
+import { InputMultiselectComponent } from './components/input-multiselect/input-multiselect.component';
 
 
 
@@ -56,7 +57,8 @@ import { InputRadioComponent } from './components/input-radio/input-radio.compon
 		InputSwitchComponent,
 		InputCheckboxComponent,
 		InputSelectComponent,
-		InputRadioComponent
+		InputRadioComponent,
+		InputMultiselectComponent
 	],
 	imports: [
 		CommonModule,
@@ -103,7 +105,8 @@ import { InputRadioComponent } from './components/input-radio/input-radio.compon
 		InputSwitchComponent,
 		InputCheckboxComponent,
 		InputSelectComponent,
-		InputRadioComponent
+		InputRadioComponent,
+		InputMultiselectComponent
 	]
 })
 export class AppSharedModule { }
