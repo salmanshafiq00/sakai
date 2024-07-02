@@ -2655,6 +2655,8 @@ export class LookupModel {
     createdYear?: number | undefined;
     subjects?: string[];
     subjectRadio?: string;
+    color?: string;
+    uploadFile?: string;
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2677,6 +2679,8 @@ export class LookupModel {
                     this.subjects!.push(item);
             }
             this.subjectRadio = _data["subjectRadio"];
+            this.color = _data["color"];
+            this.uploadFile = _data["uploadFile"];
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2714,6 +2718,8 @@ export class LookupModel {
                 data["subjects"].push(item);
         }
         data["subjectRadio"] = this.subjectRadio;
+        data["color"] = this.color;
+        data["uploadFile"] = this.uploadFile;
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -2754,8 +2760,10 @@ export class CreateLookupCommand {
     createdTime?: string;
     created?: Date;
     createdYear?: number;
+    color?: string;
     subjects?: string[];
     subjectRadio?: string;
+    uploadFile?: string;
     parentId?: string | undefined;
 
     init(_data?: any) {
@@ -2768,12 +2776,14 @@ export class CreateLookupCommand {
             this.createdTime = _data["createdTime"];
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
             this.createdYear = _data["createdYear"];
+            this.color = _data["color"];
             if (Array.isArray(_data["subjects"])) {
                 this.subjects = [] as any;
                 for (let item of _data["subjects"])
                     this.subjects!.push(item);
             }
             this.subjectRadio = _data["subjectRadio"];
+            this.uploadFile = _data["uploadFile"];
             this.parentId = _data["parentId"];
         }
     }
@@ -2795,12 +2805,14 @@ export class CreateLookupCommand {
         data["createdTime"] = this.createdTime;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
         data["createdYear"] = this.createdYear;
+        data["color"] = this.color;
         if (Array.isArray(this.subjects)) {
             data["subjects"] = [];
             for (let item of this.subjects)
                 data["subjects"].push(item);
         }
         data["subjectRadio"] = this.subjectRadio;
+        data["uploadFile"] = this.uploadFile;
         data["parentId"] = this.parentId;
         return data;
     }

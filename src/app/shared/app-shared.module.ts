@@ -37,6 +37,9 @@ import { InputSelectComponent } from './components/input-select/input-select.com
 import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputRadioComponent } from './components/input-radio/input-radio.component';
 import { InputMultiselectComponent } from './components/input-multiselect/input-multiselect.component';
+import { InputColorComponent } from './components/input-color/input-color.component';
+import { ColorPickerModule } from 'primeng/colorpicker';
+import { InputFileComponent } from './components/input-file/input-file.component';
 
 
 
@@ -58,7 +61,9 @@ import { InputMultiselectComponent } from './components/input-multiselect/input-
 		InputCheckboxComponent,
 		InputSelectComponent,
 		InputRadioComponent,
-		InputMultiselectComponent
+		InputMultiselectComponent,
+		InputColorComponent,
+		InputFileComponent
 	],
 	imports: [
 		CommonModule,
@@ -81,7 +86,8 @@ import { InputMultiselectComponent } from './components/input-multiselect/input-
 		TooltipModule,
 		CalendarModule,
 		CheckboxModule ,
-		RadioButtonModule 
+		RadioButtonModule,
+		ColorPickerModule
 	],
 	providers: [
 		MessageService,
@@ -106,7 +112,9 @@ import { InputMultiselectComponent } from './components/input-multiselect/input-
 		InputCheckboxComponent,
 		InputSelectComponent,
 		InputRadioComponent,
-		InputMultiselectComponent
+		InputMultiselectComponent,
+		InputColorComponent,
+		InputFileComponent
 	]
 })
 export class AppSharedModule { }

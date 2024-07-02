@@ -17,17 +17,8 @@
                     [readonly]="false" />
                     <app-validator-msg [control]="f['name']"></app-validator-msg>
             </div>
-            <!-- <div class="field col-12 md:col-6">
-                <label htmlFor="status">Parent Name</label>
-                <p-dropdown formControlName="parentId" inputId="parentId" optionValue="id" optionLabel="name" 
-                    [options]="optionDataSources['parentSelectList']" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
-                </p-dropdown>
-            </div> -->
-            <!-- <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4"> -->
             <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
-                <!-- <div class="flex align-items-center"> -->
                     <app-input-switch label="Status" formControlName="status" />
-                <!-- </div> -->
             </div>
             <div class="field col-12 md:col-6 d-flex ">
                 <app-input-date label="Created Date" formControlName="createdDate" [required]="true" />
@@ -102,6 +93,22 @@
                     label="Select Multi Parent"
                     formControlName="multiParent"
                     [optionDataSource]="optionDataSources['multiParentSelectList']"
+                    [required]="true" />
+            </div>
+            <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
+                <app-input-color
+                    label="Choose Color"
+                    formControlName="color"
+                    [required]="true" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-file
+                    label="Upload Files"
+                    formControlName="files"
+                    mode="basic"
+                    accept="image/jpeg"
+                    [maxWidth]="300"
+                    [maxHeight]="300"
                     [required]="true" />
             </div>
         </div>
