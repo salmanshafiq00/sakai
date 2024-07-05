@@ -2763,7 +2763,7 @@ export class CreateLookupCommand {
     color?: string;
     subjects?: string[];
     subjectRadio?: string;
-    uploadFile?: string;
+    uploadFile?: string | undefined;
     parentId?: string | undefined;
 
     init(_data?: any) {

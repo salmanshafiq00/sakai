@@ -60,6 +60,9 @@ export class LookupDetailComponent implements OnInit {
     const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
     const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
     createLookupCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
+
+    console.log(createLookupCommand);
+
     this.entityClient.createLookup(createLookupCommand).subscribe({
       next: () => {
         this.toast.created()
@@ -123,9 +126,29 @@ export class LookupDetailComponent implements OnInit {
       subjectRadio: [null, Validators.required],
       multiParent: [null, Validators.required],
       color: [null, Validators.required],
-      files: [null, Validators.required],
+      uploadFile: [null, Validators.required],
+      phoneNo: [null, Validators.required],
+      pass: [null, Validators.required],
+      descEdit: [null, Validators.required],
     });
   }
 
+  private createFormData(): FormData {
+    const formData = new FormData();
+    const formValues = this.form.value;
+    const fileInput = this.form.get('uploadFile').value;
+  
+    for (const key in formValues) {
+      if (formValues.hasOwnProperty(key) && key !== 'uploadFile') {
+        formData.append(key, formValues[key]);
+      }
+    }
+  
+    if (fileInput && fileInput.length > 0) {
+      formData.append('uploadFile', fileInput[0]);
+    }
+  
+    return formData;
+  }
 
 }

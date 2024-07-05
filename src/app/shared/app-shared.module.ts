@@ -40,7 +40,13 @@ import { InputMultiselectComponent } from './components/input-multiselect/input-
 import { InputColorComponent } from './components/input-color/input-color.component';
 import { ColorPickerModule } from 'primeng/colorpicker';
 import { InputFileComponent } from './components/input-file/input-file.component';
-
+import { InputMaskModule } from 'primeng/inputmask';
+import { InputMaskComponent } from './components/input-mask/input-mask.component';
+import { PasswordModule } from 'primeng/password';
+import { InputPasswordComponent } from './components/input-password/input-password.component';
+import { InputEditorComponent } from './components/input-editor/input-editor.component';
+import { EditorModule } from '@tinymce/tinymce-angular';
+import { ButtonComponent } from './components/button/button.component';
 
 
 @NgModule({
@@ -63,12 +69,19 @@ import { InputFileComponent } from './components/input-file/input-file.component
 		InputRadioComponent,
 		InputMultiselectComponent,
 		InputColorComponent,
-		InputFileComponent
+		InputFileComponent,
+		InputMaskComponent,
+		InputPasswordComponent,
+		InputEditorComponent,
+		ButtonComponent
 	],
 	imports: [
 		CommonModule,
 		FormsModule,
 		ReactiveFormsModule,
+
+		//
+		EditorModule,
 
 		// PrimeNg Modules //
 		ToastModule,
@@ -87,7 +100,9 @@ import { InputFileComponent } from './components/input-file/input-file.component
 		CalendarModule,
 		CheckboxModule ,
 		RadioButtonModule,
-		ColorPickerModule
+		ColorPickerModule,
+		InputMaskModule,
+		PasswordModule,
 	],
 	providers: [
 		MessageService,
@@ -114,7 +129,11 @@ import { InputFileComponent } from './components/input-file/input-file.component
 		InputRadioComponent,
 		InputMultiselectComponent,
 		InputColorComponent,
-		InputFileComponent
+		InputFileComponent,
+		InputMaskComponent,
+		InputPasswordComponent,
+		InputEditorComponent,
+		ButtonComponent
 	]
 })
 export class AppSharedModule { }

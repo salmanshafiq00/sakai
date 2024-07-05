@@ -70,6 +70,7 @@
                     label="Select Subject"
                     formControlName="subjects"
                     [optionDataSource]="optionDataSources['subjectSelectList']"
+                    [column]="true"
                     [required]="true" />
             </div>
 
@@ -104,12 +105,40 @@
             <div class="field col-12 md:col-6">
                 <app-input-file
                     label="Upload Files"
-                    formControlName="files"
+                    formControlName="uploadFile"
                     mode="basic"
                     accept="image/jpeg"
-                    [maxWidth]="300"
-                    [maxHeight]="300"
+                    [fileLimit]="2"
                     [required]="true" />
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-mask
+                    label="Phone Number"
+                    placeholder="Enter phone number"
+                    [required]="true"
+                    [mask]="'(880) 99999-99999'"
+                    formControlName="phoneNo"
+                />
+
+            </div>
+            <div class="field col-12 md:col-6">
+                <app-input-password
+                    label="Password"
+                    placeholder="Enter Password"
+                    [required]="true"
+                    formControlName="pass"
+                />
+
+            </div>
+            <div class="field col-12 md:col-12">
+                <app-input-editor
+                    label="Description"
+                    [required]="true"
+                    [height]="300"
+                    inputId="descriptionEditor"
+                    formControlName="descEdit"
+                />
+
             </div>
         </div>
         <div class="mt-3 p-dialog-footer">
