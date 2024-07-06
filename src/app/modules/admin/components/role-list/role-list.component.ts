@@ -48,15 +48,6 @@ export class RoleListComponent implements OnInit {
   globalFilterFields: string[] = [];
   globalFilterFieldNames: string[] = [];
 
-  dateFilterMatchModesOptions = [
-    { label: 'Date is', value: FilterMatchMode.DATE_IS },
-    { label: 'Date is not', value: FilterMatchMode.DATE_IS_NOT },
-    { label: 'Date is before', value: FilterMatchMode.DATE_BEFORE },
-    { label: 'Date is after', value: FilterMatchMode.DATE_AFTER },
-    { label: 'Date is or before', value: FilterMatchMode.DATE_IS_OR_BEFORE },
-    { label: 'Date is or after', value: FilterMatchMode.DATE_IS_OR_AFTER }
-  ];
-
 
   // Global filters
   @ViewChild('dt') table: Table;

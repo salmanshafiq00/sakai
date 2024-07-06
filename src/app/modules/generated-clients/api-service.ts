@@ -2657,6 +2657,7 @@ export class LookupModel {
     subjectRadio?: string;
     color?: string;
     uploadFile?: string;
+    descEdit?: string;
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2681,6 +2682,7 @@ export class LookupModel {
             this.subjectRadio = _data["subjectRadio"];
             this.color = _data["color"];
             this.uploadFile = _data["uploadFile"];
+            this.descEdit = _data["descEdit"];
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2720,6 +2722,7 @@ export class LookupModel {
         data["subjectRadio"] = this.subjectRadio;
         data["color"] = this.color;
         data["uploadFile"] = this.uploadFile;
+        data["descEdit"] = this.descEdit;
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
