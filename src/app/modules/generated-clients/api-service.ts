@@ -2659,6 +2659,9 @@ export class LookupModel {
     uploadFile?: string;
     descEdit?: string;
     menus?: string[];
+    singleMenu?: string;
+    treeSelectMenus?: string[];
+    treeSelectSingleMenu?: string;
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2689,6 +2692,13 @@ export class LookupModel {
                 for (let item of _data["menus"])
                     this.menus!.push(item);
             }
+            this.singleMenu = _data["singleMenu"];
+            if (Array.isArray(_data["treeSelectMenus"])) {
+                this.treeSelectMenus = [] as any;
+                for (let item of _data["treeSelectMenus"])
+                    this.treeSelectMenus!.push(item);
+            }
+            this.treeSelectSingleMenu = _data["treeSelectSingleMenu"];
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2734,6 +2744,13 @@ export class LookupModel {
             for (let item of this.menus)
                 data["menus"].push(item);
         }
+        data["singleMenu"] = this.singleMenu;
+        if (Array.isArray(this.treeSelectMenus)) {
+            data["treeSelectMenus"] = [];
+            for (let item of this.treeSelectMenus)
+                data["treeSelectMenus"].push(item);
+        }
+        data["treeSelectSingleMenu"] = this.treeSelectSingleMenu;
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {

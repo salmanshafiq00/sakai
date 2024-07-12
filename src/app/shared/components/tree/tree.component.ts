@@ -34,9 +34,6 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   @Input() loading: boolean = false;
   @Input() loadingIcon: string | null = null;
   @Input() emptyMessage: string | null = null;
-  @Input() ariaLabel: string | null = null;
-  @Input() togglerAriaLabel: string | null = null;
-  @Input() ariaLabelledBy: string | null = null;
   @Input() validateDrop: boolean = false;
   @Input() filter: boolean = false;
   @Input() filterBy: string = 'label';
@@ -95,47 +92,33 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   }
 
   private updateSelection(): void {
+    this.newValue = [];
     if (this.getset === 'key') {
-      // this.selection = this.optionDataSource?.filter(node => this.newValue?.includes(node.key)) ?? [];
       this.selectNodes(this.optionDataSource, this.oldValue);
       this.updateParentSelection(this.optionDataSource, this.newValue);
       this.selection = this.newValue;
+      this.onChange(this.newValue.map(node => node.key));
     } else {
       this.selectNodes(this.optionDataSource, this.oldValue);
       this.updateParentSelection(this.optionDataSource, this.newValue);
       this.selection = this.newValue;
-      console.log(this.selection)
+      this.onChange(this.newValue);
     }
-    this.onChange(this.selection);
   }
 
   onSelectionChange(event: any): void {
-    console.log(event)
-    this.newValue = [];
+    this.newValue = event;
     if (this.getset === 'key') {
       this.onChange(event?.filter((node: TreeNode) => node.leaf)?.map((node: TreeNode) => node.key) ?? []);
     } else {
-      console.log(event)
       this.onChange(event);
     }
     this.selectionChange.emit(event);
   }
 
-  scrollToVirtualIndex(index: number) {
-    // Implement scroll to virtual index
-  }
-
-  scrollTo(options: any) {
-    // Implement scroll to options
-  }
-
-  resetFilter() {
-    // Implement reset filter
-  }
-
   private selectNodes(nodes: TreeNode[], selectedKeys: string[]) {
     nodes?.forEach(node => {
-      if (selectedKeys.includes(node.key!)) {  // Ensure label is not undefined
+      if (selectedKeys.includes(node.key!)) {  // Ensure key is not undefined
         this.newValue.push(node);
       }
       if (node.children) {

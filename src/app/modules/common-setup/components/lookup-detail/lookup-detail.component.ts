@@ -128,7 +128,9 @@ export class LookupDetailComponent implements OnInit {
       pass: [null, Validators.required],
       descEdit: [null, Validators.required],
       menus: [[], Validators.required],
-      menuTreeSelectList: [null, Validators.required]
+      singleMenu: [null, Validators.required],
+      menuTreeMultiple: [[], Validators.required],
+      menuTreeSingle: [null, Validators.required]
     });
   }
 

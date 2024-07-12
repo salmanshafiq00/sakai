@@ -142,22 +142,46 @@
             </div>
             <div class="field col-12 md:col-12">
                 <app-tree
-                    label="Description"
+                    label="Multiple Tree"
                     [required]="true"
                     inputId="menuId"
                     formControlName="menus"
-                    getset="key"
+                    getset="object"
                     [optionDataSource]="optionDataSources['appMenuTreeList']"
                 />
 
             </div>
             <div class="field col-12 md:col-12">
+                <app-tree
+                    label="Single Tree"
+                    [required]="true"
+                    inputId="menuId"
+                    formControlName="singleMenu"
+                    getset="key"
+                    selectionMode="single"
+                    [optionDataSource]="optionDataSources['singleMenuTreeList']"
+                />
+
+            </div>
+            <div class="field col-12 md:col-12">
                 <app-tree-select
-                    label="Tree Select"
+                    label="Multiple Tree Select"
                     [required]="true"
                     inputId="treeSelectId"
-                    formControlName="menuTreeSelectList"
-                    [optionDataSource]="optionDataSources['parentTreeSelectList']"
+                    formControlName="menuTreeMultiple"
+                    selectionMode="multiple"
+                    [optionDataSource]="optionDataSources['treeSelectMenuseSelectList']"
+                />
+
+            </div>
+            <div class="field col-12 md:col-12">
+                <app-tree-select
+                    label="Single Tree Select"
+                    [required]="true"
+                    inputId="treeSelectId"
+                    formControlName="menuTreeSingle"
+                    selectionMode="single"
+                    [optionDataSource]="optionDataSources['treeSelectSingleMenuSelectList']"
                 />
 
             </div>
