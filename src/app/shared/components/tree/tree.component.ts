@@ -23,7 +23,7 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   @Input() optionDataSource: TreeNode[] = [];
   @Input() selectionMode: 'single' | 'multiple' | 'checkbox' = 'checkbox';
   @Input() loadingMode: 'mask' | 'icon' = 'mask';
-  @Input() selection: TreeNode[] | null = null;
+  @Input() selection: TreeNode[] | TreeNode | null = null; // Updated type to support single selection
   @Input() style: any = null;
   @Input() styleClass: string | null = null;
   @Input() contextMenu: any = null;
@@ -49,9 +49,9 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   @Input() indentation: number = 1.5;
   @Input() templateMap: any = null;
   @Input() trackBy: (index: number, item: TreeNode) => any = (index, item) => item;
-  @Input() getset: 'key' | 'object' = 'key'; // New input for custom property handling
+  @Input() getset: 'key' | 'object' = 'key';
 
-  @Output() selectionChange = new EventEmitter<TreeNode>();
+  @Output() selectionChange = new EventEmitter<TreeNode | TreeNode[]>();
   @Output() onNodeSelect = new EventEmitter<any>();
   @Output() onNodeUnselect = new EventEmitter<any>();
   @Output() onNodeExpand = new EventEmitter<any>();
@@ -94,24 +94,44 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   private updateSelection(): void {
     this.newValue = [];
     if (this.getset === 'key') {
-      this.selectNodes(this.optionDataSource, this.oldValue);
-      this.updateParentSelection(this.optionDataSource, this.newValue);
-      this.selection = this.newValue;
-      this.onChange(this.newValue.map(node => node.key));
+      if (this.selectionMode === 'single' && typeof this.oldValue === 'string') {
+        this.selectSingleNode(this.optionDataSource, this.oldValue); // Added for single selection
+        this.selection = this.newValue.length > 0 ? this.newValue[0] : null;
+        this.onChange(this.newValue.length > 0 ? this.newValue[0].key : null);
+      } else {
+        this.selectNodes(this.optionDataSource, this.oldValue);
+        this.updateParentSelection(this.optionDataSource, this.newValue);
+        this.selection = this.newValue;
+        this.onChange(this.newValue.filter(node => node.leaf).map(node => node.key));
+      }
     } else {
-      this.selectNodes(this.optionDataSource, this.oldValue);
-      this.updateParentSelection(this.optionDataSource, this.newValue);
-      this.selection = this.newValue;
-      this.onChange(this.newValue);
+      if (this.selectionMode === 'single' && typeof this.oldValue === 'object') {
+        this.selectSingleNode(this.optionDataSource, this.oldValue); // Added for single selection
+        this.selection = this.newValue.length > 0 ? this.newValue[0] : null;
+        this.onChange(this.newValue.length > 0 ? this.newValue[0] : null);
+      } else {
+        this.selectNodes(this.optionDataSource, this.oldValue);
+        this.updateParentSelection(this.optionDataSource, this.newValue);
+        this.selection = this.newValue;
+        this.onChange(this.newValue);
+      }
     }
   }
 
   onSelectionChange(event: any): void {
     this.newValue = event;
     if (this.getset === 'key') {
-      this.onChange(event?.filter((node: TreeNode) => node.leaf)?.map((node: TreeNode) => node.key) ?? []);
+      if (this.selectionMode === 'single') {
+        this.onChange(event ? event.key : null);
+      } else {
+        this.onChange(event?.filter((node: TreeNode) => node.leaf)?.map((node: TreeNode) => node.key) ?? []);
+      }
     } else {
-      this.onChange(event);
+      if (this.selectionMode === 'single') {
+        this.onChange(event);
+      } else {
+        this.onChange(event);
+      }
     }
     this.selectionChange.emit(event);
   }
@@ -127,13 +147,13 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
     });
   }
 
-  private selectNodesByLabel(nodes: TreeNode[], selectedLabels: string[]) {
+  private selectSingleNode(nodes: TreeNode[], selectedKey: string) {
     nodes?.forEach(node => {
-      if (selectedLabels.includes(node.label!)) {  // Ensure label is not undefined
+      if (node.key === selectedKey) {
         this.newValue.push(node);
       }
       if (node.children) {
-        this.selectNodesByLabel(node.children, selectedLabels);
+        this.selectSingleNode(node.children, selectedKey);
       }
     });
   }
