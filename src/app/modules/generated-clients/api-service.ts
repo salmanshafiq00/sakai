@@ -2658,6 +2658,7 @@ export class LookupModel {
     color?: string;
     uploadFile?: string;
     descEdit?: string;
+    menus?: string[];
     optionDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -2683,6 +2684,11 @@ export class LookupModel {
             this.color = _data["color"];
             this.uploadFile = _data["uploadFile"];
             this.descEdit = _data["descEdit"];
+            if (Array.isArray(_data["menus"])) {
+                this.menus = [] as any;
+                for (let item of _data["menus"])
+                    this.menus!.push(item);
+            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2723,6 +2729,11 @@ export class LookupModel {
         data["color"] = this.color;
         data["uploadFile"] = this.uploadFile;
         data["descEdit"] = this.descEdit;
+        if (Array.isArray(this.menus)) {
+            data["menus"] = [];
+            for (let item of this.menus)
+                data["menus"].push(item);
+        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {

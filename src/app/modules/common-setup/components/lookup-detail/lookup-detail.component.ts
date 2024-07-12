@@ -22,11 +22,7 @@ export class LookupDetailComponent implements OnInit {
   item: LookupModel = new LookupModel();
 
   get f() {
-    return this.form.controls;
-  }
-
-  fc(controlName: string): FormControl{
-    return this.form.get(controlName) as FormControl;
+    return this.form?.controls;
   }
 
   private customDialogService: CustomDialogService = inject(CustomDialogService);
@@ -98,6 +94,7 @@ export class LookupDetailComponent implements OnInit {
         this.item.subjects = this.optionDataSources['subjectSelectList']?.filter(x => this.item.subjects.includes(x.id));
         this.item.subjectRadio = this.optionDataSources['subjectRadioSelectList']?.find(x => this.item.subjectRadio === x.id);
         console.log(this.item)
+        // this.initializeFormGroup();
         this.form.patchValue(this.item);
       },
       error: (error) => {
@@ -130,25 +127,9 @@ export class LookupDetailComponent implements OnInit {
       phoneNo: [null, Validators.required],
       pass: [null, Validators.required],
       descEdit: [null, Validators.required],
+      menus: [[], Validators.required],
+      menuTreeSelectList: [null, Validators.required]
     });
-  }
-
-  private createFormData(): FormData {
-    const formData = new FormData();
-    const formValues = this.form.value;
-    const fileInput = this.form.get('uploadFile').value;
-  
-    for (const key in formValues) {
-      if (formValues.hasOwnProperty(key) && key !== 'uploadFile') {
-        formData.append(key, formValues[key]);
-      }
-    }
-  
-    if (fileInput && fileInput.length > 0) {
-      formData.append('uploadFile', fileInput[0]);
-    }
-  
-    return formData;
   }
 
 }

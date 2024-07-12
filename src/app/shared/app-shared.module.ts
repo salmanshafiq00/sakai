@@ -47,6 +47,10 @@ import { InputPasswordComponent } from './components/input-password/input-passwo
 import { InputEditorComponent } from './components/input-editor/input-editor.component';
 import { EditorModule } from '@tinymce/tinymce-angular';
 import { ButtonComponent } from './components/button/button.component';
+import { TreeModule } from 'primeng/tree';
+import { TreeComponent } from './components/tree/tree.component';
+import { TreeSelectModule } from 'primeng/treeselect';
+import { TreeSelectComponent } from './components/tree-select/tree-select.component';
 
 
 @NgModule({
@@ -73,7 +77,9 @@ import { ButtonComponent } from './components/button/button.component';
 		InputMaskComponent,
 		InputPasswordComponent,
 		InputEditorComponent,
-		ButtonComponent
+		ButtonComponent,
+		TreeComponent,
+		TreeSelectComponent
 	],
 	imports: [
 		CommonModule,
@@ -103,6 +109,8 @@ import { ButtonComponent } from './components/button/button.component';
 		ColorPickerModule,
 		InputMaskModule,
 		PasswordModule,
+		TreeModule ,
+		TreeSelectModule 
 	],
 	providers: [
 		MessageService,
@@ -133,7 +141,9 @@ import { ButtonComponent } from './components/button/button.component';
 		InputMaskComponent,
 		InputPasswordComponent,
 		InputEditorComponent,
-		ButtonComponent
+		ButtonComponent,
+		TreeComponent,
+		TreeSelectComponent
 	]
 })
 export class AppSharedModule { }
