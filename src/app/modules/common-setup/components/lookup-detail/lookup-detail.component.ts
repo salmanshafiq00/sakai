@@ -91,8 +91,8 @@ export class LookupDetailComponent implements OnInit {
       next: (res: LookupModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;
-        this.item.subjects = this.optionDataSources['subjectSelectList']?.filter(x => this.item.subjects.includes(x.id));
-        this.item.subjectRadio = this.optionDataSources['subjectRadioSelectList']?.find(x => this.item.subjectRadio === x.id);
+        // this.item.subjects = this.optionDataSources['subjectSelectList']?.filter(x => this.item.subjects.includes(x.id));
+        // this.item.subjectRadio = this.optionDataSources['subjectRadioSelectList']?.find(x => this.item.subjectRadio === x.id);
         console.log(this.item)
         // this.initializeFormGroup();
         this.form.patchValue(this.item);
@@ -129,8 +129,8 @@ export class LookupDetailComponent implements OnInit {
       descEdit: [null, Validators.required],
       menus: [[], Validators.required],
       singleMenu: [null, Validators.required],
-      menuTreeMultiple: [[], Validators.required],
-      menuTreeSingle: [null, Validators.required]
+      treeSelectMenus: [[], Validators.required],
+      treeSelectSingleMenu: [null, Validators.required]
     });
   }
 

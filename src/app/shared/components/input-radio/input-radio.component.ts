@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, SimpleChanges, forwardRef, OnChanges } from '@angular/core';
 import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, AbstractControl, ValidationErrors } from '@angular/forms';
 
 @Component({
@@ -18,7 +18,7 @@ import { NG_VALUE_ACCESSOR, NG_VALIDATORS, ControlValueAccessor, Validator, Abst
     }
   ]
 })
-export class InputRadioComponent implements ControlValueAccessor, Validator {
+export class InputRadioComponent implements ControlValueAccessor, Validator, OnChanges {
   @Input() label: string = '';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
@@ -26,19 +26,33 @@ export class InputRadioComponent implements ControlValueAccessor, Validator {
   @Input() autofocus: boolean = false;
   @Input() name: string;
   @Input() column: boolean = false;
+  @Input() inputId: string = null;
+  @Input() style: Object = null;
+  @Input() styleClass: string = null;
+  @Input() labelStyleClass: string = null;
+  @Input() getset: 'key'| 'object' = 'key';
+  @Input() tabindex: number = null;
   @Input() variant: 'outlined' | 'filled' = 'outlined';
   @Input() optionDataSource: any[] = [];
 
   value: any;
-  onTouched: any = () => { };
-  onChangeFn: any = (_: any) => { };
+  initalValue: any;
+  private onTouched: () => void = () => {};
+  private onChange: (value: any) => void = () => {};
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes?.['optionDataSource']) {
+      this.updateValue(this.initalValue);
+    }
+  }
 
   writeValue(value: any): void {
-    this.value = value ;
+    this.initalValue = value;
+    this.updateValue(value);
   }
 
   registerOnChange(fn: any): void {
-    this.onChangeFn = fn;
+    this.onChange = fn;
   }
 
   registerOnTouched(fn: any): void {
@@ -56,12 +70,21 @@ export class InputRadioComponent implements ControlValueAccessor, Validator {
     return null;
   }
 
-  onInputChange(event: any): void {
-    this.value = event.value;
-    this.onChangeFn(this.value);
+  private updateValue(value: any): void {
+    if (this.getset === 'key') {
+      this.value = this.optionDataSource?.find(option => option.id === value);
+    } else {
+      this.value = value;
+    }
   }
-  
-  onBlurEvent(): void {
+
+  onInputChange(event: any): void {
+    const selectedValue = event.value;
+    this.value = this.getset === 'key' ? selectedValue?.id : selectedValue;
+    this.onChange(this.value);
+  }
+
+  onBlur(): void {
     this.onTouched();
   }
 }

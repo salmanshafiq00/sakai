@@ -1,4 +1,4 @@
-import { Component, Input, forwardRef } from '@angular/core';
+import { Component, Input, forwardRef, OnChanges, SimpleChanges } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, ValidationErrors, AbstractControl } from '@angular/forms';
 import { TreeNode } from 'primeng/api';
 
@@ -19,7 +19,7 @@ import { TreeNode } from 'primeng/api';
     }
   ]
 })
-export class TreeSelectComponent implements ControlValueAccessor {
+export class TreeSelectComponent implements ControlValueAccessor, OnChanges {
   @Input() label: string = '';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
@@ -47,25 +47,23 @@ export class TreeSelectComponent implements ControlValueAccessor {
   @Input() filter: boolean = true;
   @Input() filterBy: string = 'label';
   @Input() filterMode: string = 'lenient';
-  @Input() filterPlaceholder: string = '';;
+  @Input() filterPlaceholder: string = '';
   @Input() filterInputAutoFocus: boolean = true;
   @Input() propagateSelectionDown: boolean = true;
   @Input() propagateSelectionUp: boolean = true;
   @Input() showClear: boolean = true;
   @Input() resetFilterOnHide: boolean = true;
-  @Input() virtualScroll: boolean = false;
-  @Input() virtualScrollItemSize: number = null;
-  @Input() virtualScrollOptions: any = null;
-  @Input() showTransitionOptions: string = '';
-  @Input() hideTransitionOptions: string = '';
   @Input() loading: boolean = false;
+  @Input() getset: 'key' | 'object' = 'key';
 
-  value: any = null;
-  onTouched: any = () => { };
-  onChangeFn: any = (_: any) => { };
+  value: TreeNode | TreeNode[] | string | string[] | null = null;
+  onTouched: any = () => {};
+  onChangeFn: any = (_: any) => {};
+  private internalValue: any;
 
   writeValue(value: any): void {
-    this.value = value;
+    this.internalValue = value;
+    this.updateSelection();
   }
 
   registerOnChange(fn: any): void {
@@ -80,8 +78,14 @@ export class TreeSelectComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes?.['optionDataSource']) {
+      this.updateSelection();
+    }
+  }
+
   validate(control: AbstractControl): ValidationErrors | null {
-    return this.required && (!this.value || this.value.length === 0) ? { required: true } : null;
+    return this.required && (!this.value || (Array.isArray(this.value) && this.value.length === 0)) ? { required: true } : null;
   }
 
   onFocus(event: any): void {
@@ -92,11 +96,68 @@ export class TreeSelectComponent implements ControlValueAccessor {
     this.onTouched();
   }
 
-  onNodeUnselect(event: any): void {
-    console.log(event)
+  onNodeSelect(event: any): void {
+    if (this.selectionMode === 'single') {
+      this.value = event.node;
+    } else {
+      this.value = [...(this.value as TreeNode[]), event.node];
+    }
+    this.propagateChange();
   }
 
-  onNodeSelect(event: any): void {
-    console.log(event)
+  onNodeUnselect(event: any): void {
+    if (this.selectionMode === 'single') {
+      this.value = null;
+    } else {
+      this.value = (this.value as TreeNode[]).filter(node => node.key !== event.node.key);
+    }
+    this.propagateChange();
+  }
+
+  private updateSelection(): void {
+    if (this.selectionMode === 'single') {
+      this.value = this.getset === 'key' ? this.selectSingleNodeByKey(this.optionDataSource, this.internalValue) : this.internalValue;
+    } else {
+      this.value = this.getset === 'key' ? this.selectNodesByKeys(this.optionDataSource, this.internalValue) : this.internalValue;
+    }
+    this.propagateChange();
+  }
+
+  private propagateChange(): void {
+    if (this.getset === 'key') {
+      if (this.selectionMode === 'single') {
+        this.onChangeFn((this.value as TreeNode)?.key);
+      } else {
+        this.onChangeFn((this.value as TreeNode[])?.map(node => node.key));
+      }
+    } else {
+      this.onChangeFn(this.value);
+    }
+  }
+
+  private selectNodesByKeys(nodes: TreeNode[], keys: string[]): TreeNode[] {
+    let selectedNodes: TreeNode[] = [];
+    nodes?.forEach(node => {
+      if (keys.includes(node.key)) {
+        selectedNodes.push(node);
+      }
+      if (node.children) {
+        selectedNodes = [...selectedNodes, ...this.selectNodesByKeys(node.children, keys)];
+      }
+    });
+    return selectedNodes;
+  }
+
+  private selectSingleNodeByKey(nodes: TreeNode[], key: string): TreeNode | null {
+    let selectedNode: TreeNode | null = null;
+    nodes?.forEach(node => {
+      if (node.key === key) {
+        selectedNode = node;
+      }
+      if (!selectedNode && node.children) {
+        selectedNode = this.selectSingleNodeByKey(node.children, key);
+      }
+    });
+    return selectedNode;
   }
 }

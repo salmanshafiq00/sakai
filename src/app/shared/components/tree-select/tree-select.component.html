@@ -35,16 +35,11 @@
     [propagateSelectionUp]="propagateSelectionUp"
     [showClear]="showClear"
     [resetFilterOnHide]="resetFilterOnHide"
-    [virtualScroll]="virtualScroll"
-    [virtualScrollItemSize]="virtualScrollItemSize"
-    [virtualScrollOptions]="virtualScrollOptions"
-    [showTransitionOptions]="showTransitionOptions"
-    [hideTransitionOptions]="hideTransitionOptions"
     [loading]="loading"
     [(ngModel)]="value"
+    (onNodeSelect)="onNodeSelect($event)"
+    (onNodeUnselect)="onNodeUnselect($event)"
     (onFocus)="onFocus($event)"
     (onBlur)="onBlur($event)"
-    (onNodeUnselect)="onNodeUnselect($event)"
-    (onNodeSelect)="onNodeSelect($event)"
   ></p-treeSelect>
 </div>

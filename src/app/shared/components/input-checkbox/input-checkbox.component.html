@@ -8,12 +8,12 @@
           [readonly]="readonly"
           [autofocus]="autofocus"
           [required]="required"
-          [(ngModel)]="value"
+          [(ngModel)]="selectedOptions"
           [label]="option.name"
           [name]="name"
           [value]="option"
           [binary]="binary"
-          (onChange)="onInputChange($event, option)"
+          (onChange)="onInputChange($event)"
           (onBlur)="onBlurEvent()"
         ></p-checkbox>
       </div>

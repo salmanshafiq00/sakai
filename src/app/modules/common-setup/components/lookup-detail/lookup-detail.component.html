@@ -168,8 +168,9 @@
                     label="Multiple Tree Select"
                     [required]="true"
                     inputId="treeSelectId"
-                    formControlName="menuTreeMultiple"
+                    formControlName="treeSelectMenus"
                     selectionMode="multiple"
+                    getset="key"
                     [optionDataSource]="optionDataSources['treeSelectMenuseSelectList']"
                 />
 
@@ -179,8 +180,9 @@
                     label="Single Tree Select"
                     [required]="true"
                     inputId="treeSelectId"
-                    formControlName="menuTreeSingle"
+                    formControlName="treeSelectSingleMenu"
                     selectionMode="single"
+                    getset="key"
                     [optionDataSource]="optionDataSources['treeSelectSingleMenuSelectList']"
                 />
 
