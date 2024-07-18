@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, forwardRef, Input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, AbstractControl, ValidationErrors, Validator, ControlContainer } from '@angular/forms';
 
 @Component({
@@ -8,12 +8,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, AbstractControl
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      useExisting:  InputTextComponent,
+      useExisting: forwardRef(() => InputTextComponent),
       multi: true
     },
     {
       provide: NG_VALIDATORS,
-      useExisting:  InputTextComponent,
+      useExisting: forwardRef(() => InputTextComponent),
       multi: true
     }
   ]

@@ -1,0 +1,127 @@
+<div class="col-12">
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <div class="p-fluid p-formgrid grid">
+      <div class="field col-12 md:col-6">
+        <app-input-text label="Name" formControlName="name" [required]="true" [readonly]="false" />
+        <app-validator-msg [control]="f['name']"></app-validator-msg>
+      </div>
+      <div class="field col-12 md:col-6">
+        <app-input-text label="Title" formControlName="title" [required]="true" [readonly]="false" />
+        <app-validator-msg [control]="f['title']"></app-validator-msg>
+      </div>
+      <div class="field col-12 md:col-6">
+        <app-input-text label="RouterLink" formControlName="routerLink" [required]="true" [readonly]="false" />
+        <app-validator-msg [control]="f['routerLink']"></app-validator-msg>
+      </div>
+    </div>
+
+    <div class="grid ">
+      <div class="col-12 group">
+        <div class="div-caption">
+          <span>List Page Fields</span>
+          <div (click)="addAppPageField()" class="field-plus">
+            <i class="pi pi-plus"></i> Field
+          </div>
+        </div>
+
+        <div  formArrayName="appPageFields" *ngFor="let field of appPageFields.controls; let i = index">
+          <div [formGroupName]="i" class="col-12 group-row">
+            <div class="div-caption">
+              Field
+              <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
+                <i class="pi pi-chevron-down"></i>
+              </a>
+              <a class="collapse-field" *ngIf="showPropertyStatus(field)" (click)="showProperty(field, false)">
+                <i class="pi pi-chevron-up"></i>
+              </a>
+              <a class="remove-field" (click)="removeAppPageField(i)">
+                <i class="pi pi-trash"></i>
+              </a>
+            </div>
+            <!-- Show initially -->
+            <div class="grid mt-2" *ngIf="!showPropertyStatus(field)">
+              <div class="col-4">
+                  <span>Name: {{ field.value.fieldName }}</span>
+              </div>
+              <div class="col-4">
+                  <span>Caption: {{ field.value.caption }}</span>
+              </div>
+              <div class="col-4">
+                  <span>Field Type: {{ field.value.fieldType }}</span>
+              </div>
+            </div>
+            <!-- Show when click on down chevron icon -->
+            <div class="grid mt-2" *ngIf="showPropertyStatus(field)">
+              <div class="field col-4">
+                <app-input-text formControlName="fieldName" label="Field Name" [required]="true" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="caption" label="Caption" [required]="true" />
+              </div>
+              <div class="field col-4">
+                <app-input-select [optionDataSource]="fieldTypeSelectList" formControlName="fieldType"
+                  label="Field Type" />
+              </div>
+              <div class="field col-4">
+                <app-input-select [optionDataSource]="alignSelectList" formControlName="textAlign" label="Text Align" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="sortOrder" label="Sort Order" />
+              </div>
+
+              <div class="field col-4">
+                <app-input-select [optionDataSource]="filterSelectList" formControlName="filterType"
+                  label="Filter Type" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="linkBaseUrl" label="Link Base Url" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="linkValueFieldName" label="Link Value Field Name" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="bgColor" label="Background Color" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="color" label="Color" />
+              </div>
+              <div class="field col-4 mt-4">
+                <app-input-switch formControlName="isVisible" label="Visible" />
+              </div>
+              <div class="field col-4 mt-4">
+                <app-input-switch formControlName="isActive" label="Active" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="allowSort" label="Allow Sort" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="allowFilter" label="Allow Filter" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="enableLink" label="Enable Link" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-3 p-dialog-footer">
+          <app-button
+              label="Cancel"
+              type="button"
+              icon="pi pi-times"
+              styleClass="p-button-text"
+              severity="warning"
+              (onClick)="cancel()"
+          />
+        <app-button
+              label="Save"
+              type="submit"
+              icon="pi pi-check"
+              styleClass="p-button-text"
+             
+          />
+        
+  </div>
+  </form>
+</div>

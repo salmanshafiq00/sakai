@@ -96,6 +96,7 @@ export class AppMenuDetailComponent  implements OnInit {
 
   private update() {
     let updateCommand = new UpdateAppMenuCommand();
+    console.log(this.form.value)
     updateCommand = { ...this.form.value };
     updateCommand.parentId = this.form.get('parentId')?.value?.key;
 

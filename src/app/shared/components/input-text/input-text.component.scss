@@ -5,3 +5,8 @@
 :host.ng-invalid.ng-touched input:focus{
   box-shadow: none;
 }
+
+.cust-field input {
+  width: 100%; 
+  box-sizing: border-box; 
+}

@@ -1313,6 +1313,197 @@ export class AppMenusClient implements IAppMenusClient {
     }
 }
 
+export interface IAppPagesClient {
+    getAppPages(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel>;
+    getAppPage(id: string): Observable<AppPageModel>;
+    upsertPage(command: UpsertAppPageCommand): Observable<string>;
+}
+
+@Injectable()
+export class AppPagesClient implements IAppPagesClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl ?? "";
+    }
+
+    getAppPages(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel> {
+        let url_ = this.baseUrl + "/api/AppPages";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(query);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAppPages(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAppPages(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<PaginatedResponseOfAppPageModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<PaginatedResponseOfAppPageModel>;
+        }));
+    }
+
+    protected processGetAppPages(response: HttpResponseBase): Observable<PaginatedResponseOfAppPageModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedResponseOfAppPageModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    getAppPage(id: string): Observable<AppPageModel> {
+        let url_ = this.baseUrl + "/api/AppPages/GetPage/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAppPage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAppPage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<AppPageModel>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<AppPageModel>;
+        }));
+    }
+
+    protected processGetAppPage(response: HttpResponseBase): Observable<AppPageModel> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = AppPageModel.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    upsertPage(command: UpsertAppPageCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppPages/UpsertPage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpsertPage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpsertPage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processUpsertPage(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+}
+
 export interface IRolesClient {
     getRoles(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel>;
     getRole(id: string): Observable<RoleModel>;
@@ -3197,7 +3388,7 @@ export class SidebarMenuModel {
 
 export class CreateAppMenuCommand {
     label!: string;
-    url!: string;
+    routerLink!: string;
     icon?: string;
     isActive?: boolean;
     visible?: boolean;
@@ -3210,7 +3401,7 @@ export class CreateAppMenuCommand {
     init(_data?: any) {
         if (_data) {
             this.label = _data["label"];
-            this.url = _data["url"];
+            this.routerLink = _data["routerLink"];
             this.icon = _data["icon"];
             this.isActive = _data["isActive"];
             this.visible = _data["visible"];
@@ -3232,7 +3423,7 @@ export class CreateAppMenuCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["label"] = this.label;
-        data["url"] = this.url;
+        data["routerLink"] = this.routerLink;
         data["icon"] = this.icon;
         data["isActive"] = this.isActive;
         data["visible"] = this.visible;
@@ -3248,7 +3439,7 @@ export class CreateAppMenuCommand {
 export class UpdateAppMenuCommand {
     id?: string;
     label!: string;
-    url!: string;
+    routerLink!: string;
     icon?: string;
     isActive?: boolean;
     visible?: boolean;
@@ -3263,7 +3454,7 @@ export class UpdateAppMenuCommand {
         if (_data) {
             this.id = _data["id"];
             this.label = _data["label"];
-            this.url = _data["url"];
+            this.routerLink = _data["routerLink"];
             this.icon = _data["icon"];
             this.isActive = _data["isActive"];
             this.visible = _data["visible"];
@@ -3287,7 +3478,7 @@ export class UpdateAppMenuCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["label"] = this.label;
-        data["url"] = this.url;
+        data["routerLink"] = this.routerLink;
         data["icon"] = this.icon;
         data["isActive"] = this.isActive;
         data["visible"] = this.visible;
@@ -3297,6 +3488,191 @@ export class UpdateAppMenuCommand {
         data["menuTypeId"] = this.menuTypeId;
         data["parentId"] = this.parentId;
         data["cacheKey"] = this.cacheKey;
+        return data;
+    }
+}
+
+export class PaginatedResponseOfAppPageModel {
+    items?: AppPageModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(AppPageModel.fromJS(item));
+            }
+            this.pageNumber = _data["pageNumber"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+            if (Array.isArray(_data["dataFields"])) {
+                this.dataFields = [] as any;
+                for (let item of _data["dataFields"])
+                    this.dataFields!.push(DataFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["filters"])) {
+                this.filters = [] as any;
+                for (let item of _data["filters"])
+                    this.filters!.push(DataFilterModel.fromJS(item));
+            }
+            if (_data["optionDataSources"]) {
+                this.optionDataSources = {} as any;
+                for (let key in _data["optionDataSources"]) {
+                    if (_data["optionDataSources"].hasOwnProperty(key))
+                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): PaginatedResponseOfAppPageModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedResponseOfAppPageModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageNumber"] = this.pageNumber;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        if (Array.isArray(this.dataFields)) {
+            data["dataFields"] = [];
+            for (let item of this.dataFields)
+                data["dataFields"].push(item.toJSON());
+        }
+        if (Array.isArray(this.filters)) {
+            data["filters"] = [];
+            for (let item of this.filters)
+                data["filters"].push(item.toJSON());
+        }
+        if (this.optionDataSources) {
+            data["optionDataSources"] = {};
+            for (let key in this.optionDataSources) {
+                if (this.optionDataSources.hasOwnProperty(key))
+                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export class AppPageModel {
+    id?: string;
+    title?: string;
+    subTitle?: string;
+    routerLink?: string;
+    name?: string;
+    permission?: string;
+    isActive?: boolean;
+    active?: string;
+    appPageLayout?: string;
+    optionsDataSources?: { [key: string]: any; };
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.subTitle = _data["subTitle"];
+            this.routerLink = _data["routerLink"];
+            this.name = _data["name"];
+            this.permission = _data["permission"];
+            this.isActive = _data["isActive"];
+            this.active = _data["active"];
+            this.appPageLayout = _data["appPageLayout"];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
+                }
+            }
+        }
+    }
+
+    static fromJS(data: any): AppPageModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppPageModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["subTitle"] = this.subTitle;
+        data["routerLink"] = this.routerLink;
+        data["name"] = this.name;
+        data["permission"] = this.permission;
+        data["isActive"] = this.isActive;
+        data["active"] = this.active;
+        data["appPageLayout"] = this.appPageLayout;
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
+            }
+        }
+        return data;
+    }
+}
+
+export class GetAppPageListQuery extends DataGridModel {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): GetAppPageListQuery {
+        data = typeof data === 'object' ? data : {};
+        let result = new GetAppPageListQuery();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
+        return data;
+    }
+}
+
+export class UpsertAppPageCommand extends AppPageModel {
+
+    override init(_data?: any) {
+        super.init(_data);
+    }
+
+    static override fromJS(data: any): UpsertAppPageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpsertAppPageCommand();
+        result.init(data);
+        return result;
+    }
+
+    override toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        super.toJSON(data);
         return data;
     }
 }

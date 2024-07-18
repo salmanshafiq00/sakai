@@ -91,10 +91,6 @@ export class LookupDetailComponent implements OnInit {
       next: (res: LookupModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;
-        // this.item.subjects = this.optionDataSources['subjectSelectList']?.filter(x => this.item.subjects.includes(x.id));
-        // this.item.subjectRadio = this.optionDataSources['subjectRadioSelectList']?.find(x => this.item.subjectRadio === x.id);
-        console.log(this.item)
-        // this.initializeFormGroup();
         this.form.patchValue(this.item);
       },
       error: (error) => {

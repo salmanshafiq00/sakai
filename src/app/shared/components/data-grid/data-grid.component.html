@@ -245,10 +245,16 @@
                             </div>
                         </td>
 
-
                         <!-- <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Status</span>
                             <span [class]="'status-badge status-' + (item.statusName.toLowerCase())">{{item.statusName}}</span>
                         </td>  -->
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="emptymessage">
+                    <tr>
+                        <td colspan="100%">
+                            <div class="p-datatable-emptymessage text-center"><i class="pi pi-box"></i> No data found</div>
+                        </td>
                     </tr>
                 </ng-template>
 
