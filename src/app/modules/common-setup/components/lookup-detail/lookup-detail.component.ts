@@ -52,14 +52,14 @@ export class LookupDetailComponent implements OnInit {
   }
 
   private save() {
-    let createLookupCommand = new CreateLookupCommand();
+    let createCommand = new CreateLookupCommand();
     const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
     const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
-    createLookupCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
+    createCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
 
-    console.log(createLookupCommand);
+    console.log(createCommand);
 
-    this.entityClient.createLookup(createLookupCommand).subscribe({
+    this.entityClient.createLookup(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -72,9 +72,9 @@ export class LookupDetailComponent implements OnInit {
   }
 
   private update() {
-    let updateLookupCommand = new UpdateLookupCommand();
-    updateLookupCommand = { ...this.form.value }
-    this.entityClient.updateLookup(updateLookupCommand).subscribe({
+    let updateCommand = new UpdateLookupCommand();
+    updateCommand = { ...this.form.value }
+    this.entityClient.updateLookup(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);

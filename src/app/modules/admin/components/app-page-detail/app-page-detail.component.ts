@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { LookupModel, LookupsClient, CreateLookupCommand, UpdateLookupCommand, AppPagesClient } from 'src/app/modules/generated-clients/api-service';
+import { LookupModel, LookupsClient, CreateLookupCommand, UpdateLookupCommand, AppPagesClient, UpsertAppPageCommand } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
@@ -51,25 +51,25 @@ export class AppPageDetailComponent implements OnInit {
     }
   }
 
-  // private save() {
-  //   let createLookupCommand = new CreateLookupCommand();
-  //   const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
-  //   const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
-  //   createLookupCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
+  private save() {
+    let createCommand = new UpsertAppPageCommand();
+    const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
+    const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
+    createCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
 
-  //   console.log(createLookupCommand);
+    console.log(createCommand);
 
-  //   this.entityClient.createLookup(createLookupCommand).subscribe({
-  //     next: () => {
-  //       this.toast.created()
-  //       this.customDialogService.close(true);
-  //     },
-  //     error: (error) => {
-  //       this.toast.showError(error.errors[0]?.description)
-  //       console.log(error);
-  //     }
-  //   });
-  // }
+    this.entityClient.upsertPage(createCommand).subscribe({
+      next: () => {
+        this.toast.created()
+        this.customDialogService.close(true);
+      },
+      error: (error) => {
+        this.toast.showError(error.errors[0]?.description)
+        console.log(error);
+      }
+    });
+  }
 
   // private update() {
   //   let updateLookupCommand = new UpdateLookupCommand();
