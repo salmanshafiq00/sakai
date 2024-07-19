@@ -2,7 +2,7 @@ import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular
 import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { LookupModel, LookupsClient, CreateLookupCommand, UpdateLookupCommand, AppPagesClient, UpsertAppPageCommand } from 'src/app/modules/generated-clients/api-service';
+import { AppPagesClient, UpsertAppPageCommand, AppPageModel } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
@@ -19,7 +19,11 @@ export class AppPageDetailComponent implements OnInit {
   form: FormGroup;
   id: string = '';
 
-  item: LookupModel = new LookupModel();
+  item: AppPageModel = new AppPageModel();
+
+  pageLayout: any = {
+    'appPageFields': []
+  };
 
   get f() {
     return this.form?.controls;
@@ -32,7 +36,7 @@ export class AppPageDetailComponent implements OnInit {
   private entityClient: AppPagesClient = inject(AppPagesClient);
 
   ngOnInit() {
-    this.id = this.customDialogService.getConfigData(); 
+    this.id = this.customDialogService.getConfigData();
     this.initializeFormGroup();
     this.getById(this.id);
   }
@@ -44,8 +48,7 @@ export class AppPageDetailComponent implements OnInit {
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       console.log(this.form.value)
-      console.log(this.form)
-      // this.save();
+      this.save();
     } else {
       // this.update();
     }
@@ -53,10 +56,9 @@ export class AppPageDetailComponent implements OnInit {
 
   private save() {
     let createCommand = new UpsertAppPageCommand();
-    const selectedSubjects = this.form.get('subjects')?.value?.map(x => x.id) || [];
-    const selectedRadioSubjects = this.form.get('subjectRadio')?.value?.id;
-    createCommand = { ...this.form.value, createdDate: '2023-06-06', subjects: selectedSubjects, subjectRadio:  selectedRadioSubjects}
-
+    createCommand = { ...this.form.value }
+    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
+    createCommand.appPageLayout = JSON.stringify(this.pageLayout);
     console.log(createCommand);
 
     this.entityClient.upsertPage(createCommand).subscribe({
@@ -88,10 +90,21 @@ export class AppPageDetailComponent implements OnInit {
 
   private getById(id: any) {
     this.entityClient.getAppPage(id).subscribe({
-      next: (res: LookupModel) => {
-        this.item = res;
-        this.optionDataSources = res.optionDataSources;
-        this.form.patchValue(this.item);
+      next: (res: AppPageModel) => {
+        // this.optionDataSources = res.optionDataSources;
+        if (id && id !== CommonConstants.EmptyGuid) {
+          this.pageLayout = JSON.parse(res.appPageLayout)
+          console.log(this.pageLayout);
+          this.item = res;
+          this.item.appPageFields = this.pageLayout.appPageFields;
+          console.log(this.item)
+          this.form.patchValue(this.item);
+        } else {
+          this.item.id = this.id;
+          this.form.patchValue(this.item);
+        }
+        
+
       },
       error: (error) => {
         console.log(error)
@@ -126,9 +139,9 @@ export class AppPageDetailComponent implements OnInit {
   removeAppPageField(index: number): void {
     this.appPageFields.removeAt(index);
   }
-  
-  showPropertyStatus(field: any){
-    return  field.get('showProperties')?.value;
+
+  showPropertyStatus(field: any) {
+    return field.get('showProperties')?.value;
   }
   createAppPageField(): FormGroup {
     return this.fb.group({
@@ -136,25 +149,27 @@ export class AppPageDetailComponent implements OnInit {
       appPageId: [null],
       fieldName: ['', Validators.required],
       caption: [''],
-      fieldType: [''],
+      fieldType: ['string'],
+      dbField: [''],
       format: [''],
-      cellTemplate: [''],
-      textAlign: [''],
-      position: [''],
-      allowSort: [true],
-      allowFilter: [false],
-      filterType: [''],
-      enableLink: [null],
+      textAlign: ['center'],
+      isSortable: [true],
+      isFilterable: [false],
+      IsGlobalFilterable: [false],
+      filterType: [null],
+      dSName: [''],
+      enableLink: [false],
       linkBaseUrl: [''],
       linkValueFieldName: [''],
       bgColor: [''],
       color: [''],
       isVisible: [true],
-      sortOrder: [0],
+      sortOrder: [1],
       isActive: [true],
       showProperties: [true],
     });
   }
+
   showProperty(field: AbstractControl, show: boolean): void {
     field.get('showProperties')?.setValue(show);
   }
@@ -163,13 +178,15 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'string', 'name': 'String' },
     { 'id': 'number', 'name': 'Number' },
     { 'id': 'date', 'name': 'Date' },
+    { 'id': 'datetime', 'name': 'Date Time' },
+    { 'id': 'daterange', 'name': 'Date Range' },
     { 'id': 'time', 'name': 'Time' },
     { 'id': 'list', 'name': 'List' }
   ];
 
   alignSelectList = [
     { 'id': 'left', 'name': 'Left' },
-    { 'id': 'centre', 'name': 'Centre' },
+    { 'id': 'center', 'name': 'Center' },
     { 'id': 'right', 'name': 'Right' }
   ];
 
@@ -191,44 +208,6 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'button', 'name': 'Button' },
     { 'id': 'dropdown', 'name': 'Dropdown' },
     { 'id': 'upload', 'name': 'Upload' }
-  ];
-
-  controlTypeSelectList = [
-    { 'id': 'check', 'name': 'CheckBox' },
-    { 'id': 'terms-check', 'name': 'Acknowledgement' },
-    { 'id': 'datagrid', 'name': 'DataGrid' },
-    { 'id': 'datepicker', 'name': 'Date' },
-    { 'id': 'multiselect', 'name': 'MultSelect' },
-    { 'id': 'multiselect-tag', 'name': 'MultSelect-Tag' },
-    { 'id': 'multiselect-detail', 'name': 'MultSelect-Detail' },
-    { 'id': 'number', 'name': 'Number' },
-    { 'id': 'password', 'name': 'Password' },
-    { 'id': 'radio', 'name': 'RadioGroup' },
-    { 'id': 'select', 'name': 'Dropdown' },
-    { 'id': 'textbox', 'name': 'TextBox' },
-    { 'id': 'serial', 'name': 'SerialAuto' },
-    { 'id': 'textarea', 'name': 'TextArea' },
-    { 'id': 'timepicker', 'name': 'Time' },
-    { 'id': 'treelist', 'name': 'TreeList' },
-    { 'id': 'treeselect', 'name': 'TreeSelect' },
-    { 'id': 'tab', 'name': 'Tab' },
-    { 'id': 'file', 'name': 'File' },
-    { 'id': 'customcomponent', 'name': 'Component' },
-    { 'id': 'htmleditor', 'name': 'HtmlEditor' },
-    { 'id': 'commentcontrol', 'name': 'CommentControl' },
-    { 'id': 'fileuploadcontrol', 'name': 'FileUploadControl' },
-    { 'id': 'pdfviewer', 'name': 'PdfViewer' },
-    { 'id': 'extendedpdfviewer', 'name': 'Extendedpdfviewer' },
-    { 'id': 'posDatagrid', 'name': 'PosDatagrid' },
-    { 'id': 'labelView', 'name': 'LabelView' },
-    { 'id': 'dynamicselect', 'name': 'DynamicSelect' },
-    { 'id': 'image', 'name': 'Image' },
-    { 'id': 'multiplefileprogressbar', 'name': 'Multiplefileprogressbar' },
-    { 'id': 'hrmmultiplefileprogressbar', 'name': 'HrmMultiplefileprogressbar' },
-    { 'id': 'generalfileprogressbar', 'name': 'Generalfileprogressbar' },
-    { 'id': 'datePickerTwelveHourFormat', 'name': 'DatePickerTwelveHourFormat' },
-    { 'id': 'notificationcontrol', 'name': 'NotificationControl' },
-    { 'id': 'activity', 'name': 'Activity' },
   ];
 
 }

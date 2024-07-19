@@ -27,7 +27,7 @@ export class InputSelectComponent implements ControlValueAccessor, Validator {
   @Input() placeholder: string = 'Select One';
   @Input() autofocus: boolean = false;
   @Input() variant: 'outlined' | 'filled' = 'outlined';
-  @Input() optionDataSource: any[] = [];
+  @Input() options: any[] = [];
   @Input() inputId: string = '';
   @Input() checkmark: boolean = true;
   @Input() showClear: boolean = true;

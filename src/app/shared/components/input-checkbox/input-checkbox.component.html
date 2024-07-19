@@ -2,7 +2,7 @@
   <label class="label" *ngIf="label">{{ label }}</label>
   <div class="flex justify-content-left">
     <div class="flex" [ngClass]="{'flex-column': column, 'flex-row': !column, 'gap-2': true, 'flex-wrap': !column}">
-      <div *ngFor="let option of optionDataSource" class="field-checkbox">
+      <div *ngFor="let option of options" class="field-checkbox">
         <p-checkbox 
           [disabled]="disabled"
           [readonly]="readonly"

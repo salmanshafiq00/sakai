@@ -4,6 +4,7 @@
     <span class="required-star" *ngIf="required">*</span>
   </label>
   <p-inputNumber
+      [ngClass]="{'digit-right': textRight}"
       [inputId]="inputId"
       [placeholder]="placeholder"
       [disabled]="disabled"

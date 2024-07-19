@@ -20,7 +20,7 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   @Input() hidden: boolean = false;
   @Input() autofocus: boolean = false;
   @Input() inputId: string = 'integeronly';
-  @Input() optionDataSource: TreeNode[] = [];
+  @Input() options: TreeNode[] = [];
   @Input() selectionMode: 'single' | 'multiple' | 'checkbox' = 'checkbox';
   @Input() loadingMode: 'mask' | 'icon' = 'mask';
   @Input() selection: TreeNode[] | TreeNode | null = null; // Updated type to support single selection
@@ -86,7 +86,7 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.['optionDataSource']) {
+    if (changes?.['options']) {
       this.updateSelection();
     }
   }
@@ -95,23 +95,23 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
     this.newValue = [];
     if (this.getset === 'key') {
       if (this.selectionMode === 'single' && typeof this.oldValue === 'string') {
-        this.selectSingleNode(this.optionDataSource, this.oldValue); // Added for single selection
+        this.selectSingleNode(this.options, this.oldValue); // Added for single selection
         this.selection = this.newValue.length > 0 ? this.newValue[0] : null;
         this.onChange(this.newValue.length > 0 ? this.newValue[0].key : null);
       } else {
-        this.selectNodes(this.optionDataSource, this.oldValue);
-        this.updateParentSelection(this.optionDataSource, this.newValue);
+        this.selectNodes(this.options, this.oldValue);
+        this.updateParentSelection(this.options, this.newValue);
         this.selection = this.newValue;
         this.onChange(this.newValue.filter(node => node.leaf).map(node => node.key));
       }
     } else {
       if (this.selectionMode === 'single' && typeof this.oldValue === 'object') {
-        this.selectSingleNode(this.optionDataSource, this.oldValue); // Added for single selection
+        this.selectSingleNode(this.options, this.oldValue); // Added for single selection
         this.selection = this.newValue.length > 0 ? this.newValue[0] : null;
         this.onChange(this.newValue.length > 0 ? this.newValue[0] : null);
       } else {
-        this.selectNodes(this.optionDataSource, this.oldValue);
-        this.updateParentSelection(this.optionDataSource, this.newValue);
+        this.selectNodes(this.options, this.oldValue);
+        this.updateParentSelection(this.options, this.newValue);
         this.selection = this.newValue;
         this.onChange(this.newValue);
       }

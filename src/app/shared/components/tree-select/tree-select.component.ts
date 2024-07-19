@@ -27,7 +27,7 @@ export class TreeSelectComponent implements ControlValueAccessor, OnChanges {
   @Input() placeholder: string = 'Select One';
   @Input() autofocus: boolean = false;
   @Input() variant: 'outlined' | 'filled' = 'outlined';
-  @Input() optionDataSource: TreeNode[] = [];
+  @Input() options: TreeNode[] = [];
   @Input() inputId: string = '';
   @Input() scrollHeight: string = '400px';
   @Input() metaKeySelection: boolean = false;
@@ -79,7 +79,7 @@ export class TreeSelectComponent implements ControlValueAccessor, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.['optionDataSource']) {
+    if (changes?.['options']) {
       this.updateSelection();
     }
   }
@@ -116,9 +116,9 @@ export class TreeSelectComponent implements ControlValueAccessor, OnChanges {
 
   private updateSelection(): void {
     if (this.selectionMode === 'single') {
-      this.value = this.getset === 'key' ? this.selectSingleNodeByKey(this.optionDataSource, this.internalValue) : this.internalValue;
+      this.value = this.getset === 'key' ? this.selectSingleNodeByKey(this.options, this.internalValue) : this.internalValue;
     } else {
-      this.value = this.getset === 'key' ? this.selectNodesByKeys(this.optionDataSource, this.internalValue) : this.internalValue;
+      this.value = this.getset === 'key' ? this.selectNodesByKeys(this.options, this.internalValue) : this.internalValue;
     }
     this.propagateChange();
   }

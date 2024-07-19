@@ -5,5 +5,20 @@
   app-input-number.ng-invalid.ng-touched input:focus {
     box-shadow: none;
   }
+
+  app-input-number p-inputnumber {
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+
+    app-input-number span.p-inputnumber.p-component {
+    width: 100%; 
+    box-sizing: border-box; 
+  }
+
+  .digit-right .p-inputnumber-input {
+    text-align: right;
+  }
 }
+
 

@@ -59,18 +59,23 @@
                 <app-input-text formControlName="caption" label="Caption" [required]="true" />
               </div>
               <div class="field col-4">
-                <app-input-select [optionDataSource]="fieldTypeSelectList" formControlName="fieldType"
+                <app-input-select [options]="fieldTypeSelectList" formControlName="fieldType"
                   label="Field Type" />
               </div>
               <div class="field col-4">
-                <app-input-select [optionDataSource]="alignSelectList" formControlName="textAlign" label="Text Align" />
+                <app-input-text formControlName="dbField" label="Db Field" [required]="true" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="sortOrder" label="Sort Order" />
+                <app-input-select [options]="alignSelectList" formControlName="textAlign" label="Text Align" />
               </div>
-
               <div class="field col-4">
-                <app-input-select [optionDataSource]="filterSelectList" formControlName="filterType"
+                <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true" [min]="0" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="format" label="Format" [required]="false" />
+              </div>
+              <div class="field col-4">
+                <app-input-select [options]="filterSelectList" formControlName="filterType"
                   label="Filter Type" />
               </div>
               <div class="field col-4">
@@ -85,17 +90,20 @@
               <div class="field col-4">
                 <app-input-text formControlName="color" label="Color" />
               </div>
-              <div class="field col-4 mt-4">
+              <div class="field col-4">
                 <app-input-switch formControlName="isVisible" label="Visible" />
               </div>
-              <div class="field col-4 mt-4">
+              <div class="field col-4">
                 <app-input-switch formControlName="isActive" label="Active" />
               </div>
               <div class="field col-4">
-                <app-input-switch formControlName="allowSort" label="Allow Sort" />
+                <app-input-switch formControlName="isSortable" label="Allow Sort" />
               </div>
               <div class="field col-4">
-                <app-input-switch formControlName="allowFilter" label="Allow Filter" />
+                <app-input-switch formControlName="isFilterable" label="Allow Filter" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="IsGlobalFilterable" label="Allow Global Filter" />
               </div>
               <div class="field col-4">
                 <app-input-switch formControlName="enableLink" label="Enable Link" />

@@ -33,7 +33,7 @@ export class InputRadioComponent implements ControlValueAccessor, Validator, OnC
   @Input() getset: 'key'| 'object' = 'key';
   @Input() tabindex: number = null;
   @Input() variant: 'outlined' | 'filled' = 'outlined';
-  @Input() optionDataSource: any[] = [];
+  @Input() options: any[] = [];
 
   value: any;
   initalValue: any;
@@ -41,7 +41,7 @@ export class InputRadioComponent implements ControlValueAccessor, Validator, OnC
   private onChange: (value: any) => void = () => {};
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.['optionDataSource']) {
+    if (changes?.['options']) {
       this.updateValue(this.initalValue);
     }
   }
@@ -72,7 +72,7 @@ export class InputRadioComponent implements ControlValueAccessor, Validator, OnC
 
   private updateValue(value: any): void {
     if (this.getset === 'key') {
-      this.value = this.optionDataSource?.find(option => option.id === value);
+      this.value = this.options?.find(option => option.id === value);
     } else {
       this.value = value;
     }

@@ -32,7 +32,7 @@ export class InputMultiselectComponent implements ControlValueAccessor, Validato
   @Input() variant: 'outlined' | 'filled' = 'outlined';
   @Input() appendTo: any = null;
   @Input() name: string = null;
-  @Input() optionDataSource: any[] = [];
+  @Input() options: any[] = [];
   @Input() showClear: boolean = false;
   @Input() filterBy: string = 'name';
   @Input() optionLabel: string = 'name';
@@ -58,7 +58,7 @@ export class InputMultiselectComponent implements ControlValueAccessor, Validato
   writeValue(value: any[]): void {
     this.value = value ? value : [];
     if(this.showTooltip){
-      this.tooltip = this.optionDataSource?.filter(x => this.value?.includes(x.id))?.map(x => x.name)?.join(', ') || null;
+      this.tooltip = this.options?.filter(x => this.value?.includes(x.id))?.map(x => x.name)?.join(', ') || null;
     }
   }
 
@@ -82,7 +82,7 @@ export class InputMultiselectComponent implements ControlValueAccessor, Validato
     this.value = event.value;
     this.onChangeFn(this.value);
     if(this.showTooltip){
-      this.tooltip = this.optionDataSource?.filter(x => this.value?.includes(x.id))?.map(x => x.name)?.join(', ') || null;
+      this.tooltip = this.options?.filter(x => this.value?.includes(x.id))?.map(x => x.name)?.join(', ') || null;
     }  
   }
   

@@ -32,7 +32,7 @@ export class InputCheckboxComponent implements ControlValueAccessor, Validator, 
   @Input() column: boolean = false;
   @Input() getset: 'key' | 'object' = 'object';
   @Input() variant: 'outlined' | 'filled' = 'outlined';
-  @Input() optionDataSource: any[] = [];
+  @Input() options: any[] = [];
   @Input() checkedIcon: string = 'pi pi-check';
   @Input() uncheckedIcon: string = 'pi pi-times';
 
@@ -43,7 +43,7 @@ export class InputCheckboxComponent implements ControlValueAccessor, Validator, 
   onChangeFn: any = (_: any) => { };
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes?.['optionDataSource'] && !changes?.['optionDataSource'].isFirstChange()) {
+    if (changes?.['options'] && !changes?.['options'].isFirstChange()) {
       this.updateSelection(this.initialValue);
     }
   }
@@ -84,7 +84,7 @@ export class InputCheckboxComponent implements ControlValueAccessor, Validator, 
   }
 
   private updateSelection(value: any[]): void {
-      this.selectedOptions = this.optionDataSource?.filter(option => value.includes(option.id)) || [];
+      this.selectedOptions = this.options?.filter(option => value.includes(option.id)) || [];
       if(this.getset === 'object'){
         this.value = this.selectedOptions;
         this.onChangeFn(this.value);  

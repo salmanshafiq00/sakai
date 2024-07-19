@@ -1459,7 +1459,7 @@ export class AppPagesClient implements IAppPagesClient {
             })
         };
 
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processUpsertPage(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -3585,6 +3585,7 @@ export class AppPageModel {
     isActive?: boolean;
     active?: string;
     appPageLayout?: string;
+    appPageFields?: AppPageFieldModel[];
     optionsDataSources?: { [key: string]: any; };
 
     init(_data?: any) {
@@ -3598,6 +3599,11 @@ export class AppPageModel {
             this.isActive = _data["isActive"];
             this.active = _data["active"];
             this.appPageLayout = _data["appPageLayout"];
+            if (Array.isArray(_data["appPageFields"])) {
+                this.appPageFields = [] as any;
+                for (let item of _data["appPageFields"])
+                    this.appPageFields!.push(AppPageFieldModel.fromJS(item));
+            }
             if (_data["optionsDataSources"]) {
                 this.optionsDataSources = {} as any;
                 for (let key in _data["optionsDataSources"]) {
@@ -3626,6 +3632,11 @@ export class AppPageModel {
         data["isActive"] = this.isActive;
         data["active"] = this.active;
         data["appPageLayout"] = this.appPageLayout;
+        if (Array.isArray(this.appPageFields)) {
+            data["appPageFields"] = [];
+            for (let item of this.appPageFields)
+                data["appPageFields"].push(item.toJSON());
+        }
         if (this.optionsDataSources) {
             data["optionsDataSources"] = {};
             for (let key in this.optionsDataSources) {
@@ -3633,6 +3644,89 @@ export class AppPageModel {
                     (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
+        return data;
+    }
+}
+
+export class AppPageFieldModel {
+    id?: string;
+    appPageId?: string;
+    fieldName?: string;
+    caption?: string;
+    fieldType?: string;
+    dbField?: string;
+    format?: string;
+    textAlign?: string;
+    isSortable?: boolean;
+    isFilterable?: boolean;
+    dsName?: string;
+    isGlobalFilterable?: boolean;
+    filterType?: string;
+    enableLink?: boolean;
+    linkBaseUrl?: string;
+    linkValueFieldName?: string;
+    bgColor?: string;
+    color?: string;
+    isVisible?: boolean;
+    sortOrder?: number;
+    isActive?: boolean;
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.appPageId = _data["appPageId"];
+            this.fieldName = _data["fieldName"];
+            this.caption = _data["caption"];
+            this.fieldType = _data["fieldType"];
+            this.dbField = _data["dbField"];
+            this.format = _data["format"];
+            this.textAlign = _data["textAlign"];
+            this.isSortable = _data["isSortable"];
+            this.isFilterable = _data["isFilterable"];
+            this.dsName = _data["dsName"];
+            this.isGlobalFilterable = _data["isGlobalFilterable"];
+            this.filterType = _data["filterType"];
+            this.enableLink = _data["enableLink"];
+            this.linkBaseUrl = _data["linkBaseUrl"];
+            this.linkValueFieldName = _data["linkValueFieldName"];
+            this.bgColor = _data["bgColor"];
+            this.color = _data["color"];
+            this.isVisible = _data["isVisible"];
+            this.sortOrder = _data["sortOrder"];
+            this.isActive = _data["isActive"];
+        }
+    }
+
+    static fromJS(data: any): AppPageFieldModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppPageFieldModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["appPageId"] = this.appPageId;
+        data["fieldName"] = this.fieldName;
+        data["caption"] = this.caption;
+        data["fieldType"] = this.fieldType;
+        data["dbField"] = this.dbField;
+        data["format"] = this.format;
+        data["textAlign"] = this.textAlign;
+        data["isSortable"] = this.isSortable;
+        data["isFilterable"] = this.isFilterable;
+        data["dsName"] = this.dsName;
+        data["isGlobalFilterable"] = this.isGlobalFilterable;
+        data["filterType"] = this.filterType;
+        data["enableLink"] = this.enableLink;
+        data["linkBaseUrl"] = this.linkBaseUrl;
+        data["linkValueFieldName"] = this.linkValueFieldName;
+        data["bgColor"] = this.bgColor;
+        data["color"] = this.color;
+        data["isVisible"] = this.isVisible;
+        data["sortOrder"] = this.sortOrder;
+        data["isActive"] = this.isActive;
         return data;
     }
 }
