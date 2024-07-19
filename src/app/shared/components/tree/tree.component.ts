@@ -138,7 +138,7 @@ export class TreeComponent implements ControlValueAccessor, OnChanges {
 
   private selectNodes(nodes: TreeNode[], selectedKeys: string[]) {
     nodes?.forEach(node => {
-      if (selectedKeys.includes(node.key!)) {  // Ensure key is not undefined
+      if (selectedKeys?.includes(node.key!)) {  // Ensure key is not undefined
         this.newValue.push(node);
       }
       if (node.children) {

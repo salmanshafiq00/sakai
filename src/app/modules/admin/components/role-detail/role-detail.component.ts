@@ -48,19 +48,9 @@ export class RoleDetailComponent {
 
 
   ngOnInit() {
-
     this.id = this.customDialogService.getConfigData();
     this.initializeFormGroup();
-
-    if (this.id && this.id !== this.comConst.EmptyGuid) {
-      this.getById(this.id);
-    }
-
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.getAllPermissionNodeList();
-      this.getAllAppMenuTreeList();
-    }
-
+    this.getById(this.id);
   }
 
   onSubmit() {
@@ -78,15 +68,12 @@ export class RoleDetailComponent {
   private save() {
     let createCommand = new CreateRoleCommand();
     createCommand = { ...this.form.value }
-    createCommand.permissions = this.selectedPermissions.filter(x => x.leaf).map(x => x.label)
-    createCommand.rolemenus = this.selectedAppMenus.filter(x => x.leaf).map(x => x.key)
     this.entityClient.create(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
       },
       error: (error) => {
-        console.log(error)
         this.toast.showError(error.errors[0]?.description)
       }
     });
@@ -96,8 +83,6 @@ export class RoleDetailComponent {
   private update() {
     let updateCommand = new UpdateRoleCommand();
     updateCommand = { ...this.form.value };
-    updateCommand.permissions = this.selectedPermissions.filter(x => x.leaf).map(x => x.label)
-    updateCommand.rolemenus = this.selectedAppMenus.filter(x => x.leaf).map(x => x.key)
     this.entityClient.updateRole(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
@@ -116,18 +101,6 @@ export class RoleDetailComponent {
         this.item = res;
         console.log(res);
         this.optionDataSources = res.optionsDataSources;
-
-        this.selectedAppMenus = [];  // Clear the array before using
-        this.selectNodes(this.optionDataSources['appMenuTreeList'], this.item.roleMenus);
-        this.updateParentSelection(this.optionDataSources['appMenuTreeList'], this.selectedAppMenus);
-
-        this.selectedPermissions = [];  // Clear the array before using
-        this.selectNodesByLabel(this.optionDataSources['permissionNodeList'], this.item.permissions,);
-        this.updateParentSelection(this.optionDataSources['permissionNodeList'], this.selectedPermissions);
-  
-        console.log(this.selectedPermissions);
-        console.log(this.selectedAppMenus);        
-
         this.form.patchValue({
           ...this.item
         });
@@ -140,35 +113,9 @@ export class RoleDetailComponent {
       id: [''],
       name: ['', Validators.required],
       permissions: [null],
-      appMenus: [null],
+      roleMenus: [null],
     });
 
-  }
-
-
-
-  private getAllPermissionNodeList() {
-    this.nodeListClient.getAllPermissionNodeList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['permissionNodeList'] = res;
-        console.log(this.optionDataSources)
-      },
-      error: (error) => {
-        console.log(error)
-      }
-    });
-  }
-
-  private getAllAppMenuTreeList() {
-    this.nodeListClient.getAllAppMenuTreeSelectList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['appMenuTreeList'] = res;
-        console.log(this.optionDataSources)
-      },
-      error: (error) => {
-        console.log(error)
-      }
-    });
   }
 
   selectNodes(nodes: TreeNode[], selectedLabels: string[]) {
@@ -224,9 +171,9 @@ export class RoleDetailComponent {
       }
     });
   }
-  
-  
-  
+
+
+
 
 
 }

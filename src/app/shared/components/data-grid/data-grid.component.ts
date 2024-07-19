@@ -208,7 +208,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   
 
   edit(item: any) {
-    console.log(item);
     this.openDialog(item.id);
   }
 
