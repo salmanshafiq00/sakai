@@ -11,7 +11,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
   selector: 'app-app-menu-detail',
   templateUrl: './app-menu-detail.component.html',
   styleUrl: './app-menu-detail.component.scss',
-  providers: [ToastService, TreeNodeListsClient, SelectListsClient, AppMenusClient]
+  providers: [ToastService , AppMenusClient]
 })
 export class AppMenuDetailComponent  implements OnInit {
   VMsg = CommonValidationMessage;
@@ -41,26 +41,14 @@ export class AppMenuDetailComponent  implements OnInit {
   private toast: ToastService = inject(ToastService);
   private fb: FormBuilder = inject(FormBuilder);
 
-  private treeNodeListsClient: TreeNodeListsClient = inject(TreeNodeListsClient);
-  private selectListsClient: SelectListsClient = inject(SelectListsClient);
   private entityClient: AppMenusClient = inject(AppMenusClient);
 
 
 
   ngOnInit() {
-
     this.id = this.customDialogService.getConfigData();
     this.initializeFormGroup();
-
-    if (this.id && this.id !== this.comConst.EmptyGuid) {
-      this.getById(this.id);
-    }
-
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.GetAllAppMenuTreeSelectList();
-      this.getMenuTypeSelectList();
-    }
-
+    this.getById(this.id);
   }
 
   onSubmit() {
@@ -79,8 +67,6 @@ export class AppMenuDetailComponent  implements OnInit {
     console.log(this.form.value)
     let createCommand = new CreateAppMenuCommand();
     createCommand = { ...this.form.value }
-    createCommand.parentId = this.form.get('parentId')?.value?.key;
-    console.log(createCommand)
     this.entityClient.createMenu(createCommand).subscribe({
       next: () => {
         this.toast.created()
@@ -98,8 +84,6 @@ export class AppMenuDetailComponent  implements OnInit {
     let updateCommand = new UpdateAppMenuCommand();
     console.log(this.form.value)
     updateCommand = { ...this.form.value };
-    updateCommand.parentId = this.form.get('parentId')?.value?.key;
-
     this.entityClient.updateMenu(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
@@ -116,13 +100,12 @@ export class AppMenuDetailComponent  implements OnInit {
     this.entityClient.getAppMenu(id).subscribe({
       next: (res: AppMenuModel) => {
         this.item = res;
-        console.log(res);
          this.optionDataSources = res.optionsDataSources;
-        const selectedParent = this.optionDataSources['parentTreeSelectList'].find(x => x.key?.toLowerCase() == res.parentId?.toLowerCase());
-        this.form.patchValue({
-          ...this.item,
-          parentId: selectedParent
-        });
+         if(id && id !== this.comConst.EmptyGuid){
+          this.form.patchValue({
+            ...this.item
+          });
+         }
       }
     });
   }
@@ -143,30 +126,5 @@ export class AppMenuDetailComponent  implements OnInit {
     });
 
   }
-
-
-
-  private GetAllAppMenuTreeSelectList() {
-    this.treeNodeListsClient.getAllAppMenuTreeSelectList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['parentTreeSelectList'] = res;
-      },
-      error: (error) => {
-          console.log(error)
-      }
-    });
-  }
-
-  private getMenuTypeSelectList() {
-    this.selectListsClient.getMenuTypeSelectList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['menuTypeSelectList'] = res;
-      },
-      error: (error) => {
-          console.log(error)
-      }
-    });
-  }
-
 
 }

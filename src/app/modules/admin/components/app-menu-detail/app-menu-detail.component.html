@@ -2,32 +2,45 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="p-fluid p-formgrid grid">
       <div class="field col-12 md:col-6">
-        <label htmlFor="label">Label</label>
-        <input type="text" pInputText formControlName="label" autofocus
-          [ngClass]="{'ng-invalid ng-dirty': f['label']?.invalid && f['label']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['label'].errors?.['required'] && f['label']?.touched">{{VMsg.required}}</small>
+          <app-input-text 
+            label="Label" 
+            formControlName="label" 
+            [required]="true"
+            [readonly]="false" />
+          <app-validator-msg [control]="f['label']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="routerLink">RouterLink</label>
-        <input type="text" pInputText formControlName="routerLink"
-          [ngClass]="{'ng-invalid ng-dirty': f['routerLink']?.invalid && f['routerLink']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['routerLink'].errors?.['required'] && f['routerLink']?.touched">{{VMsg.required}}</small>
+          <app-input-text 
+            label="RouterLink" 
+            formControlName="routerLink" 
+            [required]="true"
+            [readonly]="false" />
+          <app-validator-msg [control]="f['routerLink']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="parentId">Parent Name</label>
+        <!-- <label htmlFor="parentId">Parent Name</label>
         <p-treeSelect formControlName="parentId" [options]="optionDataSources['parentTreeSelectList']" selectionMode="single"
           [showClear]="true" placeholder="Select one" appendTo="body">
-        </p-treeSelect>
+        </p-treeSelect> -->
+        <app-tree-select
+            label="Parent Name"
+            [required]="true"
+            inputId="parentId"
+            formControlName="parentId"
+            selectionMode="single"
+            getset="key"
+            [options]="optionDataSources['parentTreeSelectList']"
+        />
+
       </div>
 
       <div class="field col-12 md:col-6">
-        <label htmlFor="status">Menu Type</label>
-        <p-dropdown formControlName="menuTypeId" inputId="menuTypeId" optionValue="id" optionLabel="name" 
-            [options]="optionDataSources['menuTypeSelectList']" [showClear]="true" [filter]="true" filterBy="name" placeholder="Select one"  appendTo="body">
-        </p-dropdown>
-    </div>
+        <app-input-select
+          label="Menu Type"
+          formControlName="menuTypeId"
+          [options]="optionDataSources['menuTypeSelectList']"
+          [required]="true" />
+     </div>
 
       <div class="field col-12 md:col-6">
         <label for="icon">Icon</label>
@@ -55,36 +68,45 @@
         </p-dropdown>
       </div>
       
+      <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
+        <app-input-switch label="Active" formControlName="isActive" />
+      </div>
+      <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
+        <app-input-switch label="Visible" formControlName="visible" />
+      </div>
+      <div class="field col-12 md:col-6">
+        <app-input-number 
+            label="Order No" 
+            formControlName="orderNo"
+            [min]="0" 
+            [required]="true" />
+          <app-validator-msg [control]="f['orderNo']" />
+      </div>
+      <div class="field col-12 md:col-6">
+        <app-input-textarea 
+          label="Description" 
+          formControlName="description" 
+          [required]="false"
+          [max]="200"
+          [showCharLength]="true" />
+        <app-validator-msg [control]="f['description']" />
 
-      <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
-        <div class="flex align-items-center">
-          <label class="input-switch-label" htmlFor="visible">Active</label>
-          <p-inputSwitch class="input-switch ml-2" formControlName="isActive" />
-        </div>
-      </div>
-      <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
-        <div class="flex align-items-center">
-          <label class="input-switch-label" htmlFor="visible">Visible</label>
-          <p-inputSwitch class="input-switch ml-2" formControlName="visible" />
-        </div>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label htmlFor="orderNo">Order No</label>
-        <input type="text" pInputText formControlName="orderNo"
-          [ngClass]="{'ng-invalid ng-dirty': f['orderNo']?.invalid && f['orderNo']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['orderNo'].errors?.['required'] && f['orderNo']?.touched">{{VMsg.required}}</small>
-      </div>
-      <div class="field col-12 md:col-6">
-        <label for="description">Description</label>
-        <textarea pInputTextarea formControlName="description" rows="3" cols="20"></textarea>
       </div>
     </div>
     <div class="mt-3 p-dialog-footer">
-      <button pButton pRipple label="Cancel" type="button" icon="pi pi-times" class="p-button-text"
-        (click)="cancel()"></button>
-      <button pButton pRipple label="Save" type="submit" icon="pi pi-check" class="p-button-text"
-        [disabled]="form.invalid"></button>
+      <app-button
+          label="Cancel"
+          type="button"
+          icon="pi pi-times"
+          styleClass="p-button-text"
+          severity="warning"
+          (onClick)="cancel()"/>
+        <app-button
+          label="Save"
+          type="submit"
+          icon="pi pi-check"
+          styleClass="p-button-text"
+          [disabled]="form.invalid"/>
     </div>
   </form>
 </div>
