@@ -11,7 +11,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss',
-  providers: [ToastService, SelectListsClient, UsersClient]
+  providers: [ToastService, UsersClient]
 })
 export class UserDetailComponent implements OnInit {
   VMsg = CommonValidationMessage;
@@ -29,11 +29,11 @@ export class UserDetailComponent implements OnInit {
     return this.form.controls;
   }
 
-  get isEdit(): boolean{
+  get isEdit(): boolean {
     return this.id && this.id != '00000000-0000-0000-0000-000000000000'
   }
 
-  selectList(dsName: string){
+  selectList(dsName: string) {
     return this.optionDataSources[dsName];
   }
 
@@ -41,7 +41,6 @@ export class UserDetailComponent implements OnInit {
   private toast: ToastService = inject(ToastService);
   private fb: FormBuilder = inject(FormBuilder);
 
-  private selectListClient: SelectListsClient = inject(SelectListsClient);
   private entityClient: UsersClient = inject(UsersClient);
 
 
@@ -50,14 +49,11 @@ export class UserDetailComponent implements OnInit {
 
     this.id = this.customDialogService.getConfigData();
     this.initializeFormGroup();
+    this.getById(this.id);
 
-    if (this.id && this.id !== this.comConst.EmptyGuid) {
-      this.getById(this.id);
-    }
-
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.getRoleSelectList();
-    }
+    // if (!this.id || this.id === this.comConst.EmptyGuid) {
+    //   this.getRoleSelectList();
+    // }
 
   }
 
@@ -77,8 +73,6 @@ export class UserDetailComponent implements OnInit {
     console.log(this.form.value)
     let createCommand = new CreateAppUserCommand();
     createCommand = { ...this.form.value }
-    createCommand.roles = this.form.get('roles')?.value?.map((x) => x.id);
-    console.log(createCommand)
     this.entityClient.createUser(createCommand).subscribe({
       next: () => {
         this.toast.created()
@@ -95,8 +89,6 @@ export class UserDetailComponent implements OnInit {
   private update() {
     let updateCommand = new UpdateAppUserCommand();
     updateCommand = { ...this.form.value };
-    updateCommand.roles = this.form.get('roles')?.value?.map((x) => x.id);
-
     this.entityClient.updateUser(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
@@ -114,11 +106,11 @@ export class UserDetailComponent implements OnInit {
       next: (res: AppUserModel) => {
         this.item = res;
         console.log(res);
-         this.optionDataSources = res.optionsDataSources;
-        const assignedRoles = this.optionDataSources['roleSelectList'].filter(role => res.roles.includes(role.name));
+        this.optionDataSources = res.optionsDataSources;
+        // const assignedRoles = this.optionDataSources['roleSelectList'].filter(role => res.roles.includes(role.name));
         this.form.patchValue({
           ...this.item,
-          roles: assignedRoles
+          // roles: assignedRoles
         });
       }
     });
@@ -138,19 +130,6 @@ export class UserDetailComponent implements OnInit {
       roles: [null]
     });
 
-  }
-
-
-
-  private getRoleSelectList() {
-    this.selectListClient.getRoleSelectList(false).subscribe({
-      next: (res) => {
-        this.roleSelectList = res;
-      },
-      error: (error) => {
-          console.log(error)
-      }
-    });
   }
 
 }

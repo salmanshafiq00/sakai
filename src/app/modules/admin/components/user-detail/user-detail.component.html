@@ -2,71 +2,85 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="p-fluid p-formgrid grid">
       <div class="field col-12 md:col-6">
-        <label htmlFor="firstName">First Name</label>
-        <input type="text" pInputText id="firstName" formControlName="firstName" autofocus
-          [ngClass]="{'ng-invalid ng-dirty': f['firstName']?.invalid && f['firstName']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['firstName'].errors?.['required'] && f['firstName']?.touched">{{VMsg.required}}</small>
+        <app-input-text 
+          label="First Name" 
+          formControlName="firstName" 
+          [required]="true"
+          [readonly]="false" />
+        <app-validator-msg [control]="f['firstName']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="lastName">Last Name</label>
-        <input type="text" pInputText id="lastName" formControlName="lastName"
-          [ngClass]="{'ng-invalid ng-dirty': f['lastName']?.invalid && f['lastName']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['lastName'].errors?.['required'] && f['lastName']?.touched">{{VMsg.required}}</small>
+        <app-input-text 
+          label="Last Name" 
+          formControlName="lastName" 
+          [required]="true"
+          [readonly]="false" />
+        <app-validator-msg [control]="f['lastName']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="email">Email</label>
-        <input type="text" pInputText id="email" formControlName="email" autofocus
-          [ngClass]="{'ng-invalid ng-dirty': f['email']?.invalid && f['email']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['email'].errors?.['required'] && f['email']?.touched">{{VMsg.required}}</small>
+        <app-input-text 
+          label="Email" 
+          formControlName="email" 
+          [required]="true"
+          [readonly]="false" />
+        <app-validator-msg [control]="f['email']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="username">User Name</label>
-        <input type="text" pInputText id="username" formControlName="username"
-          [ngClass]="{'ng-invalid ng-dirty': f['username']?.invalid && f['username']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['username'].errors?.['required'] && f['username']?.touched">{{VMsg.required}}</small>
+        <app-input-text 
+          label="User Name" 
+          formControlName="username" 
+          [required]="true"
+          [readonly]="false" />
+        <app-validator-msg [control]="f['username']" />
       </div>
       <div class="field col-12 md:col-6">
-        <label htmlFor="phoneNumber">Phone Number</label>
-        <input type="text" pInputText id="phoneNumber" formControlName="phoneNumber"
-          [ngClass]="{'ng-invalid ng-dirty': f['phoneNumber']?.invalid && f['phoneNumber']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['phoneNumber'].errors?.['required'] && f['phoneNumber']?.touched">{{VMsg.required}}</small>
+        <app-input-text 
+          label="Phone Number" 
+          formControlName="phoneNumber" 
+          [required]="true"
+          [readonly]="false" />
+        <app-validator-msg [control]="f['phoneNumber']" />
       </div>
       <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
-        <div class="flex align-items-center">
-          <label class="input-switch-label" htmlFor="isActive">Active</label>
-          <p-inputSwitch class="input-switch ml-2" formControlName="isActive" />
-        </div>
+        <app-input-switch label="Active" formControlName="isActive" />
       </div>
       <div class="field col-12 md:col-12">
-        <label class="" htmlFor="roles">Roles</label>
-        <p-multiSelect [options]="optionDataSources['roleSelectList']" formControlName="roles" optionLabel="name" display="chip" [showClear]="true" appendTo="body"
-          placeholder="Select Any" />
+        <app-input-multiselect
+          label="Roles"
+          formControlName="roles"
+          [options]="optionDataSources['roleSelectList']"
+          appendTo="body"
+          [required]="false" />
       </div>
       <div class="field col-12 md:col-6" *ngIf="!isEdit" >
-        <label htmlFor="password">Password</label>
-        <input type="text" pInputText id="password" formControlName="password" autofocus
-          [ngClass]="{'ng-invalid ng-dirty': f['password']?.invalid && f['password']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['password'].errors?.['required'] && f['password']?.touched">{{VMsg.required}}</small>
+        <app-input-password 
+          label="Password" 
+          formControlName="password" 
+          [required]="true" />
+        <app-validator-msg [control]="f['password']" />
       </div>
       <div class="field col-12 md:col-6" *ngIf="!isEdit">
-        <label htmlFor="confirmPassword">Confirm Password</label>
-        <input type="text" pInputText id="confirmPassword" formControlName="confirmPassword"
-          [ngClass]="{'ng-invalid ng-dirty': f['confirmPassword']?.invalid && f['confirmPassword']?.touched}" />
-        <small class="validation-msg"
-          *ngIf="f['confirmPassword'].errors?.['required'] && f['confirmPassword']?.touched">{{VMsg.required}}</small>
+        <app-input-password 
+          label="Confirm Password" 
+          formControlName="confirmPassword" 
+          [required]="true" />
+        <app-validator-msg [control]="f['confirmPassword']" />
       </div>
     </div>
     <div class="mt-3 p-dialog-footer">
-      <button pButton pRipple label="Cancel" type="button" icon="pi pi-times" class="p-button-text"
-        (click)="cancel()"></button>
-      <button pButton pRipple label="Save" type="submit" icon="pi pi-check" class="p-button-text"
-        [disabled]="form.invalid"></button>
+        <app-button
+          label="Cancel"
+          type="button"
+          icon="pi pi-times"
+          styleClass="p-button-text"
+          severity="warning"
+          (onClick)="cancel()"/>
+        <app-button
+          label="Save"
+          type="submit"
+          icon="pi pi-check"
+          styleClass="p-button-text"
+          [disabled]="form.invalid"/>
     </div>
   </form>
 </div>
