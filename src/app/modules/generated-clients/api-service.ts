@@ -2353,7 +2353,7 @@ export class LookupDetailModel {
     statusName?: string;
     parentId?: string | undefined;
     parentName?: string;
-    lookupId?: string;
+    lookupId?: string | undefined;
     lookupName?: string;
     optionDataSources?: { [key: string]: any; };
 

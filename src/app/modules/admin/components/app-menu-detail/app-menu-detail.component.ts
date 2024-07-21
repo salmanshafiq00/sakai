@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel, TreeNodeListsClient, SelectListsClient } from 'src/app/modules/generated-clients/api-service';
+import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { PrimengIcon } from 'src/app/shared/services/primeng-icon';
 import { ToastService } from 'src/app/shared/services/toast.service';
@@ -64,7 +64,6 @@ export class AppMenuDetailComponent  implements OnInit {
   }
 
   private save() {
-    console.log(this.form.value)
     let createCommand = new CreateAppMenuCommand();
     createCommand = { ...this.form.value }
     this.entityClient.createMenu(createCommand).subscribe({
@@ -84,6 +83,7 @@ export class AppMenuDetailComponent  implements OnInit {
     let updateCommand = new UpdateAppMenuCommand();
     console.log(this.form.value)
     updateCommand = { ...this.form.value };
+    console.log(updateCommand)
     this.entityClient.updateMenu(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
@@ -122,7 +122,8 @@ export class AppMenuDetailComponent  implements OnInit {
       visible: [true],
       orderNo: [''],
       parentId: [null],
-      menuTypeId: [null]
+      menuTypeId: [null],
+      test: ['test value']
     });
 
   }

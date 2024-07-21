@@ -2,7 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { LookupModel, SelectListsClient, LookupDetailsClient, CreateLookupDetailCommand, UpdateLookupDetailCommand, LookupDetailModel } from 'src/app/modules/generated-clients/api-service';
+import { LookupModel, LookupDetailsClient, CreateLookupDetailCommand, UpdateLookupDetailCommand, LookupDetailModel } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
@@ -10,12 +10,9 @@ import { ToastService } from 'src/app/shared/services/toast.service';
   selector: 'app-lookup-detail-detail',
   templateUrl: './lookup-detail-detail.component.html',
   styleUrl: './lookup-detail-detail.component.scss',
-  providers: [ToastService, LookupDetailsClient, SelectListsClient]
+  providers: [ToastService, LookupDetailsClient]
 })
-export class LookupDetailDetailComponent  implements OnInit {
-
-  submitted: boolean = true;
-
+export class LookupDetailDetailComponent implements OnInit {
   VMsg = CommonValidationMessage;
   comConst = CommonConstants;
   optionDataSources = {};
@@ -33,28 +30,13 @@ export class LookupDetailDetailComponent  implements OnInit {
   private toast: ToastService = inject(ToastService);
   private fb: FormBuilder = inject(FormBuilder);
 
-  private selectListClient: SelectListsClient = inject(SelectListsClient);
   private entityClient: LookupDetailsClient = inject(LookupDetailsClient);
 
-
-
   ngOnInit() {
-
-    this.id = this.customDialogService.getConfigData(); // get the passed data (id)
+    this.id = this.customDialogService.getConfigData(); 
     this.initializeFormGroup();
-
-    if (this.id && this.id !== this.comConst.EmptyGuid) {
-      this.getById(this.id);
-    }
-
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.getParentSelectList();
-      this.getLookupSelectList();
-    }
-
+    this.getById(this.id);
   }
-
-
 
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
@@ -64,13 +46,11 @@ export class LookupDetailDetailComponent  implements OnInit {
     }
   }
 
-
   cancel() {
     this.customDialogService.close(false);
   }
 
   private save() {
-    this.submitted = true;
     let createLookupCommand = new CreateLookupDetailCommand();
     createLookupCommand = { ...this.form.value }
 
@@ -88,7 +68,6 @@ export class LookupDetailDetailComponent  implements OnInit {
   }
 
   private update() {
-    this.submitted = true;
     let updateLookupCommand = new UpdateLookupDetailCommand();
     updateLookupCommand = { ...this.form.value }
 
@@ -100,24 +79,6 @@ export class LookupDetailDetailComponent  implements OnInit {
       error: (error) => {
         this.toast.showError(error.errors[0]?.description)
         console.log(error);
-      }
-    });
-  }
-
-  private getParentSelectList() {
-    this.selectListClient.getLookupDetailSelectList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['parentSelectList'] = res;
-        console.log(this.optionDataSources);
-      }
-    });
-  }
-
-  private getLookupSelectList() {
-    this.selectListClient.getLookupSelectList(false).subscribe({
-      next: (res) => {
-        this.optionDataSources['lookupSelectList'] = res;
-        console.log(this.optionDataSources);
       }
     });
   }
@@ -142,7 +103,6 @@ export class LookupDetailDetailComponent  implements OnInit {
       status: [false],
       parentId: [null],
       lookupId: [null],
-      created: [null]
     });
   }
 
