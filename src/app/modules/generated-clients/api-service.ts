@@ -2410,10 +2410,10 @@ export class LookupDetailModel {
 }
 
 export class DataFieldModel {
-    field?: string;
-    header?: string;
+    fieldName?: string;
+    caption?: string;
     fieldType?: string;
-    visible?: boolean;
+    isVisible?: boolean;
     sortOrder?: number;
     isSortable?: boolean;
     isGlobalFilterable?: boolean;
@@ -2422,10 +2422,10 @@ export class DataFieldModel {
 
     init(_data?: any) {
         if (_data) {
-            this.field = _data["field"];
-            this.header = _data["header"];
+            this.fieldName = _data["fieldName"];
+            this.caption = _data["caption"];
             this.fieldType = _data["fieldType"];
-            this.visible = _data["visible"];
+            this.isVisible = _data["isVisible"];
             this.sortOrder = _data["sortOrder"];
             this.isSortable = _data["isSortable"];
             this.isGlobalFilterable = _data["isGlobalFilterable"];
@@ -2443,10 +2443,10 @@ export class DataFieldModel {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["field"] = this.field;
-        data["header"] = this.header;
+        data["fieldName"] = this.fieldName;
+        data["caption"] = this.caption;
         data["fieldType"] = this.fieldType;
-        data["visible"] = this.visible;
+        data["isVisible"] = this.isVisible;
         data["sortOrder"] = this.sortOrder;
         data["isSortable"] = this.isSortable;
         data["isGlobalFilterable"] = this.isGlobalFilterable;
