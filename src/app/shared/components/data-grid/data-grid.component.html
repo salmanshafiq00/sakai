@@ -90,7 +90,7 @@
 
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-                        <h5 class="mb-2 sm:m-0">{{getPageTitle}}</h5> 
+                        <h5 class="mb-2 sm:m-0">{{pageTitle}}</h5> 
                         <span class="block md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
                             <input 
@@ -130,10 +130,7 @@
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th> -->
                         <ng-container *ngFor="let col of columns">
-                            <th  
-                                *ngIf="col.isVisible"
-                                [pSortableColumn]="col.isSortable ? col.fieldName : ''" 
-                            >
+                            <th [pSortableColumn]="col.isSortable ? col.fieldName : ''" >
                             
                             <!-- FieldType.string -->
                             <p-columnFilter 
@@ -160,7 +157,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.fieldName, 'select')]"
-                                        [options]="optionDataSources[col?.dsName]" 
+                                        [options]="optionDataSources[col?.dSName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
                                         [optionLabel]="'name'" 
@@ -190,7 +187,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.fieldName, 'select')]"
-                                        [options]="optionDataSources[col?.dsName]" 
+                                        [options]="optionDataSources[col?.dSName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
                                         optionLabel="name"
@@ -231,10 +228,10 @@
                             <p-tableCheckbox [value]="items"></p-tableCheckbox>
                         </td> -->
                         <ng-container *ngFor="let col of columns">
-                            <td *ngIf="col.isVisible && col.fieldType !== FieldType.date">
+                            <td *ngIf="col.fieldType !== FieldType.date">
                                 {{items[col.fieldName]}}
                             </td>
-                            <td *ngIf="col.isVisible && col.fieldType === FieldType.date">
+                            <td *ngIf="col.fieldType === FieldType.date">
                                 {{items[col.fieldName] | date: 'dd/MM/yyyy'}}
                             </td>
                         </ng-container>

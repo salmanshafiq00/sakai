@@ -12,6 +12,7 @@ import { AppMenusClient } from 'src/app/modules/generated-clients/api-service';
 export class AppMenuListComponent {
   detailComponent = AppMenuDetailComponent;
   getFuncName = 'getAppMenus';
+  pageId = '5255d7a0-49b8-45da-3f93-08dca9b2d959';
 
   constructor(public entityClient: AppMenusClient){
     

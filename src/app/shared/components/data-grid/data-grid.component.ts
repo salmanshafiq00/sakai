@@ -3,7 +3,7 @@ import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { AppPageModel, AppPagesClient, DataFieldModel, DataFilterModel } from 'src/app/modules/generated-clients/api-service';
+import { AppPageFieldModel, AppPageModel, AppPagesClient, DataFieldModel, DataFilterModel, GlobalFilterFieldModel } from 'src/app/modules/generated-clients/api-service';
 import { BackoffService } from '../../services/backoff.service';
 import { ToastService } from '../../services/toast.service';
 import { DatePipe } from '@angular/common';
@@ -21,8 +21,9 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   // Page Layout Settings Start Start
   isPagelayoutFound: boolean = true;
-  appPageLayout = {};
+  appPageLayout: any = {};
   appPageModel: AppPageModel = null;
+  globalfiltersTooltip: string = '';
 
   // Page Layout Settings Start End
 
@@ -33,7 +34,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   isInitialLoaded: boolean = false;
   responsiveLayout = 'scroll';
   cols: any[] = [];
-  dataFields: DataFieldModel[] = [];
+  dataFields: AppPageFieldModel[] = [];
   filters: DataFilterModel[] = [];
   lazyLoading: boolean = true;
   selectionMode: "single" | "multiple" = "multiple";
@@ -54,7 +55,8 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   // Filtering Global
   globalFilterFields: string[] = [];
-  globalFilterFieldNames: string[] = [];
+  globalFilterFieldModels: GlobalFilterFieldModel[] = [];
+  // globalFilterFieldNames: string[] = [];
 
   // Global filters
   @ViewChild('dt') table: Table;
@@ -97,13 +99,17 @@ export class DataGridComponent implements OnInit, OnDestroy {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
   }
 
-  get globalfiltersTooltip(): string {
-    return this.globalFilterFieldNames?.join(', ');
-  }
+  // get globalfiltersTooltip(): string {
+  //   // this.click++;
+  //   // console.log('click', this.click)
+  //   // return this.globalFilterFieldNames?.join(', ');
+  //   console.log(this.appPageLayout.appPageFields.filter(field => field.isVisible === true && field.isGlobalFilterable));
+  //   return this.appPageLayout.appPageFields.filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.fieldName).join(', ') ?? '';
+  // }
 
-  get getPageTitle(){
-    return this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
-  }
+  // get getPageTitle(){
+  //   return this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
+  // }
 
 
   ngOnInit() {
@@ -122,6 +128,29 @@ export class DataGridComponent implements OnInit, OnDestroy {
           if (data) {
             this.appPageModel = data;
             this.appPageLayout = JSON.parse(data.appPageLayout);
+
+            this.dataFields = [...this.appPageLayout.appPageFields.filter(field => field.isVisible === true)]; // TODO: sort before set
+
+            this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
+
+            this.globalFilterFields = [...this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).map(x => x.fieldName)]
+            console.log(this.globalFilterFields)
+            
+            this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).forEach(field => {
+              this.globalFilterFieldModels.push(new GlobalFilterFieldModel({
+                fieldName: field.fieldName,
+                fieldType: field.fieldType,
+                dbField: field.dbField
+              }));
+            });
+
+            this.globalfiltersTooltip = this.appPageLayout.appPageFields
+              .filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.caption)
+              .join(', ') ?? '';
+
+              this.createDataFilterModelList();
+
+            console.log(this.appPageLayout)
           } else {
             this.isPagelayoutFound = false;
             // TODO: createNewpageLayout()
@@ -137,6 +166,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
 
+    console.log('check second time after filter')
     this.loading = true;
 
     this.first = event.first;
@@ -149,6 +179,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
     query.sortField = this.getSortedField(event);
     query.sortOrder = event.sortOrder;
     query.globalFilterValue = this.getGlobalFilterValue(event);
+    query.globalFilterFields = this.globalFilterFieldModels;
     query.isInitialLoaded = this.isInitialLoaded;
 
     this.mapAndSetToDataFilterModel(event.filters);
@@ -168,14 +199,15 @@ export class DataGridComponent implements OnInit, OnDestroy {
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
         this.totalPages = res.totalPages;
-        this.dataFields = res.dataFields;
-        this.filters = res.filters;
-        this.globalFilterFields = res.dataFields
-          .filter(x => x.isGlobalFilterable)
-          .map(x => x.fieldName);
-        this.globalFilterFieldNames = res.dataFields
-          .filter(x => x.isGlobalFilterable)
-          .map(x => x.pageTitle);
+        // this.dataFields = res.dataFields;
+        // this.filters = res.filters;
+        // this.globalFilterFields = res.dataFields
+        //   .filter(x => x.isGlobalFilterable)
+        //   .map(x => x.fieldName);
+
+        // this.globalFilterFieldNames = res.dataFields
+        //   .filter(x => x.isGlobalFilterable)
+        //   .map(x => x.caption);
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
@@ -191,6 +223,18 @@ export class DataGridComponent implements OnInit, OnDestroy {
       complete: () => {
         this.loading = false;
       }
+    });
+  }
+
+  private createDataFilterModelList() {
+    this.dataFields.filter(field => field.isFilterable === true).forEach(field => {
+      this.filters.push(new DataFilterModel({
+        fieldName: field.fieldName,
+        fieldType: field.fieldType,
+        dsName: field.dsName,
+        dbField: field.dbField,
+        dataSource: []
+      }));
     });
   }
 
@@ -218,12 +262,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
     this.loadData({ first: this.first, rows: this.rows }, false);
   }
 
-  getFilterValue(field: string) {
-    const filter = this.filters.find(f => f.field === field);
-    return filter ? filter.value : null;
-  }
-
-
   onSearchInput(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value;
     this.onGlobalFilter(searchText);
@@ -238,6 +276,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   }
 
   private onGlobalFilter(searchText: string, matchMode: string = 'contains'): void {
+    console.log(searchText)
     this.table.filterGlobal(searchText, matchMode);
     this.table.filterDelay = this.debounceTimeout;
   }
@@ -279,7 +318,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
       if (Object.prototype.hasOwnProperty.call(filters, field)) {
 
         // existingFilter is exist
-        const existingFilter = this.filters.find(x => x.field === field);
+        const existingFilter = this.filters.find(x => x.fieldName === field);
 
         if (!existingFilter) continue;
 
@@ -297,13 +336,13 @@ export class DataGridComponent implements OnInit, OnDestroy {
                 isFirstFilterMetaData = false;
               } else {
                 const newFilter = new DataFilterModel();
-                newFilter.field = field;
+                newFilter.fieldName = field;
                 newFilter.fieldType = existingFilter.fieldType;
                 newFilter.value = this.getTranformValue(existingFilter, filter);
                 newFilter.matchMode = filter.matchMode || '';
                 newFilter.operator = filter.operator || '';
                 newFilter.dsName = existingFilter.dsName;
-                newFilter.dataSource = existingFilter.dataSource; 
+                newFilter.dataSource = existingFilter.dataSource;
                 this.filters.push(newFilter);
               }
             }

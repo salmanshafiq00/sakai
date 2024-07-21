@@ -103,7 +103,7 @@ export class AppPageDetailComponent implements OnInit {
           this.item.id = this.id;
           this.form.patchValue(this.item);
         }
-        
+
 
       },
       error: (error) => {
@@ -141,7 +141,7 @@ export class AppPageDetailComponent implements OnInit {
   }
   createAppPageField(): FormGroup {
     const fld_id = 'fld_' + this.newGuid();
-
+    const sortOrder = (<FormArray>this.form.get('appPageFields'))?.length + 1 ?? 1;
     return this.fb.group({
       id: [fld_id],
       fieldName: ['', Validators.required],
@@ -152,7 +152,7 @@ export class AppPageDetailComponent implements OnInit {
       textAlign: ['center'],
       isSortable: [true],
       isFilterable: [false],
-      IsGlobalFilterable: [false],
+      isGlobalFilterable: [false],
       filterType: [null],
       dSName: [''],
       enableLink: [false],
@@ -161,7 +161,7 @@ export class AppPageDetailComponent implements OnInit {
       bgColor: [''],
       color: [''],
       isVisible: [true],
-      sortOrder: [1],
+      sortOrder: [sortOrder],
       isActive: [true],
       showProperties: [true],
     });
@@ -181,12 +181,13 @@ export class AppPageDetailComponent implements OnInit {
 
   fieldTypeSelectList = [
     { 'id': 'string', 'name': 'String' },
-    { 'id': 'number', 'name': 'Number' },
+    { 'id': 'select', 'name': 'Select' },
+    { 'id': 'multiselect', 'name': 'Multi-Select' },
     { 'id': 'date', 'name': 'Date' },
     { 'id': 'datetime', 'name': 'Date Time' },
     { 'id': 'daterange', 'name': 'Date Range' },
     { 'id': 'time', 'name': 'Time' },
-    { 'id': 'list', 'name': 'List' }
+    { 'id': 'number', 'name': 'Number' }
   ];
 
   alignSelectList = [

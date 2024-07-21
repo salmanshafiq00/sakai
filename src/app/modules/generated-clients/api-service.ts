@@ -2261,7 +2261,7 @@ export class AccountsClient implements IAccountsClient {
     }
 }
 
-export class PaginatedResponseOfLookupDetailModel {
+export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseOfLookupDetailModel {
     items?: LookupDetailModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -2271,6 +2271,15 @@ export class PaginatedResponseOfLookupDetailModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfLookupDetailModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2344,7 +2353,19 @@ export class PaginatedResponseOfLookupDetailModel {
     }
 }
 
-export class LookupDetailModel {
+export interface IPaginatedResponseOfLookupDetailModel {
+    items?: LookupDetailModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class LookupDetailModel implements ILookupDetailModel {
     id?: string;
     name?: string;
     code?: string;
@@ -2356,6 +2377,15 @@ export class LookupDetailModel {
     lookupId?: string | undefined;
     lookupName?: string;
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: ILookupDetailModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2409,10 +2439,25 @@ export class LookupDetailModel {
     }
 }
 
-export class DataFieldModel {
+export interface ILookupDetailModel {
+    id?: string;
+    name?: string;
+    code?: string;
+    description?: string;
+    status?: boolean;
+    statusName?: string;
+    parentId?: string | undefined;
+    parentName?: string;
+    lookupId?: string | undefined;
+    lookupName?: string;
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class DataFieldModel implements IDataFieldModel {
     fieldName?: string;
     caption?: string;
     fieldType?: string;
+    dbField?: string;
     sortOrder?: number;
     isVisible?: boolean;
     isSortable?: boolean;
@@ -2420,11 +2465,21 @@ export class DataFieldModel {
     isFilterable?: boolean;
     dsName?: string;
 
+    constructor(data?: IDataFieldModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
     init(_data?: any) {
         if (_data) {
             this.fieldName = _data["fieldName"];
             this.caption = _data["caption"];
             this.fieldType = _data["fieldType"];
+            this.dbField = _data["dbField"];
             this.sortOrder = _data["sortOrder"];
             this.isVisible = _data["isVisible"];
             this.isSortable = _data["isSortable"];
@@ -2446,6 +2501,7 @@ export class DataFieldModel {
         data["fieldName"] = this.fieldName;
         data["caption"] = this.caption;
         data["fieldType"] = this.fieldType;
+        data["dbField"] = this.dbField;
         data["sortOrder"] = this.sortOrder;
         data["isVisible"] = this.isVisible;
         data["isSortable"] = this.isSortable;
@@ -2456,8 +2512,21 @@ export class DataFieldModel {
     }
 }
 
-export class DataFilterModel {
-    field?: string;
+export interface IDataFieldModel {
+    fieldName?: string;
+    caption?: string;
+    fieldType?: string;
+    dbField?: string;
+    sortOrder?: number;
+    isVisible?: boolean;
+    isSortable?: boolean;
+    isGlobalFilterable?: boolean;
+    isFilterable?: boolean;
+    dsName?: string;
+}
+
+export class DataFilterModel implements IDataFilterModel {
+    fieldName?: string;
     fieldType?: string;
     value?: string;
     matchMode?: string;
@@ -2466,9 +2535,18 @@ export class DataFilterModel {
     dbField?: string;
     dataSource?: SelectListModel[];
 
+    constructor(data?: IDataFilterModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
     init(_data?: any) {
         if (_data) {
-            this.field = _data["field"];
+            this.fieldName = _data["fieldName"];
             this.fieldType = _data["fieldType"];
             this.value = _data["value"];
             this.matchMode = _data["matchMode"];
@@ -2492,7 +2570,7 @@ export class DataFilterModel {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["field"] = this.field;
+        data["fieldName"] = this.fieldName;
         data["fieldType"] = this.fieldType;
         data["value"] = this.value;
         data["matchMode"] = this.matchMode;
@@ -2508,11 +2586,31 @@ export class DataFilterModel {
     }
 }
 
-export class SelectListModel {
+export interface IDataFilterModel {
+    fieldName?: string;
+    fieldType?: string;
+    value?: string;
+    matchMode?: string;
+    operator?: string;
+    dsName?: string;
+    dbField?: string;
+    dataSource?: SelectListModel[];
+}
+
+export class SelectListModel implements ISelectListModel {
     id?: any;
     name?: string;
     isDefault?: boolean;
     severity?: string;
+
+    constructor(data?: ISelectListModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2540,7 +2638,14 @@ export class SelectListModel {
     }
 }
 
-export abstract class DataGridModel {
+export interface ISelectListModel {
+    id?: any;
+    name?: string;
+    isDefault?: boolean;
+    severity?: string;
+}
+
+export abstract class DataGridModel implements IDataGridModel {
     isInitialLoaded?: boolean;
     allowCache?: boolean | undefined;
     pageNumber?: number;
@@ -2550,7 +2655,17 @@ export abstract class DataGridModel {
     sortOrder?: number | undefined;
     defaultOrderFieldName?: string | undefined;
     globalFilterValue?: string;
+    globalFilterFields?: GlobalFilterFieldModel[];
     filters?: DataFilterModel[];
+
+    constructor(data?: IDataGridModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2563,6 +2678,11 @@ export abstract class DataGridModel {
             this.sortOrder = _data["sortOrder"];
             this.defaultOrderFieldName = _data["defaultOrderFieldName"];
             this.globalFilterValue = _data["globalFilterValue"];
+            if (Array.isArray(_data["globalFilterFields"])) {
+                this.globalFilterFields = [] as any;
+                for (let item of _data["globalFilterFields"])
+                    this.globalFilterFields!.push(GlobalFilterFieldModel.fromJS(item));
+            }
             if (Array.isArray(_data["filters"])) {
                 this.filters = [] as any;
                 for (let item of _data["filters"])
@@ -2587,6 +2707,11 @@ export abstract class DataGridModel {
         data["sortOrder"] = this.sortOrder;
         data["defaultOrderFieldName"] = this.defaultOrderFieldName;
         data["globalFilterValue"] = this.globalFilterValue;
+        if (Array.isArray(this.globalFilterFields)) {
+            data["globalFilterFields"] = [];
+            for (let item of this.globalFilterFields)
+                data["globalFilterFields"].push(item.toJSON());
+        }
         if (Array.isArray(this.filters)) {
             data["filters"] = [];
             for (let item of this.filters)
@@ -2596,8 +2721,26 @@ export abstract class DataGridModel {
     }
 }
 
-export class GetLookupDetailListQuery extends DataGridModel {
+export interface IDataGridModel {
+    isInitialLoaded?: boolean;
+    allowCache?: boolean | undefined;
+    pageNumber?: number;
+    pageSize?: number;
+    offset?: number;
+    sortField?: string;
+    sortOrder?: number | undefined;
+    defaultOrderFieldName?: string | undefined;
+    globalFilterValue?: string;
+    globalFilterFields?: GlobalFilterFieldModel[];
+    filters?: DataFilterModel[];
+}
+
+export class GetLookupDetailListQuery extends DataGridModel implements IGetLookupDetailListQuery {
     cacheKey?: string;
+
+    constructor(data?: IGetLookupDetailListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -2621,7 +2764,59 @@ export class GetLookupDetailListQuery extends DataGridModel {
     }
 }
 
-export class ProblemDetails {
+export interface IGetLookupDetailListQuery extends IDataGridModel {
+    cacheKey?: string;
+}
+
+export class GlobalFilterFieldModel implements IGlobalFilterFieldModel {
+    fieldName?: string;
+    dbField?: string;
+    fieldType?: string;
+    matchMode?: string;
+
+    constructor(data?: IGlobalFilterFieldModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fieldName = _data["fieldName"];
+            this.dbField = _data["dbField"];
+            this.fieldType = _data["fieldType"];
+            this.matchMode = _data["matchMode"];
+        }
+    }
+
+    static fromJS(data: any): GlobalFilterFieldModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new GlobalFilterFieldModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fieldName"] = this.fieldName;
+        data["dbField"] = this.dbField;
+        data["fieldType"] = this.fieldType;
+        data["matchMode"] = this.matchMode;
+        return data;
+    }
+}
+
+export interface IGlobalFilterFieldModel {
+    fieldName?: string;
+    dbField?: string;
+    fieldType?: string;
+    matchMode?: string;
+}
+
+export class ProblemDetails implements IProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
     status?: number | undefined;
@@ -2629,6 +2824,15 @@ export class ProblemDetails {
     instance?: string | undefined;
 
     [key: string]: any;
+
+    constructor(data?: IProblemDetails) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2666,7 +2870,17 @@ export class ProblemDetails {
     }
 }
 
-export class CreateLookupDetailCommand {
+export interface IProblemDetails {
+    type?: string | undefined;
+    title?: string | undefined;
+    status?: number | undefined;
+    detail?: string | undefined;
+    instance?: string | undefined;
+
+    [key: string]: any;
+}
+
+export class CreateLookupDetailCommand implements ICreateLookupDetailCommand {
     name!: string;
     code!: string;
     description?: string;
@@ -2674,6 +2888,15 @@ export class CreateLookupDetailCommand {
     lookupId?: string;
     parentId?: string | undefined;
     cacheKey?: string;
+
+    constructor(data?: ICreateLookupDetailCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2707,7 +2930,17 @@ export class CreateLookupDetailCommand {
     }
 }
 
-export class UpdateLookupDetailCommand {
+export interface ICreateLookupDetailCommand {
+    name: string;
+    code: string;
+    description?: string;
+    status?: boolean;
+    lookupId?: string;
+    parentId?: string | undefined;
+    cacheKey?: string;
+}
+
+export class UpdateLookupDetailCommand implements IUpdateLookupDetailCommand {
     id?: string;
     name!: string;
     code!: string;
@@ -2716,6 +2949,15 @@ export class UpdateLookupDetailCommand {
     lookupId!: string;
     parentId?: string | undefined;
     cacheKey?: string;
+
+    constructor(data?: IUpdateLookupDetailCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2751,7 +2993,18 @@ export class UpdateLookupDetailCommand {
     }
 }
 
-export class PaginatedResponseOfLookupModel {
+export interface IUpdateLookupDetailCommand {
+    id?: string;
+    name: string;
+    code: string;
+    description?: string;
+    status?: boolean;
+    lookupId: string;
+    parentId?: string | undefined;
+    cacheKey?: string;
+}
+
+export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLookupModel {
     items?: LookupModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -2761,6 +3014,15 @@ export class PaginatedResponseOfLookupModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfLookupModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2834,7 +3096,19 @@ export class PaginatedResponseOfLookupModel {
     }
 }
 
-export class LookupModel {
+export interface IPaginatedResponseOfLookupModel {
+    items?: LookupModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class LookupModel implements ILookupModel {
     id?: string;
     name?: string;
     code?: string;
@@ -2857,6 +3131,15 @@ export class LookupModel {
     treeSelectMenus?: string[];
     treeSelectSingleMenu?: string;
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: ILookupModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -2956,7 +3239,36 @@ export class LookupModel {
     }
 }
 
-export class GetLookupListQuery extends DataGridModel {
+export interface ILookupModel {
+    id?: string;
+    name?: string;
+    code?: string;
+    description?: string;
+    status?: boolean;
+    statusName?: string;
+    parentId?: string | undefined;
+    parentName?: string;
+    created?: Date | undefined;
+    createdDate?: Date | undefined;
+    createdTime?: string | undefined;
+    createdYear?: number | undefined;
+    subjects?: string[];
+    subjectRadio?: string;
+    color?: string;
+    uploadFile?: string;
+    descEdit?: string;
+    menus?: string[];
+    singleMenu?: string;
+    treeSelectMenus?: string[];
+    treeSelectSingleMenu?: string;
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class GetLookupListQuery extends DataGridModel implements IGetLookupListQuery {
+
+    constructor(data?: IGetLookupListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -2976,7 +3288,10 @@ export class GetLookupListQuery extends DataGridModel {
     }
 }
 
-export class CreateLookupCommand {
+export interface IGetLookupListQuery extends IDataGridModel {
+}
+
+export class CreateLookupCommand implements ICreateLookupCommand {
     name!: string;
     code!: string;
     description?: string;
@@ -2990,6 +3305,15 @@ export class CreateLookupCommand {
     subjectRadio?: string;
     uploadFile?: string | undefined;
     parentId?: string | undefined;
+
+    constructor(data?: ICreateLookupCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3043,7 +3367,23 @@ export class CreateLookupCommand {
     }
 }
 
-export class UpdateLookupCommand {
+export interface ICreateLookupCommand {
+    name: string;
+    code: string;
+    description?: string;
+    status?: boolean;
+    createdDate?: Date;
+    createdTime?: string;
+    created?: Date;
+    createdYear?: number;
+    color?: string;
+    subjects?: string[];
+    subjectRadio?: string;
+    uploadFile?: string | undefined;
+    parentId?: string | undefined;
+}
+
+export class UpdateLookupCommand implements IUpdateLookupCommand {
     id?: string;
     name!: string;
     code!: string;
@@ -3051,6 +3391,15 @@ export class UpdateLookupCommand {
     status?: boolean;
     parentId?: string | undefined;
     cacheKey?: string;
+
+    constructor(data?: IUpdateLookupCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3084,7 +3433,17 @@ export class UpdateLookupCommand {
     }
 }
 
-export class TreeNodeModel {
+export interface IUpdateLookupCommand {
+    id?: string;
+    name: string;
+    code: string;
+    description?: string;
+    status?: boolean;
+    parentId?: string | undefined;
+    cacheKey?: string;
+}
+
+export class TreeNodeModel implements ITreeNodeModel {
     key?: any;
     label?: string;
     icon?: string;
@@ -3097,6 +3456,15 @@ export class TreeNodeModel {
     partialSelected?: boolean;
     leaf?: boolean;
     children?: TreeNodeModel[];
+
+    constructor(data?: ITreeNodeModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3148,7 +3516,22 @@ export class TreeNodeModel {
     }
 }
 
-export class PaginatedResponseOfAppMenuModel {
+export interface ITreeNodeModel {
+    key?: any;
+    label?: string;
+    icon?: string;
+    parentId?: any | undefined;
+    data?: string;
+    disabledCheckbox?: boolean;
+    disabled?: boolean;
+    visible?: boolean;
+    isActive?: boolean;
+    partialSelected?: boolean;
+    leaf?: boolean;
+    children?: TreeNodeModel[];
+}
+
+export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppMenuModel {
     items?: AppMenuModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -3158,6 +3541,15 @@ export class PaginatedResponseOfAppMenuModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfAppMenuModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3231,7 +3623,19 @@ export class PaginatedResponseOfAppMenuModel {
     }
 }
 
-export class AppMenuModel {
+export interface IPaginatedResponseOfAppMenuModel {
+    items?: AppMenuModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class AppMenuModel implements IAppMenuModel {
     id?: string;
     parentId?: string | undefined;
     parentName?: string;
@@ -3248,6 +3652,15 @@ export class AppMenuModel {
     menuTypeId?: string;
     menuTypeName?: string;
     optionsDataSources?: { [key: string]: any; };
+
+    constructor(data?: IAppMenuModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3311,7 +3724,30 @@ export class AppMenuModel {
     }
 }
 
-export class GetAppMenuListQuery extends DataGridModel {
+export interface IAppMenuModel {
+    id?: string;
+    parentId?: string | undefined;
+    parentName?: string;
+    label?: string;
+    routerLink?: string;
+    icon?: string;
+    tooltip?: string;
+    isActive?: boolean;
+    orderNo?: number;
+    visible?: boolean;
+    visibility?: string;
+    description?: string;
+    active?: string;
+    menuTypeId?: string;
+    menuTypeName?: string;
+    optionsDataSources?: { [key: string]: any; };
+}
+
+export class GetAppMenuListQuery extends DataGridModel implements IGetAppMenuListQuery {
+
+    constructor(data?: IGetAppMenuListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -3331,7 +3767,10 @@ export class GetAppMenuListQuery extends DataGridModel {
     }
 }
 
-export class SidebarMenuModel {
+export interface IGetAppMenuListQuery extends IDataGridModel {
+}
+
+export class SidebarMenuModel implements ISidebarMenuModel {
     id?: string;
     label?: string;
     routerLink?: string;
@@ -3342,6 +3781,15 @@ export class SidebarMenuModel {
     parentId?: string | undefined;
     parentLabel?: string;
     items?: SidebarMenuModel[] | undefined;
+
+    constructor(data?: ISidebarMenuModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3389,7 +3837,20 @@ export class SidebarMenuModel {
     }
 }
 
-export class CreateAppMenuCommand {
+export interface ISidebarMenuModel {
+    id?: string;
+    label?: string;
+    routerLink?: string;
+    icon?: string;
+    visible?: boolean;
+    tooltip?: string;
+    orderNo?: number;
+    parentId?: string | undefined;
+    parentLabel?: string;
+    items?: SidebarMenuModel[] | undefined;
+}
+
+export class CreateAppMenuCommand implements ICreateAppMenuCommand {
     label!: string;
     routerLink!: string;
     icon?: string;
@@ -3400,6 +3861,15 @@ export class CreateAppMenuCommand {
     description?: string;
     menuTypeId!: string;
     parentId?: string | undefined;
+
+    constructor(data?: ICreateAppMenuCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3439,7 +3909,20 @@ export class CreateAppMenuCommand {
     }
 }
 
-export class UpdateAppMenuCommand {
+export interface ICreateAppMenuCommand {
+    label: string;
+    routerLink: string;
+    icon?: string;
+    isActive?: boolean;
+    visible?: boolean;
+    orderNo?: number;
+    tooltip?: string;
+    description?: string;
+    menuTypeId: string;
+    parentId?: string | undefined;
+}
+
+export class UpdateAppMenuCommand implements IUpdateAppMenuCommand {
     id?: string;
     label!: string;
     routerLink!: string;
@@ -3452,6 +3935,15 @@ export class UpdateAppMenuCommand {
     menuTypeId!: string;
     parentId?: string | undefined;
     cacheKey?: string;
+
+    constructor(data?: IUpdateAppMenuCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3495,7 +3987,22 @@ export class UpdateAppMenuCommand {
     }
 }
 
-export class PaginatedResponseOfAppPageModel {
+export interface IUpdateAppMenuCommand {
+    id?: string;
+    label: string;
+    routerLink: string;
+    icon?: string;
+    isActive?: boolean;
+    visible?: boolean;
+    orderNo?: number;
+    tooltip?: string;
+    description?: string;
+    menuTypeId: string;
+    parentId?: string | undefined;
+    cacheKey?: string;
+}
+
+export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppPageModel {
     items?: AppPageModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -3505,6 +4012,15 @@ export class PaginatedResponseOfAppPageModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfAppPageModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3578,7 +4094,19 @@ export class PaginatedResponseOfAppPageModel {
     }
 }
 
-export class AppPageModel {
+export interface IPaginatedResponseOfAppPageModel {
+    items?: AppPageModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class AppPageModel implements IAppPageModel {
     id?: string;
     title?: string;
     subTitle?: string;
@@ -3586,6 +4114,15 @@ export class AppPageModel {
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
     optionsDataSources?: { [key: string]: any; };
+
+    constructor(data?: IAppPageModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3639,7 +4176,17 @@ export class AppPageModel {
     }
 }
 
-export class AppPageFieldModel {
+export interface IAppPageModel {
+    id?: string;
+    title?: string;
+    subTitle?: string;
+    componentName?: string;
+    appPageLayout?: string;
+    appPageFields?: AppPageFieldModel[];
+    optionsDataSources?: { [key: string]: any; };
+}
+
+export class AppPageFieldModel implements IAppPageFieldModel {
     id?: string;
     fieldName?: string;
     caption?: string;
@@ -3660,6 +4207,15 @@ export class AppPageFieldModel {
     isVisible?: boolean;
     sortOrder?: number;
     isActive?: boolean;
+
+    constructor(data?: IAppPageFieldModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3719,7 +4275,34 @@ export class AppPageFieldModel {
     }
 }
 
-export class GetAppPageListQuery extends DataGridModel {
+export interface IAppPageFieldModel {
+    id?: string;
+    fieldName?: string;
+    caption?: string;
+    fieldType?: string;
+    dbField?: string;
+    format?: string;
+    textAlign?: string;
+    isSortable?: boolean;
+    isFilterable?: boolean;
+    dsName?: string;
+    isGlobalFilterable?: boolean;
+    filterType?: string;
+    enableLink?: boolean;
+    linkBaseUrl?: string;
+    linkValueFieldName?: string;
+    bgColor?: string;
+    color?: string;
+    isVisible?: boolean;
+    sortOrder?: number;
+    isActive?: boolean;
+}
+
+export class GetAppPageListQuery extends DataGridModel implements IGetAppPageListQuery {
+
+    constructor(data?: IGetAppPageListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -3739,7 +4322,14 @@ export class GetAppPageListQuery extends DataGridModel {
     }
 }
 
-export class UpsertAppPageCommand extends AppPageModel {
+export interface IGetAppPageListQuery extends IDataGridModel {
+}
+
+export class UpsertAppPageCommand extends AppPageModel implements IUpsertAppPageCommand {
+
+    constructor(data?: IUpsertAppPageCommand) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -3759,7 +4349,10 @@ export class UpsertAppPageCommand extends AppPageModel {
     }
 }
 
-export class PaginatedResponseOfRoleModel {
+export interface IUpsertAppPageCommand extends IAppPageModel {
+}
+
+export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleModel {
     items?: RoleModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -3769,6 +4362,15 @@ export class PaginatedResponseOfRoleModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfRoleModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3842,12 +4444,33 @@ export class PaginatedResponseOfRoleModel {
     }
 }
 
-export class RoleModel {
+export interface IPaginatedResponseOfRoleModel {
+    items?: RoleModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class RoleModel implements IRoleModel {
     id?: string;
     name?: string;
     roleMenus?: string[];
     permissions?: string[];
     optionsDataSources?: { [key: string]: any; };
+
+    constructor(data?: IRoleModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3905,7 +4528,19 @@ export class RoleModel {
     }
 }
 
-export class GetRoleListQuery extends DataGridModel {
+export interface IRoleModel {
+    id?: string;
+    name?: string;
+    roleMenus?: string[];
+    permissions?: string[];
+    optionsDataSources?: { [key: string]: any; };
+}
+
+export class GetRoleListQuery extends DataGridModel implements IGetRoleListQuery {
+
+    constructor(data?: IGetRoleListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -3925,10 +4560,22 @@ export class GetRoleListQuery extends DataGridModel {
     }
 }
 
-export class CreateRoleCommand {
+export interface IGetRoleListQuery extends IDataGridModel {
+}
+
+export class CreateRoleCommand implements ICreateRoleCommand {
     name?: string;
     rolemenus?: string[];
     permissions?: string[];
+
+    constructor(data?: ICreateRoleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -3970,11 +4617,26 @@ export class CreateRoleCommand {
     }
 }
 
-export class UpdateRoleCommand {
+export interface ICreateRoleCommand {
+    name?: string;
+    rolemenus?: string[];
+    permissions?: string[];
+}
+
+export class UpdateRoleCommand implements IUpdateRoleCommand {
     id?: string;
     name?: string;
     rolemenus?: string[];
     permissions?: string[];
+
+    constructor(data?: IUpdateRoleCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4018,7 +4680,14 @@ export class UpdateRoleCommand {
     }
 }
 
-export class PaginatedResponseOfAppUserModel {
+export interface IUpdateRoleCommand {
+    id?: string;
+    name?: string;
+    rolemenus?: string[];
+    permissions?: string[];
+}
+
+export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppUserModel {
     items?: AppUserModel[];
     pageNumber?: number;
     totalPages?: number;
@@ -4028,6 +4697,15 @@ export class PaginatedResponseOfAppUserModel {
     dataFields?: DataFieldModel[];
     filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
+
+    constructor(data?: IPaginatedResponseOfAppUserModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4101,7 +4779,19 @@ export class PaginatedResponseOfAppUserModel {
     }
 }
 
-export class AppUserModel {
+export interface IPaginatedResponseOfAppUserModel {
+    items?: AppUserModel[];
+    pageNumber?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+    dataFields?: DataFieldModel[];
+    filters?: DataFilterModel[];
+    optionDataSources?: { [key: string]: any; };
+}
+
+export class AppUserModel implements IAppUserModel {
     id?: string;
     username?: string;
     password?: string;
@@ -4115,6 +4805,15 @@ export class AppUserModel {
     assignedRoles?: string;
     optionsDataSources?: { [key: string]: any; };
     roles?: string[] | undefined;
+
+    constructor(data?: IAppUserModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4180,7 +4879,27 @@ export class AppUserModel {
     }
 }
 
-export class GetAppUserListQuery extends DataGridModel {
+export interface IAppUserModel {
+    id?: string;
+    username?: string;
+    password?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string | undefined;
+    photoUrl?: string | undefined;
+    isActive?: boolean;
+    status?: string;
+    assignedRoles?: string;
+    optionsDataSources?: { [key: string]: any; };
+    roles?: string[] | undefined;
+}
+
+export class GetAppUserListQuery extends DataGridModel implements IGetAppUserListQuery {
+
+    constructor(data?: IGetAppUserListQuery) {
+        super(data);
+    }
 
     override init(_data?: any) {
         super.init(_data);
@@ -4200,7 +4919,10 @@ export class GetAppUserListQuery extends DataGridModel {
     }
 }
 
-export class CreateAppUserCommand {
+export interface IGetAppUserListQuery extends IDataGridModel {
+}
+
+export class CreateAppUserCommand implements ICreateAppUserCommand {
     username!: string;
     password!: string;
     email?: string;
@@ -4210,6 +4932,15 @@ export class CreateAppUserCommand {
     photoUrl?: string;
     isActive?: boolean;
     roles?: string[] | undefined;
+
+    constructor(data?: ICreateAppUserCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4255,7 +4986,19 @@ export class CreateAppUserCommand {
     }
 }
 
-export class UpdateAppUserCommand {
+export interface ICreateAppUserCommand {
+    username: string;
+    password: string;
+    email?: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber?: string;
+    photoUrl?: string;
+    isActive?: boolean;
+    roles?: string[] | undefined;
+}
+
+export class UpdateAppUserCommand implements IUpdateAppUserCommand {
     id?: string;
     username?: string;
     email?: string;
@@ -4265,6 +5008,15 @@ export class UpdateAppUserCommand {
     photoUrl?: string;
     isActive?: boolean;
     roles?: string[] | undefined;
+
+    constructor(data?: IUpdateAppUserCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4310,9 +5062,30 @@ export class UpdateAppUserCommand {
     }
 }
 
-export class AddToRolesCommand {
+export interface IUpdateAppUserCommand {
+    id?: string;
+    username?: string;
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    phoneNumber?: string;
+    photoUrl?: string;
+    isActive?: boolean;
+    roles?: string[] | undefined;
+}
+
+export class AddToRolesCommand implements IAddToRolesCommand {
     id?: string;
     roleNames?: string[];
+
+    constructor(data?: IAddToRolesCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4344,12 +5117,26 @@ export class AddToRolesCommand {
     }
 }
 
-export class AuthenticatedResponse {
+export interface IAddToRolesCommand {
+    id?: string;
+    roleNames?: string[];
+}
+
+export class AuthenticatedResponse implements IAuthenticatedResponse {
     accessToken?: string;
     tokenType?: string;
     expiresInMinutes?: number;
     refreshToken?: string;
     refreshTokenExpiresOn?: Date;
+
+    constructor(data?: IAuthenticatedResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4379,10 +5166,27 @@ export class AuthenticatedResponse {
     }
 }
 
-export class LoginRequestCommand {
+export interface IAuthenticatedResponse {
+    accessToken?: string;
+    tokenType?: string;
+    expiresInMinutes?: number;
+    refreshToken?: string;
+    refreshTokenExpiresOn?: Date;
+}
+
+export class LoginRequestCommand implements ILoginRequestCommand {
     userName?: string;
     password?: string;
     isRemember?: boolean;
+
+    constructor(data?: ILoginRequestCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
 
     init(_data?: any) {
         if (_data) {
@@ -4406,6 +5210,12 @@ export class LoginRequestCommand {
         data["isRemember"] = this.isRemember;
         return data;
     }
+}
+
+export interface ILoginRequestCommand {
+    userName?: string;
+    password?: string;
+    isRemember?: boolean;
 }
 
 function formatDate(d: Date) {
