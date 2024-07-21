@@ -2,16 +2,15 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
     <div class="p-fluid p-formgrid grid">
       <div class="field col-12 md:col-6">
-        <app-input-text label="Name" formControlName="name" [required]="true" [readonly]="false" />
-        <app-validator-msg [control]="f['name']"></app-validator-msg>
+        <app-input-text label="Component Name" formControlName="componentName" [required]="true" />
+        <app-validator-msg [control]="f['componentName']"></app-validator-msg>
       </div>
       <div class="field col-12 md:col-6">
-        <app-input-text label="Title" formControlName="title" [required]="true" [readonly]="false" />
+        <app-input-text label="Title" formControlName="title" [required]="true" />
         <app-validator-msg [control]="f['title']"></app-validator-msg>
       </div>
       <div class="field col-12 md:col-6">
-        <app-input-text label="RouterLink" formControlName="routerLink" [required]="true" [readonly]="false" />
-        <app-validator-msg [control]="f['routerLink']"></app-validator-msg>
+        <app-input-text label="Sub Title" formControlName="subTitle" [required]="false" />
       </div>
     </div>
 

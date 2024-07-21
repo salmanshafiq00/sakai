@@ -118,11 +118,7 @@ export class AppPageDetailComponent implements OnInit {
       id: [null],
       title: ['', Validators.required],
       subTitle: [''],
-      routerLink: [''],
-      name: ['', Validators.required],
-      permission: [''],
-      isActive: [false],
-      active: [''],
+      componentName: ['', Validators.required],
       appPageLayout: [''],
       appPageFields: this.fb.array([])
     });
@@ -144,9 +140,10 @@ export class AppPageDetailComponent implements OnInit {
     return field.get('showProperties')?.value;
   }
   createAppPageField(): FormGroup {
+    const fld_id = 'fld_' + this.newGuid();
+
     return this.fb.group({
-      id: [null],
-      appPageId: [null],
+      id: [fld_id],
       fieldName: ['', Validators.required],
       caption: [''],
       fieldType: ['string'],
@@ -172,6 +169,14 @@ export class AppPageDetailComponent implements OnInit {
 
   showProperty(field: AbstractControl, show: boolean): void {
     field.get('showProperties')?.setValue(show);
+  }
+
+  newGuid() {
+    return 'xxx4x'.replace(/[xy]/g, function (c) {
+      const r = Math.random() * 16 | 0,
+        v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
   }
 
   fieldTypeSelectList = [

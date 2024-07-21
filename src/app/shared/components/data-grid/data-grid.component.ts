@@ -3,7 +3,7 @@ import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { DataFieldModel, DataFilterModel } from 'src/app/modules/generated-clients/api-service';
+import { AppPageModel, AppPagesClient, DataFieldModel, DataFilterModel } from 'src/app/modules/generated-clients/api-service';
 import { BackoffService } from '../../services/backoff.service';
 import { ToastService } from '../../services/toast.service';
 import { DatePipe } from '@angular/common';
@@ -15,14 +15,20 @@ import { AppDataGridModel } from '../../models/app-data-grid.model';
   selector: 'app-data-grid',
   templateUrl: './data-grid.component.html',
   styleUrl: './data-grid.component.scss',
-  providers: [ToastService, BackoffService, ConfirmDialogService, DatePipe]
+  providers: [ToastService, BackoffService, ConfirmDialogService, DatePipe, AppPagesClient]
 })
 export class DataGridComponent implements OnInit, OnDestroy {
+
+  // Page Layout Settings Start Start
+  isPagelayoutFound: boolean = true;
+  appPageLayout = {};
+  appPageModel: AppPageModel = null;
+
+  // Page Layout Settings Start End
 
   FieldType = FieldType;
   FilterMatchModes = FilterMatchMode;
   emptyGuid = '00000000-0000-0000-0000-000000000000';
-
   // Table Settings //
   isInitialLoaded: boolean = false;
   responsiveLayout = 'scroll';
@@ -64,16 +70,17 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // Dropdwon Selected value
   selectedParent: any;
   selectedStatus: any;
-   // Centralized storage for dynamic dropdown values
-   dynamicDropdownValues: { [key: string]: any } = {};
+  // Centralized storage for dynamic dropdown values
+  dynamicDropdownValues: { [key: string]: any } = {};
 
 
   // 
+  @Input() pageId: string;
   @Input() entityClient: any;
   @Input() detailComponent: any;
   @Input() dialogSize: any = '900px';
   @Input() getFuncName = '';
-  @Input() caption: string = 'Entity Service';
+  @Input() pageTitle: string = null;
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
 
@@ -84,7 +91,23 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private confirmDialogService = inject(ConfirmDialogService);
   private datePipe = inject(DatePipe);
   private customDialogService = inject(CustomDialogService);
+  private appPagesClient = inject(AppPagesClient);
+
+  get hasSelectOrDateType(): boolean {
+    return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
+  }
+
+  get globalfiltersTooltip(): string {
+    return this.globalFilterFieldNames?.join(', ');
+  }
+
+  get getPageTitle(){
+    return this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
+  }
+
+
   ngOnInit() {
+    this.loadGridLayout();
     this.loadData({ first: this.first, rows: this.rows }, true)
   }
 
@@ -92,14 +115,25 @@ export class DataGridComponent implements OnInit, OnDestroy {
     // this.searchSubject.unsubscribe();
   }
 
-  get hasSelectOrDateType(): boolean {
-    return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
+  loadGridLayout() {
+    if (this.pageId) {
+      this.appPagesClient.getAppPage(this.pageId).subscribe({
+        next: (data: AppPageModel) => {
+          if (data) {
+            this.appPageModel = data;
+            this.appPageLayout = JSON.parse(data.appPageLayout);
+          } else {
+            this.isPagelayoutFound = false;
+            // TODO: createNewpageLayout()
+          }
+        },
+        error: (error) => {
+          console.log(error)
+        }
+      });
+    }
   }
 
-  // Function to generate unique keys for dropdowns
-  generateDropdownKey(field: string, type: 'select' | 'multiSelect'): string {
-    return `${field}_${type}`;
-}
 
   loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
 
@@ -126,10 +160,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
       query.allowCache = false;
     }
 
-    console.log(query)
-    console.log(new Date())
+    // console.log(query)
     this.entityClient?.[this.getFuncName](query)?.subscribe({
       next: (res) => {
+        console.log(res, new Date())
         this.items = res.items;
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
@@ -138,10 +172,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
         this.filters = res.filters;
         this.globalFilterFields = res.dataFields
           .filter(x => x.isGlobalFilterable)
-          .map(x => x.field);
+          .map(x => x.fieldName);
         this.globalFilterFieldNames = res.dataFields
           .filter(x => x.isGlobalFilterable)
-          .map(x => x.header);
+          .map(x => x.pageTitle);
 
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
 
@@ -160,21 +194,28 @@ export class DataGridComponent implements OnInit, OnDestroy {
     });
   }
 
-  get globalfiltersTooltip(): string {
-    return this.globalFilterFieldNames?.join(', ');
+
+  // TODO: Here this.loadData() function called twice instead of once
+  // refreshGrid() {
+  //   this.loading = true;
+
+  //   const delay = this.backoffService.getDelay();
+  //   console.log(`Applying delay: ${delay}ms`);
+  //   timer(delay).subscribe(() => {
+  //     this.clear();
+  //     this.loadData({ first: this.first, rows: this.rows }, false);
+  //     // this.backoffService.resetDelay();  // need more analyze
+  //   });
+
+  // }
+  // Function to generate unique keys for dropdowns
+  generateDropdownKey(field: string, type: 'select' | 'multiSelect'): string {
+    return `${field}_${type}`;
   }
 
+
   refreshGrid() {
-    this.loading = true;
-
-    const delay = this.backoffService.getDelay();
-    console.log(`Applying delay: ${delay}ms`);
-    timer(delay).subscribe(() => {
-      this.clear();
-      this.loadData({ first: this.first, rows: this.rows }, false);
-      // this.backoffService.resetDelay();
-    });
-
+    this.loadData({ first: this.first, rows: this.rows }, false);
   }
 
   getFilterValue(field: string) {
@@ -205,21 +246,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
     this.table.clear();
     this.globalSearchInput.nativeElement.value = '';
   }
-  
 
-  edit(item: any) {
-    this.openDialog(item.id);
-  }
-
-  delete(item: any) {
-
-    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
-      if (confirmed) {
-        this.deleteItem(item.id);
-        this.toast.created()
-      }
-    });
-  }
 
   private getGlobalFilterValue(event: TableLazyLoadEvent): string {
     if (typeof event.globalFilter === 'string') {
@@ -276,7 +303,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
                 newFilter.matchMode = filter.matchMode || '';
                 newFilter.operator = filter.operator || '';
                 newFilter.dsName = existingFilter.dsName;
-                newFilter.dataSource = existingFilter.dataSource;
+                newFilter.dataSource = existingFilter.dataSource; 
                 this.filters.push(newFilter);
               }
             }
@@ -330,6 +357,22 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   deleteSelectedItems() {
 
+  }
+
+  ///  -------------  Edit & Delete -------------------
+
+  edit(item: any) {
+    this.openDialog(item.id);
+  }
+
+  delete(item: any) {
+
+    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteItem(item.id);
+        this.toast.created()
+      }
+    });
   }
 
   ///  -------------  Dialog -------------------

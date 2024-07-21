@@ -12,7 +12,6 @@ import { AppMenusClient } from 'src/app/modules/generated-clients/api-service';
 export class AppMenuListComponent {
   detailComponent = AppMenuDetailComponent;
   getFuncName = 'getAppMenus';
-  caption = 'Manage Application Menu'
 
   constructor(public entityClient: AppMenusClient){
     

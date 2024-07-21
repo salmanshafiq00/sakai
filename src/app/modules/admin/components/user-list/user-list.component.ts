@@ -11,7 +11,6 @@ import { UserDetailComponent } from '../user-detail/user-detail.component';
 export class UserListComponent {
   detailComponent = UserDetailComponent;
   getFuncName = 'getUsers';
-  caption = 'Manage Lookup'
 
   constructor(public entityClient: UsersClient) {
       

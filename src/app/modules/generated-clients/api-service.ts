@@ -2413,8 +2413,8 @@ export class DataFieldModel {
     fieldName?: string;
     caption?: string;
     fieldType?: string;
-    isVisible?: boolean;
     sortOrder?: number;
+    isVisible?: boolean;
     isSortable?: boolean;
     isGlobalFilterable?: boolean;
     isFilterable?: boolean;
@@ -2425,8 +2425,8 @@ export class DataFieldModel {
             this.fieldName = _data["fieldName"];
             this.caption = _data["caption"];
             this.fieldType = _data["fieldType"];
-            this.isVisible = _data["isVisible"];
             this.sortOrder = _data["sortOrder"];
+            this.isVisible = _data["isVisible"];
             this.isSortable = _data["isSortable"];
             this.isGlobalFilterable = _data["isGlobalFilterable"];
             this.isFilterable = _data["isFilterable"];
@@ -2446,8 +2446,8 @@ export class DataFieldModel {
         data["fieldName"] = this.fieldName;
         data["caption"] = this.caption;
         data["fieldType"] = this.fieldType;
-        data["isVisible"] = this.isVisible;
         data["sortOrder"] = this.sortOrder;
+        data["isVisible"] = this.isVisible;
         data["isSortable"] = this.isSortable;
         data["isGlobalFilterable"] = this.isGlobalFilterable;
         data["isFilterable"] = this.isFilterable;
@@ -2463,6 +2463,7 @@ export class DataFilterModel {
     matchMode?: string;
     operator?: string;
     dsName?: string;
+    dbField?: string;
     dataSource?: SelectListModel[];
 
     init(_data?: any) {
@@ -2473,6 +2474,7 @@ export class DataFilterModel {
             this.matchMode = _data["matchMode"];
             this.operator = _data["operator"];
             this.dsName = _data["dsName"];
+            this.dbField = _data["dbField"];
             if (Array.isArray(_data["dataSource"])) {
                 this.dataSource = [] as any;
                 for (let item of _data["dataSource"])
@@ -2496,6 +2498,7 @@ export class DataFilterModel {
         data["matchMode"] = this.matchMode;
         data["operator"] = this.operator;
         data["dsName"] = this.dsName;
+        data["dbField"] = this.dbField;
         if (Array.isArray(this.dataSource)) {
             data["dataSource"] = [];
             for (let item of this.dataSource)
@@ -3579,11 +3582,7 @@ export class AppPageModel {
     id?: string;
     title?: string;
     subTitle?: string;
-    routerLink?: string;
-    name?: string;
-    permission?: string;
-    isActive?: boolean;
-    active?: string;
+    componentName?: string;
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
     optionsDataSources?: { [key: string]: any; };
@@ -3593,11 +3592,7 @@ export class AppPageModel {
             this.id = _data["id"];
             this.title = _data["title"];
             this.subTitle = _data["subTitle"];
-            this.routerLink = _data["routerLink"];
-            this.name = _data["name"];
-            this.permission = _data["permission"];
-            this.isActive = _data["isActive"];
-            this.active = _data["active"];
+            this.componentName = _data["componentName"];
             this.appPageLayout = _data["appPageLayout"];
             if (Array.isArray(_data["appPageFields"])) {
                 this.appPageFields = [] as any;
@@ -3626,11 +3621,7 @@ export class AppPageModel {
         data["id"] = this.id;
         data["title"] = this.title;
         data["subTitle"] = this.subTitle;
-        data["routerLink"] = this.routerLink;
-        data["name"] = this.name;
-        data["permission"] = this.permission;
-        data["isActive"] = this.isActive;
-        data["active"] = this.active;
+        data["componentName"] = this.componentName;
         data["appPageLayout"] = this.appPageLayout;
         if (Array.isArray(this.appPageFields)) {
             data["appPageFields"] = [];
@@ -3650,7 +3641,6 @@ export class AppPageModel {
 
 export class AppPageFieldModel {
     id?: string;
-    appPageId?: string;
     fieldName?: string;
     caption?: string;
     fieldType?: string;
@@ -3674,7 +3664,6 @@ export class AppPageFieldModel {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.appPageId = _data["appPageId"];
             this.fieldName = _data["fieldName"];
             this.caption = _data["caption"];
             this.fieldType = _data["fieldType"];
@@ -3707,7 +3696,6 @@ export class AppPageFieldModel {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["appPageId"] = this.appPageId;
         data["fieldName"] = this.fieldName;
         data["caption"] = this.caption;
         data["fieldType"] = this.fieldType;

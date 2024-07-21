@@ -11,7 +11,6 @@ import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component'
 export class LookupListComponent  {
   detailComponent = LookupDetailComponent;
   getFuncName = 'getLookups';
-  caption = 'Manage Lookup'
 
   constructor(public entityClient: LookupsClient) {
       

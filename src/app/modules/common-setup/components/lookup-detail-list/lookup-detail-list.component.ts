@@ -13,7 +13,6 @@ import { LookupDetailsClient, } from 'src/app/modules/generated-clients/api-serv
 export class LookupDetailListComponent  {
   detailComponent = LookupDetailDetailComponent;
   getFuncName = 'getLookupDetails';
-  caption = 'Manage Lookup Detail'
 
   constructor(public entityClient: LookupDetailsClient) {
       

@@ -21,7 +21,6 @@ import { RoleDetailComponent } from '../role-detail/role-detail.component';
 export class RoleListComponent {
   detailComponent = RoleDetailComponent;
   getFuncName = 'getRoles';
-  caption = 'Manage Roles'
 
   constructor(public entityClient: RolesClient) {
       
