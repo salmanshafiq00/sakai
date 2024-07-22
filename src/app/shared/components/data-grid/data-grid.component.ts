@@ -3,7 +3,7 @@ import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { AppPageFieldModel, AppPageModel, AppPagesClient, DataFieldModel, DataFilterModel, GlobalFilterFieldModel } from 'src/app/modules/generated-clients/api-service';
+import { AppPageFieldModel, AppPageModel, AppPagesClient, DataFilterModel, GlobalFilterFieldModel } from 'src/app/modules/generated-clients/api-service';
 import { BackoffService } from '../../services/backoff.service';
 import { ToastService } from '../../services/toast.service';
 import { DatePipe } from '@angular/common';
@@ -134,7 +134,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
             this.globalFilterFields = [...this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).map(x => x.fieldName)]
-            console.log(this.globalFilterFields)
             
             this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).forEach(field => {
               this.globalFilterFieldModels.push(new GlobalFilterFieldModel({
@@ -165,10 +164,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
 
   loadData(event: TableLazyLoadEvent, allowCache?: boolean) {
-
-    console.log('check second time after filter')
     this.loading = true;
-
     this.first = event.first;
     this.rows = event.rows;
 
@@ -194,23 +190,11 @@ export class DataGridComponent implements OnInit, OnDestroy {
     // console.log(query)
     this.entityClient?.[this.getFuncName](query)?.subscribe({
       next: (res) => {
-        console.log(res, new Date())
         this.items = res.items;
         this.pageNumber = res.pageNumber;
         this.totalRecords = res.totalCount;
         this.totalPages = res.totalPages;
-        // this.dataFields = res.dataFields;
-        // this.filters = res.filters;
-        // this.globalFilterFields = res.dataFields
-        //   .filter(x => x.isGlobalFilterable)
-        //   .map(x => x.fieldName);
-
-        // this.globalFilterFieldNames = res.dataFields
-        //   .filter(x => x.isGlobalFilterable)
-        //   .map(x => x.caption);
-
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
-
         // option datasource only assign initially not second time
         if (!this.isInitialLoaded) {
           this.optionDataSources = res.optionDataSources;
@@ -232,8 +216,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
         fieldName: field.fieldName,
         fieldType: field.fieldType,
         dsName: field.dsName,
-        dbField: field.dbField,
-        dataSource: []
+        dbField: field.dbField
       }));
     });
   }
@@ -342,7 +325,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
                 newFilter.matchMode = filter.matchMode || '';
                 newFilter.operator = filter.operator || '';
                 newFilter.dsName = existingFilter.dsName;
-                newFilter.dataSource = existingFilter.dataSource;
                 this.filters.push(newFilter);
               }
             }
@@ -381,6 +363,22 @@ export class DataGridComponent implements OnInit, OnDestroy {
     }
   }
 
+  ///  -------------  Edit & Delete -------------------
+
+  edit(item: any) {
+    this.openDialog(item.id);
+  }
+
+  delete(item: any) {
+
+    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
+      if (confirmed) {
+        this.deleteItem(item.id);
+        this.toast.created()
+      }
+    });
+  }
+
   private deleteItem(id: string) {
     this.entityClient.deleteLookup(id).subscribe({
       next: () => {
@@ -398,21 +396,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   }
 
-  ///  -------------  Edit & Delete -------------------
-
-  edit(item: any) {
-    this.openDialog(item.id);
-  }
-
-  delete(item: any) {
-
-    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
-      if (confirmed) {
-        this.deleteItem(item.id);
-        this.toast.created()
-      }
-    });
-  }
 
   ///  -------------  Dialog -------------------
 

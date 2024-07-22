@@ -2268,8 +2268,6 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfLookupDetailModel) {
@@ -2293,16 +2291,6 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -2332,16 +2320,6 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -2360,8 +2338,6 @@ export interface IPaginatedResponseOfLookupDetailModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 
@@ -2451,198 +2427,6 @@ export interface ILookupDetailModel {
     lookupId?: string | undefined;
     lookupName?: string;
     optionDataSources?: { [key: string]: any; };
-}
-
-export class DataFieldModel implements IDataFieldModel {
-    fieldName?: string;
-    caption?: string;
-    fieldType?: string;
-    dbField?: string;
-    sortOrder?: number;
-    isVisible?: boolean;
-    isSortable?: boolean;
-    isGlobalFilterable?: boolean;
-    isFilterable?: boolean;
-    dsName?: string;
-
-    constructor(data?: IDataFieldModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.fieldName = _data["fieldName"];
-            this.caption = _data["caption"];
-            this.fieldType = _data["fieldType"];
-            this.dbField = _data["dbField"];
-            this.sortOrder = _data["sortOrder"];
-            this.isVisible = _data["isVisible"];
-            this.isSortable = _data["isSortable"];
-            this.isGlobalFilterable = _data["isGlobalFilterable"];
-            this.isFilterable = _data["isFilterable"];
-            this.dsName = _data["dsName"];
-        }
-    }
-
-    static fromJS(data: any): DataFieldModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new DataFieldModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fieldName"] = this.fieldName;
-        data["caption"] = this.caption;
-        data["fieldType"] = this.fieldType;
-        data["dbField"] = this.dbField;
-        data["sortOrder"] = this.sortOrder;
-        data["isVisible"] = this.isVisible;
-        data["isSortable"] = this.isSortable;
-        data["isGlobalFilterable"] = this.isGlobalFilterable;
-        data["isFilterable"] = this.isFilterable;
-        data["dsName"] = this.dsName;
-        return data;
-    }
-}
-
-export interface IDataFieldModel {
-    fieldName?: string;
-    caption?: string;
-    fieldType?: string;
-    dbField?: string;
-    sortOrder?: number;
-    isVisible?: boolean;
-    isSortable?: boolean;
-    isGlobalFilterable?: boolean;
-    isFilterable?: boolean;
-    dsName?: string;
-}
-
-export class DataFilterModel implements IDataFilterModel {
-    fieldName?: string;
-    fieldType?: string;
-    value?: string;
-    matchMode?: string;
-    operator?: string;
-    dsName?: string;
-    dbField?: string;
-    dataSource?: SelectListModel[];
-
-    constructor(data?: IDataFilterModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.fieldName = _data["fieldName"];
-            this.fieldType = _data["fieldType"];
-            this.value = _data["value"];
-            this.matchMode = _data["matchMode"];
-            this.operator = _data["operator"];
-            this.dsName = _data["dsName"];
-            this.dbField = _data["dbField"];
-            if (Array.isArray(_data["dataSource"])) {
-                this.dataSource = [] as any;
-                for (let item of _data["dataSource"])
-                    this.dataSource!.push(SelectListModel.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): DataFilterModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new DataFilterModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fieldName"] = this.fieldName;
-        data["fieldType"] = this.fieldType;
-        data["value"] = this.value;
-        data["matchMode"] = this.matchMode;
-        data["operator"] = this.operator;
-        data["dsName"] = this.dsName;
-        data["dbField"] = this.dbField;
-        if (Array.isArray(this.dataSource)) {
-            data["dataSource"] = [];
-            for (let item of this.dataSource)
-                data["dataSource"].push(item.toJSON());
-        }
-        return data;
-    }
-}
-
-export interface IDataFilterModel {
-    fieldName?: string;
-    fieldType?: string;
-    value?: string;
-    matchMode?: string;
-    operator?: string;
-    dsName?: string;
-    dbField?: string;
-    dataSource?: SelectListModel[];
-}
-
-export class SelectListModel implements ISelectListModel {
-    id?: any;
-    name?: string;
-    isDefault?: boolean;
-    severity?: string;
-
-    constructor(data?: ISelectListModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.name = _data["name"];
-            this.isDefault = _data["isDefault"];
-            this.severity = _data["severity"];
-        }
-    }
-
-    static fromJS(data: any): SelectListModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new SelectListModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["name"] = this.name;
-        data["isDefault"] = this.isDefault;
-        data["severity"] = this.severity;
-        return data;
-    }
-}
-
-export interface ISelectListModel {
-    id?: any;
-    name?: string;
-    isDefault?: boolean;
-    severity?: string;
 }
 
 export abstract class DataGridModel implements IDataGridModel {
@@ -2814,6 +2598,66 @@ export interface IGlobalFilterFieldModel {
     dbField?: string;
     fieldType?: string;
     matchMode?: string;
+}
+
+export class DataFilterModel implements IDataFilterModel {
+    fieldName?: string;
+    fieldType?: string;
+    value?: string;
+    matchMode?: string;
+    operator?: string;
+    dsName?: string;
+    dbField?: string;
+
+    constructor(data?: IDataFilterModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fieldName = _data["fieldName"];
+            this.fieldType = _data["fieldType"];
+            this.value = _data["value"];
+            this.matchMode = _data["matchMode"];
+            this.operator = _data["operator"];
+            this.dsName = _data["dsName"];
+            this.dbField = _data["dbField"];
+        }
+    }
+
+    static fromJS(data: any): DataFilterModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new DataFilterModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fieldName"] = this.fieldName;
+        data["fieldType"] = this.fieldType;
+        data["value"] = this.value;
+        data["matchMode"] = this.matchMode;
+        data["operator"] = this.operator;
+        data["dsName"] = this.dsName;
+        data["dbField"] = this.dbField;
+        return data;
+    }
+}
+
+export interface IDataFilterModel {
+    fieldName?: string;
+    fieldType?: string;
+    value?: string;
+    matchMode?: string;
+    operator?: string;
+    dsName?: string;
+    dbField?: string;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -3011,8 +2855,6 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfLookupModel) {
@@ -3036,16 +2878,6 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -3075,16 +2907,6 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -3103,8 +2925,6 @@ export interface IPaginatedResponseOfLookupModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 
@@ -3443,6 +3263,54 @@ export interface IUpdateLookupCommand {
     cacheKey?: string;
 }
 
+export class SelectListModel implements ISelectListModel {
+    id?: any;
+    name?: string;
+    isDefault?: boolean;
+    severity?: string;
+
+    constructor(data?: ISelectListModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.name = _data["name"];
+            this.isDefault = _data["isDefault"];
+            this.severity = _data["severity"];
+        }
+    }
+
+    static fromJS(data: any): SelectListModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new SelectListModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["name"] = this.name;
+        data["isDefault"] = this.isDefault;
+        data["severity"] = this.severity;
+        return data;
+    }
+}
+
+export interface ISelectListModel {
+    id?: any;
+    name?: string;
+    isDefault?: boolean;
+    severity?: string;
+}
+
 export class TreeNodeModel implements ITreeNodeModel {
     key?: any;
     label?: string;
@@ -3538,8 +3406,6 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppMenuModel) {
@@ -3563,16 +3429,6 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -3602,16 +3458,6 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -3630,8 +3476,6 @@ export interface IPaginatedResponseOfAppMenuModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 
@@ -4009,8 +3853,6 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppPageModel) {
@@ -4034,16 +3876,6 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -4073,16 +3905,6 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -4101,8 +3923,6 @@ export interface IPaginatedResponseOfAppPageModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 
@@ -4359,8 +4179,6 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfRoleModel) {
@@ -4384,16 +4202,6 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -4423,16 +4231,6 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -4451,8 +4249,6 @@ export interface IPaginatedResponseOfRoleModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 
@@ -4694,8 +4490,6 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppUserModel) {
@@ -4719,16 +4513,6 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (Array.isArray(_data["dataFields"])) {
-                this.dataFields = [] as any;
-                for (let item of _data["dataFields"])
-                    this.dataFields!.push(DataFieldModel.fromJS(item));
-            }
-            if (Array.isArray(_data["filters"])) {
-                this.filters = [] as any;
-                for (let item of _data["filters"])
-                    this.filters!.push(DataFilterModel.fromJS(item));
-            }
             if (_data["optionDataSources"]) {
                 this.optionDataSources = {} as any;
                 for (let key in _data["optionDataSources"]) {
@@ -4758,16 +4542,6 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (Array.isArray(this.dataFields)) {
-            data["dataFields"] = [];
-            for (let item of this.dataFields)
-                data["dataFields"].push(item.toJSON());
-        }
-        if (Array.isArray(this.filters)) {
-            data["filters"] = [];
-            for (let item of this.filters)
-                data["filters"].push(item.toJSON());
-        }
         if (this.optionDataSources) {
             data["optionDataSources"] = {};
             for (let key in this.optionDataSources) {
@@ -4786,8 +4560,6 @@ export interface IPaginatedResponseOfAppUserModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    dataFields?: DataFieldModel[];
-    filters?: DataFilterModel[];
     optionDataSources?: { [key: string]: any; };
 }
 

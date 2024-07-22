@@ -162,7 +162,6 @@ export class AppPageDetailComponent implements OnInit {
       color: [''],
       isVisible: [true],
       sortOrder: [sortOrder],
-      isActive: [true],
       showProperties: [true],
     });
   }
