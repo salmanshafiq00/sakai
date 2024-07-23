@@ -22,7 +22,8 @@ export class AppPageDetailComponent implements OnInit {
   item: AppPageModel = new AppPageModel();
 
   pageLayout: any = {
-    'appPageFields': []
+    'appPageFields': [],
+    'appPageActions': []
   };
 
   get f() {
@@ -48,7 +49,7 @@ export class AppPageDetailComponent implements OnInit {
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       console.log(this.form.value)
-      this.save();
+      // this.save();
     } else {
       // this.update();
     }
@@ -57,7 +58,8 @@ export class AppPageDetailComponent implements OnInit {
   private save() {
     let createCommand = new UpsertAppPageCommand();
     createCommand = { ...this.form.value }
-    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
+    this.pageLayout.appPageFields = this.form.get('appPageFields').value; 
+    this.pageLayout.appPageActions = this.form.get('appPageActions').value; 
     createCommand.appPageLayout = JSON.stringify(this.pageLayout);
     console.log(createCommand);
 
@@ -120,9 +122,56 @@ export class AppPageDetailComponent implements OnInit {
       subTitle: [''],
       componentName: ['', Validators.required],
       appPageLayout: [''],
-      appPageFields: this.fb.array([])
+      appPageFields: this.fb.array([]),
+      appPageActions: this.fb.array([])
     });
   }
+  showProperty(field: AbstractControl, show: boolean): void {
+    field.get('showProperties')?.setValue(show);
+  }
+
+
+  showPropertyStatus(field: any) {
+    return field.get('showProperties')?.value;
+  }
+
+  // App Page Toolbar Actions //
+
+  get appPageActions(): FormArray {
+    return this.form.get('appPageActions') as FormArray;
+  }
+
+
+  addAppPageAction(): void {
+    this.appPageActions.push(this.createAppPageAction());
+  }
+
+  removeAppPageAction(index: number): void {
+    this.appPageActions.removeAt(index);
+  }
+
+  private createAppPageAction(): FormGroup {
+    const atn_id = 'atn_' + this.newGuid();
+    const sortOrder = this.appPageActions?.length + 1 ?? 1;
+    return this.fb.group({
+      id: [atn_id],
+      actionName: ['', Validators.required],
+      actionType: ['', Validators.required],
+      caption: [''],
+      icon: [''],
+      permissions: ['string'],
+      functionName: [''],
+      navigationUrl: [''],
+      position: ['left'],
+      sortOrder: [sortOrder],
+      isVisible: [true],
+      showCaption: [true],
+      ParentId: [null],
+      showProperties: [true]
+    });
+  }
+
+  // App Page Fields //
 
   get appPageFields(): FormArray {
     return this.form.get('appPageFields') as FormArray;
@@ -136,12 +185,9 @@ export class AppPageDetailComponent implements OnInit {
     this.appPageFields.removeAt(index);
   }
 
-  showPropertyStatus(field: any) {
-    return field.get('showProperties')?.value;
-  }
   createAppPageField(): FormGroup {
     const fld_id = 'fld_' + this.newGuid();
-    const sortOrder = (<FormArray>this.form.get('appPageFields'))?.length + 1 ?? 1;
+    const sortOrder = this.appPageFields?.length + 1 ?? 1;
     return this.fb.group({
       id: [fld_id],
       fieldName: ['', Validators.required],
@@ -161,16 +207,15 @@ export class AppPageDetailComponent implements OnInit {
       bgColor: [''],
       color: [''],
       isVisible: [true],
+      isActive: [true],
       sortOrder: [sortOrder],
       showProperties: [true],
     });
   }
 
-  showProperty(field: AbstractControl, show: boolean): void {
-    field.get('showProperties')?.setValue(show);
-  }
 
-  newGuid() {
+
+  private newGuid() {
     return 'xxx4x'.replace(/[xy]/g, function (c) {
       const r = Math.random() * 16 | 0,
         v = c === 'x' ? r : (r & 0x3 | 0x8);

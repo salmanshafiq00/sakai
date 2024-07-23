@@ -14,6 +14,84 @@
       </div>
     </div>
 
+    <!-- Page Toolbar Actions -->
+    <div class="grid m-1">
+      <div class="col-12 group">
+        <div class="div-caption">
+          <span>Actions</span>
+          <div (click)="addAppPageAction()" class="field-plus">
+            <i class="pi pi-plus"></i> Action
+          </div>
+        </div>
+
+        <div formArrayName="appPageActions" *ngFor="let field of appPageActions.controls; let i = index">
+          <div [formGroupName]="i" class="col-12 group-row">
+            <div class="div-caption">
+              Action Item
+              <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
+                <i class="pi pi-chevron-down"></i>
+              </a>
+              <a class="collapse-field" *ngIf="showPropertyStatus(field)" (click)="showProperty(field, false)">
+                <i class="pi pi-chevron-up"></i>
+              </a>
+              <a class="remove-field" (click)="removeAppPageAction(i)">
+                <i class="pi pi-trash"></i>
+              </a>
+            </div>
+            <!-- Show initially -->
+            <div class="grid mt-2" *ngIf="!showPropertyStatus(field)">
+              <div class="col-4">
+                <span>Name: {{ field.value.actionName }}</span>
+              </div>
+              <div class="col-4">
+                <span>Caption: {{ field.value.caption }}</span>
+              </div>
+              <div class="col-4">
+                <span>Function: {{ field.value.functionName }}</span>
+              </div>
+            </div>
+            <!-- Show when click on down chevron icon -->
+            <div class="grid mt-2" *ngIf="showPropertyStatus(field)">
+              <div class="field col-4">
+                <app-input-text formControlName="actionName" label="Action Name" [required]="true" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="caption" label="Caption" [required]="true" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="icon" label="Icon" [required]="false" />
+                <!--  add select icon dropdown -->
+              </div>
+              <div class="field col-4">
+                <app-input-select [options]="actionTypeSelectList" formControlName="actionType" label="Action Type" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="functionName" label="Function Name" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="navigationUrl" label="Navigation Url" />
+              </div>
+              <div class="field col-4">
+                <app-input-select [options]="alignSelectList" formControlName="position" label="Position" />
+              </div>
+              <div class="field col-4">
+                <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true"
+                  [min]="0" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="isVisible" label="Visible" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="showCaption" label="Show Caption" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page Toolbar Actions -->
+
+    <!-- Page Data Field -->
     <div class="grid m-1">
       <div class="col-12 group">
         <div class="div-caption">
@@ -23,7 +101,7 @@
           </div>
         </div>
 
-        <div  formArrayName="appPageFields" *ngFor="let field of appPageFields.controls; let i = index">
+        <div formArrayName="appPageFields" *ngFor="let field of appPageFields.controls; let i = index">
           <div [formGroupName]="i" class="col-12 group-row">
             <div class="div-caption">
               Field
@@ -40,13 +118,13 @@
             <!-- Show initially -->
             <div class="grid mt-2" *ngIf="!showPropertyStatus(field)">
               <div class="col-4">
-                  <span>Name: {{ field.value.fieldName }}</span>
+                <span>Name: {{ field.value.fieldName }}</span>
               </div>
               <div class="col-4">
-                  <span>Caption: {{ field.value.caption }}</span>
+                <span>Caption: {{ field.value.caption }}</span>
               </div>
               <div class="col-4">
-                  <span>Field Type: {{ field.value.fieldType }}</span>
+                <span>Field Type: {{ field.value.fieldType }}</span>
               </div>
             </div>
             <!-- Show when click on down chevron icon -->
@@ -58,8 +136,7 @@
                 <app-input-text formControlName="caption" label="Caption" [required]="true" />
               </div>
               <div class="field col-4">
-                <app-input-select [options]="fieldTypeSelectList" formControlName="fieldType"
-                  label="Field Type" />
+                <app-input-select [options]="fieldTypeSelectList" formControlName="fieldType" label="Field Type" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="dbField" label="Db Field" [required]="true" />
@@ -68,14 +145,14 @@
                 <app-input-select [options]="alignSelectList" formControlName="textAlign" label="Text Align" />
               </div>
               <div class="field col-4">
-                <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true" [min]="0" />
+                <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true"
+                  [min]="0" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="format" label="Format" [required]="false" />
               </div>
               <div class="field col-4">
-                <app-input-select [options]="filterSelectList" formControlName="filterType"
-                  label="Filter Type" />
+                <app-input-select [options]="filterSelectList" formControlName="filterType" label="Filter Type" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="dSName" label="DS Name" />
@@ -112,23 +189,13 @@
         </div>
       </div>
     </div>
+    <!-- Page Data Field -->
+
     <div class="mt-3 p-dialog-footer">
-      <app-button
-          label="Cancel"
-          type="button"
-          icon="pi pi-times"
-          styleClass="p-button-text"
-          severity="warning"
-          (onClick)="cancel()"
-      />
-      <app-button
-            label="Save"
-            type="submit"
-            icon="pi pi-check"
-            styleClass="p-button-text"
-            
-        />
-        
-  </div>
+      <app-button label="Cancel" type="button" icon="pi pi-times" styleClass="p-button-text" severity="warning"
+        (onClick)="cancel()" />
+      <app-button label="Save" type="submit" icon="pi pi-check" styleClass="p-button-text" />
+
+    </div>
   </form>
 </div>
