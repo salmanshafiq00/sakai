@@ -3,7 +3,7 @@ import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { timer } from 'rxjs';
 import { FieldType } from 'src/app/core/contants/FieldDataType';
-import { AppPageFieldModel, AppPageModel, AppPagesClient, DataFilterModel, GlobalFilterFieldModel } from 'src/app/modules/generated-clients/api-service';
+import { AppPageActionModel, AppPageFieldModel, AppPageModel, AppPagesClient, DataFilterModel, GlobalFilterFieldModel } from 'src/app/modules/generated-clients/api-service';
 import { BackoffService } from '../../services/backoff.service';
 import { ToastService } from '../../services/toast.service';
 import { DatePipe } from '@angular/common';
@@ -22,8 +22,12 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // Page Layout Settings Start Start
   isPagelayoutFound: boolean = true;
   appPageLayout: any = {};
+  appPageToolbarActions: AppPageActionModel[] = [];
+  leftToolbarActions: AppPageActionModel[] = [];
+  dataFields: AppPageFieldModel[] = [];
   appPageModel: AppPageModel = null;
   globalfiltersTooltip: string = '';
+
 
   // Page Layout Settings Start End
 
@@ -34,7 +38,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   isInitialLoaded: boolean = false;
   responsiveLayout = 'scroll';
   cols: any[] = [];
-  dataFields: AppPageFieldModel[] = [];
   filters: DataFilterModel[] = [];
   lazyLoading: boolean = true;
   selectionMode: "single" | "multiple" = "multiple";
@@ -75,7 +78,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // Centralized storage for dynamic dropdown values
   dynamicDropdownValues: { [key: string]: any } = {};
 
-
   // 
   @Input() pageId: string;
   @Input() entityClient: any;
@@ -86,7 +88,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
 
-  // Dialog ---------------------
+  get hasSelectOrDateType(): boolean {
+    return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
+  }
+
 
   private backoffService = inject(BackoffService);
   private toast = inject(ToastService);
@@ -94,10 +99,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private datePipe = inject(DatePipe);
   private customDialogService = inject(CustomDialogService);
   private appPagesClient = inject(AppPagesClient);
-
-  get hasSelectOrDateType(): boolean {
-    return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
-  }
 
   // get globalfiltersTooltip(): string {
   //   // this.click++;
@@ -129,22 +130,25 @@ export class DataGridComponent implements OnInit, OnDestroy {
             this.appPageModel = data;
             this.appPageLayout = JSON.parse(data.appPageLayout);
 
-            this.dataFields = [...this.appPageLayout.appPageFields.filter(field => field.isVisible === true)]; // TODO: sort before set
-
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
-            this.globalFilterFields = [...this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).map(x => x.fieldName)]
+            this.dataFields = [...this.appPageLayout.appPageFields?.filter(field => field.isVisible === true)]; 
+            console.log(this.dataFields)
+            this.appPageToolbarActions = [...this.appPageLayout.appPageActions?.filter(field => field.isVisible === true)]; 
+            this.leftToolbarActions = [...this.appPageLayout.appPageActions?.filter(action => action.position === 'left' && action.isVisible === true)]; 
+
+            this.globalFilterFields = [...this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).map(x => x.field)]
             
             this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).forEach(field => {
               this.globalFilterFieldModels.push(new GlobalFilterFieldModel({
-                fieldName: field.fieldName,
+                field: field.field,
                 fieldType: field.fieldType,
                 dbField: field.dbField
               }));
             });
 
             this.globalfiltersTooltip = this.appPageLayout.appPageFields
-              .filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.caption)
+              .filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.header)
               .join(', ') ?? '';
 
               this.createDataFilterModelList();
@@ -213,7 +217,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private createDataFilterModelList() {
     this.dataFields.filter(field => field.isFilterable === true).forEach(field => {
       this.filters.push(new DataFilterModel({
-        fieldName: field.fieldName,
+        field: field.field,
         fieldType: field.fieldType,
         dsName: field.dsName,
         dbField: field.dbField
@@ -236,14 +240,15 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   // }
   // Function to generate unique keys for dropdowns
-  generateDropdownKey(field: string, type: 'select' | 'multiSelect'): string {
-    return `${field}_${type}`;
-  }
-
 
   refreshGrid() {
     this.loadData({ first: this.first, rows: this.rows }, false);
   }
+
+  generateDropdownKey(field: string, type: 'select' | 'multiSelect'): string {
+    return `${field}_${type}`;
+  }
+
 
   onSearchInput(event: Event): void {
     const searchText = (event.target as HTMLInputElement).value;
@@ -255,6 +260,14 @@ export class DataGridComponent implements OnInit, OnDestroy {
       const searchText = (event.target as HTMLInputElement).value;
       this.table.filterDelay = 0;
       this.onGlobalFilter(searchText);
+    }
+  }
+
+  handleAction(funcName: string){
+    if(funcName === 'new'){
+      this.openDialog(this.emptyGuid)
+    } else if (funcName === 'refresh'){
+      this.refreshGrid()
     }
   }
 
@@ -301,7 +314,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
       if (Object.prototype.hasOwnProperty.call(filters, field)) {
 
         // existingFilter is exist
-        const existingFilter = this.filters.find(x => x.fieldName === field);
+        const existingFilter = this.filters.find(x => x.field === field);
 
         if (!existingFilter) continue;
 
@@ -319,7 +332,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
                 isFirstFilterMetaData = false;
               } else {
                 const newFilter = new DataFilterModel();
-                newFilter.fieldName = field;
+                newFilter.field = field;
                 newFilter.fieldType = existingFilter.fieldType;
                 newFilter.value = this.getTranformValue(existingFilter, filter);
                 newFilter.matchMode = filter.matchMode || '';

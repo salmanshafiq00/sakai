@@ -7,17 +7,17 @@
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div >
-                        <p-button 
-                            pRipple 
-                            [raised]="true"
-                            severity="success"
-                            label="New" 
-                            icon="pi pi-plus" 
-                            class="mr-2" 
-                            styleClass="p-button-sm"
-                            (click)="openDialog(emptyGuid)">
-                        </p-button>                       
-                        <p-button 
+                        <ng-container *ngFor="let action of leftToolbarActions">
+                            <app-button 
+                                [id]="action.actionName + '_btn'"
+                                [label]="action.caption" 
+                                class="mr-2" 
+                                [size]="'small'"
+                                [icon]="action.icon"
+                                [severity]="action.severity"
+                                (onClick)="handleAction(action.actionName)" />
+                        </ng-container>                   
+                        <!-- <p-button 
                             pRipple
                             [raised]="true"
                             severity="help" 
@@ -39,7 +39,7 @@
                             styleClass="p-button-sm"
                             (click)="deleteSelectedItems()" 
                             [disabled]="!selectedItems || !selectedItems.length">
-                        </p-button>
+                        </p-button> -->
                     </div>
                 </ng-template>
 
@@ -130,13 +130,13 @@
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th> -->
                         <ng-container *ngFor="let col of columns">
-                            <th [pSortableColumn]="col.isSortable ? col.fieldName : ''" >
+                            <th [pSortableColumn]="col.isSortable ? col.field : ''" >
                             
                             <!-- FieldType.string -->
                             <p-columnFilter 
                                 type="text" 
                                 *ngIf="col.isFilterable && col.fieldType === FieldType.string" 
-                                [field]="col.fieldName" 
+                                [field]="col.field" 
                                 display="menu" 
                                 [showAddButton]="false" 
                                 [showClearButton]="true"  />
@@ -144,7 +144,7 @@
                             <!-- FieldType.select -->
                             <p-columnFilter 
                                 *ngIf="col.isFilterable && col.fieldType === FieldType.select" 
-                                [field]="col.fieldName" 
+                                [field]="col.field" 
                                 [showMenu]="true"
                                 [matchMode]="FilterMatchModes.EQUALS"
                                 display="menu"
@@ -156,7 +156,7 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
-                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.fieldName, 'select')]"
+                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
                                         [options]="optionDataSources[col?.dSName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
@@ -174,7 +174,7 @@
                             <!-- FieldType.multiSelect -->
                             <p-columnFilter 
                                 *ngIf="col.isFilterable && col.fieldType === FieldType.multiSelect" 
-                                [field]="col.fieldName" 
+                                [field]="col.field" 
                                 [showMenu]="true"
                                 [matchMode]="FilterMatchModes.IN"
                                 display="menu"
@@ -186,7 +186,7 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
-                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.fieldName, 'select')]"
+                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
                                         [options]="optionDataSources[col?.dSName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
@@ -205,15 +205,15 @@
                             <p-columnFilter 
                                 *ngIf="col.isFilterable && col.fieldType === FieldType.date"
                                 type="date" 
-                                [field]="col.fieldName" 
+                                [field]="col.field" 
                                 display="menu">
                             </p-columnFilter>
                                                                                
-                            {{col.caption}}
+                            {{col.header}}
 
                             <p-sortIcon 
                                 [hidden]="!col.isSortable" 
-                                [field]="col.fieldName">
+                                [field]="col.field">
                             </p-sortIcon>
                         </th>
                         </ng-container>
@@ -229,10 +229,10 @@
                         </td> -->
                         <ng-container *ngFor="let col of columns">
                             <td *ngIf="col.fieldType !== FieldType.date">
-                                {{items[col.fieldName]}}
+                                {{items[col.field]}}
                             </td>
                             <td *ngIf="col.fieldType === FieldType.date">
-                                {{items[col.fieldName] | date: 'dd/MM/yyyy'}}
+                                {{items[col.field] | date: 'dd/MM/yyyy'}}
                             </td>
                         </ng-container>
                         <td>

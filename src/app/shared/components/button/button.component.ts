@@ -18,7 +18,7 @@ export class ButtonComponent {
   @Input() rounded: boolean = false;
   @Input() text: boolean = false;
   @Input() plain: boolean = false;
-  @Input() severity: 'success' | 'info' | 'warning' | 'primary' | 'help' | 'danger' | 'secondary' | 'contrast' | null = null;
+  @Input() severity: 'success' | 'info' | 'warning' | 'primary' | 'help' | 'danger' | 'secondary' | 'contrast' | string | null = null;
   @Input() outlined: boolean = false;
   @Input() link: boolean = false;
   @Input() tabindex: number | null = null;

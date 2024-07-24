@@ -1,9 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { AppPagesClient, UpsertAppPageCommand, AppPageModel } from 'src/app/modules/generated-clients/api-service';
+import { AppPagesClient, AppPageModel, CreateAppPageCommand, UpdateAppPageCommand } from 'src/app/modules/generated-clients/api-service';
 import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
+import { PrimengIcon } from 'src/app/shared/services/primeng-icon';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
@@ -22,9 +23,11 @@ export class AppPageDetailComponent implements OnInit {
   item: AppPageModel = new AppPageModel();
 
   pageLayout: any = {
-    'appPageFields': [],
-    'appPageActions': []
+    'appPageActions': [],
+    'appPageFields': []
   };
+
+  primengIcons = PrimengIcon.primeIcons;
 
   get f() {
     return this.form?.controls;
@@ -49,21 +52,27 @@ export class AppPageDetailComponent implements OnInit {
   onSubmit() {
     if (!this.id || this.id === this.comConst.EmptyGuid) {
       console.log(this.form.value)
-      // this.save();
+      this.save();
     } else {
-      // this.update();
+      this.update();
     }
   }
 
   private save() {
-    let createCommand = new UpsertAppPageCommand();
+    let createCommand = new CreateAppPageCommand();
     createCommand = { ...this.form.value }
-    this.pageLayout.appPageFields = this.form.get('appPageFields').value; 
-    this.pageLayout.appPageActions = this.form.get('appPageActions').value; 
+    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
+    this.pageLayout.appPageActions = this.form.get('appPageActions').value;
+
+    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
+    this.pageLayout.appPageActions.forEach(value => value.showProperties = false);
+    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+    this.pageLayout.appPageActions = this.pageLayout.appPageActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+
     createCommand.appPageLayout = JSON.stringify(this.pageLayout);
     console.log(createCommand);
 
-    this.entityClient.upsertPage(createCommand).subscribe({
+    this.entityClient.createAppPage(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -75,38 +84,54 @@ export class AppPageDetailComponent implements OnInit {
     });
   }
 
-  // private update() {
-  //   let updateLookupCommand = new UpdateLookupCommand();
-  //   updateLookupCommand = { ...this.form.value }
-  //   this.entityClient.updateLookup(updateLookupCommand).subscribe({
-  //     next: () => {
-  //       this.toast.updated()
-  //       this.customDialogService.close(true);
-  //     },
-  //     error: (error) => {
-  //       this.toast.showError(error.errors[0]?.description)
-  //       console.log(error);
-  //     }
-  //   });
-  // }
+  private update() {
+    let command = new UpdateAppPageCommand();
+    command = { ...this.form.value }
+    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
+    this.pageLayout.appPageActions = this.form.get('appPageActions').value;
+
+    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
+    this.pageLayout.appPageActions.forEach(value => value.showProperties = false);
+    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+    this.pageLayout.appPageActions = this.pageLayout.appPageActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+
+    command.appPageLayout = JSON.stringify(this.pageLayout);
+    console.log(command);
+
+    this.entityClient.updateAppPage(command).subscribe({
+      next: () => {
+        this.toast.created()
+        this.customDialogService.close(true);
+      },
+      error: (error) => {
+        this.toast.showError(error.errors[0]?.description)
+        console.log(error);
+      }
+    });
+  }
 
   private getById(id: any) {
     this.entityClient.getAppPage(id).subscribe({
       next: (res: AppPageModel) => {
-        // this.optionDataSources = res.optionDataSources;
         if (id && id !== CommonConstants.EmptyGuid) {
           this.pageLayout = JSON.parse(res.appPageLayout)
-          console.log(this.pageLayout);
           this.item = res;
-          this.item.appPageFields = this.pageLayout.appPageFields;
+          this.item.appPageFields = this.pageLayout.appPageFields || [];
+          this.item.appPageActions = this.pageLayout.appPageActions || [];
+          this.item.appPageFields?.forEach(() => {
+            this.addAppPageField();
+          });
+          this.item.appPageActions?.forEach(() => {
+            this.addAppPageAction();
+          })
           console.log(this.item)
           this.form.patchValue(this.item);
         } else {
+          console.log('new create')
           this.item.id = this.id;
+          this.defaultAppPageAction();
           this.form.patchValue(this.item);
         }
-
-
       },
       error: (error) => {
         console.log(error)
@@ -123,7 +148,7 @@ export class AppPageDetailComponent implements OnInit {
       componentName: ['', Validators.required],
       appPageLayout: [''],
       appPageFields: this.fb.array([]),
-      appPageActions: this.fb.array([])
+      appPageActions: this.fb.array([]),
     });
   }
   showProperty(field: AbstractControl, show: boolean): void {
@@ -156,19 +181,63 @@ export class AppPageDetailComponent implements OnInit {
     return this.fb.group({
       id: [atn_id],
       actionName: ['', Validators.required],
-      actionType: ['', Validators.required],
+      actionType: ['button', Validators.required],
       caption: [''],
-      icon: [''],
-      permissions: ['string'],
+      icon: [null],
+      permissions: [''],
       functionName: [''],
       navigationUrl: [''],
       position: ['left'],
+      severity: ['primary'],
       sortOrder: [sortOrder],
       isVisible: [true],
       showCaption: [true],
       ParentId: [null],
       showProperties: [true]
     });
+  }
+
+  private defaultAppPageAction() {
+    const atn_id_1 = 'atn_' + this.newGuid();
+    const atn_id_2 = 'atn_' + this.newGuid();
+    const appPageActions = this.fb.array([
+      this.fb.group({
+        id: [atn_id_1],
+        actionName: ['new', Validators.required],
+        actionType: ['button', Validators.required],
+        caption: ['New'],
+        icon: ['pi pi-plus'],
+        permissions: [''],
+        functionName: [''],
+        navigationUrl: [''],
+        position: ['left'],
+        severity: ['success'],
+        sortOrder: [1],
+        isVisible: [true],
+        showCaption: [true],
+        ParentId: [null],
+        showProperties: [false]
+      }),
+      this.fb.group({
+        id: [atn_id_2],
+        actionName: ['refresh', Validators.required],
+        actionType: ['button', Validators.required],
+        caption: ['Refresh'],
+        icon: ['pi pi-sync'],
+        permissions: [''],
+        functionName: [''],
+        navigationUrl: [''],
+        position: ['left'],
+        severity: ['help'],
+        sortOrder: [2],
+        isVisible: [true],
+        showCaption: [true],
+        ParentId: [null],
+        showProperties: [false]
+      })
+    ]);
+  
+    this.form.setControl('appPageActions', appPageActions);
   }
 
   // App Page Fields //
@@ -190,8 +259,8 @@ export class AppPageDetailComponent implements OnInit {
     const sortOrder = this.appPageFields?.length + 1 ?? 1;
     return this.fb.group({
       id: [fld_id],
-      fieldName: ['', Validators.required],
-      caption: [''],
+      field: ['', Validators.required],
+      header: [''],
       fieldType: ['string'],
       dbField: [''],
       format: [''],
@@ -260,4 +329,14 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'upload', 'name': 'Upload' }
   ];
 
+  severitySelectList = [
+    { 'id': 'primary', 'name': 'Primary' },
+    { 'id': 'secondary', 'name': 'Decondary' },
+    { 'id': 'success', 'name': 'Success' },
+    { 'id': 'info', 'name': 'Info' },
+    { 'id': 'warning', 'name': 'Warning' },
+    { 'id': 'help', 'name': 'Help' },
+    { 'id': 'danger', 'name': 'Danger' },
+    { 'id': 'contrast', 'name': 'Contrast' }
+  ];
 }

@@ -1316,7 +1316,9 @@ export class AppMenusClient implements IAppMenusClient {
 export interface IAppPagesClient {
     getAppPages(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel>;
     getAppPage(id: string): Observable<AppPageModel>;
-    upsertPage(command: UpsertAppPageCommand): Observable<string>;
+    createAppPage(command: CreateAppPageCommand): Observable<string>;
+    updateAppPage(command: UpdateAppPageCommand): Observable<void>;
+    upsertAppPage(command: UpsertAppPageCommand): Observable<string>;
 }
 
 @Injectable()
@@ -1442,8 +1444,8 @@ export class AppPagesClient implements IAppPagesClient {
         return _observableOf(null as any);
     }
 
-    upsertPage(command: UpsertAppPageCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/AppPages/UpsertPage";
+    createAppPage(command: CreateAppPageCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppPages/CreateAppPage";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1460,11 +1462,11 @@ export class AppPagesClient implements IAppPagesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpsertPage(response_);
+            return this.processCreateAppPage(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpsertPage(response_ as any);
+                    return this.processCreateAppPage(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -1473,7 +1475,124 @@ export class AppPagesClient implements IAppPagesClient {
         }));
     }
 
-    protected processUpsertPage(response: HttpResponseBase): Observable<string> {
+    protected processCreateAppPage(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                result200 = resultData200 !== undefined ? resultData200 : <any>null;
+    
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    updateAppPage(command: UpdateAppPageCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/AppPages/UpdateAppPage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateAppPage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateAppPage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processUpdateAppPage(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    upsertAppPage(command: UpsertAppPageCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppPages/UpsertAppPage";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpsertAppPage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpsertAppPage(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<string>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<string>;
+        }));
+    }
+
+    protected processUpsertAppPage(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2553,7 +2672,7 @@ export interface IGetLookupDetailListQuery extends IDataGridModel {
 }
 
 export class GlobalFilterFieldModel implements IGlobalFilterFieldModel {
-    fieldName?: string;
+    field?: string;
     dbField?: string;
     fieldType?: string;
     matchMode?: string;
@@ -2569,7 +2688,7 @@ export class GlobalFilterFieldModel implements IGlobalFilterFieldModel {
 
     init(_data?: any) {
         if (_data) {
-            this.fieldName = _data["fieldName"];
+            this.field = _data["field"];
             this.dbField = _data["dbField"];
             this.fieldType = _data["fieldType"];
             this.matchMode = _data["matchMode"];
@@ -2585,7 +2704,7 @@ export class GlobalFilterFieldModel implements IGlobalFilterFieldModel {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["fieldName"] = this.fieldName;
+        data["field"] = this.field;
         data["dbField"] = this.dbField;
         data["fieldType"] = this.fieldType;
         data["matchMode"] = this.matchMode;
@@ -2594,14 +2713,14 @@ export class GlobalFilterFieldModel implements IGlobalFilterFieldModel {
 }
 
 export interface IGlobalFilterFieldModel {
-    fieldName?: string;
+    field?: string;
     dbField?: string;
     fieldType?: string;
     matchMode?: string;
 }
 
 export class DataFilterModel implements IDataFilterModel {
-    fieldName?: string;
+    field?: string;
     fieldType?: string;
     value?: string;
     matchMode?: string;
@@ -2620,7 +2739,7 @@ export class DataFilterModel implements IDataFilterModel {
 
     init(_data?: any) {
         if (_data) {
-            this.fieldName = _data["fieldName"];
+            this.field = _data["field"];
             this.fieldType = _data["fieldType"];
             this.value = _data["value"];
             this.matchMode = _data["matchMode"];
@@ -2639,7 +2758,7 @@ export class DataFilterModel implements IDataFilterModel {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["fieldName"] = this.fieldName;
+        data["field"] = this.field;
         data["fieldType"] = this.fieldType;
         data["value"] = this.value;
         data["matchMode"] = this.matchMode;
@@ -2651,7 +2770,7 @@ export class DataFilterModel implements IDataFilterModel {
 }
 
 export interface IDataFilterModel {
-    fieldName?: string;
+    field?: string;
     fieldType?: string;
     value?: string;
     matchMode?: string;
@@ -3933,6 +4052,7 @@ export class AppPageModel implements IAppPageModel {
     componentName?: string;
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
+    appPageActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IAppPageModel) {
@@ -3955,6 +4075,11 @@ export class AppPageModel implements IAppPageModel {
                 this.appPageFields = [] as any;
                 for (let item of _data["appPageFields"])
                     this.appPageFields!.push(AppPageFieldModel.fromJS(item));
+            }
+            if (Array.isArray(_data["appPageActions"])) {
+                this.appPageActions = [] as any;
+                for (let item of _data["appPageActions"])
+                    this.appPageActions!.push(AppPageActionModel.fromJS(item));
             }
             if (_data["optionsDataSources"]) {
                 this.optionsDataSources = {} as any;
@@ -3985,6 +4110,11 @@ export class AppPageModel implements IAppPageModel {
             for (let item of this.appPageFields)
                 data["appPageFields"].push(item.toJSON());
         }
+        if (Array.isArray(this.appPageActions)) {
+            data["appPageActions"] = [];
+            for (let item of this.appPageActions)
+                data["appPageActions"].push(item.toJSON());
+        }
         if (this.optionsDataSources) {
             data["optionsDataSources"] = {};
             for (let key in this.optionsDataSources) {
@@ -4003,13 +4133,14 @@ export interface IAppPageModel {
     componentName?: string;
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
+    appPageActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 }
 
 export class AppPageFieldModel implements IAppPageFieldModel {
     id?: string;
-    fieldName?: string;
-    caption?: string;
+    field?: string;
+    header?: string;
     fieldType?: string;
     dbField?: string;
     format?: string;
@@ -4040,8 +4171,8 @@ export class AppPageFieldModel implements IAppPageFieldModel {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.fieldName = _data["fieldName"];
-            this.caption = _data["caption"];
+            this.field = _data["field"];
+            this.header = _data["header"];
             this.fieldType = _data["fieldType"];
             this.dbField = _data["dbField"];
             this.format = _data["format"];
@@ -4072,8 +4203,8 @@ export class AppPageFieldModel implements IAppPageFieldModel {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["fieldName"] = this.fieldName;
-        data["caption"] = this.caption;
+        data["field"] = this.field;
+        data["header"] = this.header;
         data["fieldType"] = this.fieldType;
         data["dbField"] = this.dbField;
         data["format"] = this.format;
@@ -4097,8 +4228,8 @@ export class AppPageFieldModel implements IAppPageFieldModel {
 
 export interface IAppPageFieldModel {
     id?: string;
-    fieldName?: string;
-    caption?: string;
+    field?: string;
+    header?: string;
     fieldType?: string;
     dbField?: string;
     format?: string;
@@ -4116,6 +4247,90 @@ export interface IAppPageFieldModel {
     isVisible?: boolean;
     sortOrder?: number;
     isActive?: boolean;
+}
+
+export class AppPageActionModel implements IAppPageActionModel {
+    id?: string;
+    actionTypeId?: number | undefined;
+    actionName?: string;
+    severity?: string;
+    permissions?: string;
+    caption?: string;
+    icon?: string;
+    functionName?: string;
+    navigationUrl?: string;
+    position?: string;
+    parentId?: string | undefined;
+    sortOrder?: number;
+    isVisible?: boolean;
+
+    constructor(data?: IAppPageActionModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.actionTypeId = _data["actionTypeId"];
+            this.actionName = _data["actionName"];
+            this.severity = _data["severity"];
+            this.permissions = _data["permissions"];
+            this.caption = _data["caption"];
+            this.icon = _data["icon"];
+            this.functionName = _data["functionName"];
+            this.navigationUrl = _data["navigationUrl"];
+            this.position = _data["position"];
+            this.parentId = _data["parentId"];
+            this.sortOrder = _data["sortOrder"];
+            this.isVisible = _data["isVisible"];
+        }
+    }
+
+    static fromJS(data: any): AppPageActionModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new AppPageActionModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["actionTypeId"] = this.actionTypeId;
+        data["actionName"] = this.actionName;
+        data["severity"] = this.severity;
+        data["permissions"] = this.permissions;
+        data["caption"] = this.caption;
+        data["icon"] = this.icon;
+        data["functionName"] = this.functionName;
+        data["navigationUrl"] = this.navigationUrl;
+        data["position"] = this.position;
+        data["parentId"] = this.parentId;
+        data["sortOrder"] = this.sortOrder;
+        data["isVisible"] = this.isVisible;
+        return data;
+    }
+}
+
+export interface IAppPageActionModel {
+    id?: string;
+    actionTypeId?: number | undefined;
+    actionName?: string;
+    severity?: string;
+    permissions?: string;
+    caption?: string;
+    icon?: string;
+    functionName?: string;
+    navigationUrl?: string;
+    position?: string;
+    parentId?: string | undefined;
+    sortOrder?: number;
+    isVisible?: boolean;
 }
 
 export class GetAppPageListQuery extends DataGridModel implements IGetAppPageListQuery {
@@ -4143,6 +4358,114 @@ export class GetAppPageListQuery extends DataGridModel implements IGetAppPageLis
 }
 
 export interface IGetAppPageListQuery extends IDataGridModel {
+}
+
+export class CreateAppPageCommand implements ICreateAppPageCommand {
+    title?: string;
+    subTitle?: string;
+    componentName?: string;
+    appPageLayout?: string;
+    cacheKey?: string;
+
+    constructor(data?: ICreateAppPageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.subTitle = _data["subTitle"];
+            this.componentName = _data["componentName"];
+            this.appPageLayout = _data["appPageLayout"];
+            this.cacheKey = _data["cacheKey"];
+        }
+    }
+
+    static fromJS(data: any): CreateAppPageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateAppPageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["subTitle"] = this.subTitle;
+        data["componentName"] = this.componentName;
+        data["appPageLayout"] = this.appPageLayout;
+        data["cacheKey"] = this.cacheKey;
+        return data;
+    }
+}
+
+export interface ICreateAppPageCommand {
+    title?: string;
+    subTitle?: string;
+    componentName?: string;
+    appPageLayout?: string;
+    cacheKey?: string;
+}
+
+export class UpdateAppPageCommand implements IUpdateAppPageCommand {
+    id?: string;
+    title?: string;
+    subTitle?: string;
+    componentName?: string;
+    appPageLayout?: string;
+    cacheKey?: string;
+
+    constructor(data?: IUpdateAppPageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.subTitle = _data["subTitle"];
+            this.componentName = _data["componentName"];
+            this.appPageLayout = _data["appPageLayout"];
+            this.cacheKey = _data["cacheKey"];
+        }
+    }
+
+    static fromJS(data: any): UpdateAppPageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateAppPageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["subTitle"] = this.subTitle;
+        data["componentName"] = this.componentName;
+        data["appPageLayout"] = this.appPageLayout;
+        data["cacheKey"] = this.cacheKey;
+        return data;
+    }
+}
+
+export interface IUpdateAppPageCommand {
+    id?: string;
+    title?: string;
+    subTitle?: string;
+    componentName?: string;
+    appPageLayout?: string;
+    cacheKey?: string;
 }
 
 export class UpsertAppPageCommand extends AppPageModel implements IUpsertAppPageCommand {

@@ -27,14 +27,6 @@ export class AppMenuDetailComponent  implements OnInit {
     return this.form.controls;
   }
 
-  get isEdit(): boolean{
-    return this.id && this.id != '00000000-0000-0000-0000-000000000000'
-  }
-
-  selectList(dsName: string){
-    return this.optionDataSources[dsName];
-  }
-
   primengIcons = PrimengIcon.primeIcons;
 
   private customDialogService: CustomDialogService = inject(CustomDialogService);

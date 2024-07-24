@@ -56,3 +56,12 @@
   padding: .5rem;
 
 }
+
+::ng-deep p-dropdown.icon-drop > div {
+  width: 100%; 
+}
+
+::ng-deep p-button.severity-drop-btn > button {
+  padding: 0rem 1rem;
+}
+

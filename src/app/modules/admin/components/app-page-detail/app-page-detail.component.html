@@ -59,8 +59,54 @@
                 <app-input-text formControlName="caption" label="Caption" [required]="true" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="icon" label="Icon" [required]="false" />
-                <!--  add select icon dropdown -->
+                <label for="icon">Icon</label>
+                <p-dropdown [options]="primengIcons"
+                  optionLabel="label"
+                  optionValue="value"
+                  formControlName="icon"
+                  [filter]="true"
+                  filterBy="label"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="icon-drop"
+                  placeholder="Select One">
+                  <ng-template let-selectedOption pTemplate="selectedItem">
+                    <div class="flex align-items-center gap-2">
+                      <i [ngClass]="selectedOption?.value"></i>
+                      <div> {{ selectedOption?.label }}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <i [ngClass]="option.value"></i>
+                      <span class="p-ml-2"> {{ option.label }}</span>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+              <div class="field col-4">
+                <label for="severity">Severity</label>
+                <p-dropdown [options]="severitySelectList"
+                  optionLabel="name"
+                  optionValue="id"
+                  formControlName="severity"
+                  [filter]="true"
+                  filterBy="name"
+                  [showClear]="true"
+                  appendTo="body"
+                  class="icon-drop"
+                  placeholder="Select One">
+                  <ng-template let-selectedOption pTemplate="selectedItem">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" /> 
+                    </div>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> 
+                    </div>
+                  </ng-template>
+                </p-dropdown>
               </div>
               <div class="field col-4">
                 <app-input-select [options]="actionTypeSelectList" formControlName="actionType" label="Action Type" />
@@ -118,10 +164,10 @@
             <!-- Show initially -->
             <div class="grid mt-2" *ngIf="!showPropertyStatus(field)">
               <div class="col-4">
-                <span>Name: {{ field.value.fieldName }}</span>
+                <span>Name: {{ field.value.field }}</span>
               </div>
               <div class="col-4">
-                <span>Caption: {{ field.value.caption }}</span>
+                <span>Caption: {{ field.value.header }}</span>
               </div>
               <div class="col-4">
                 <span>Field Type: {{ field.value.fieldType }}</span>
@@ -130,10 +176,10 @@
             <!-- Show when click on down chevron icon -->
             <div class="grid mt-2" *ngIf="showPropertyStatus(field)">
               <div class="field col-4">
-                <app-input-text formControlName="fieldName" label="Field Name" [required]="true" />
+                <app-input-text formControlName="field" label="Field Name" [required]="true" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="caption" label="Caption" [required]="true" />
+                <app-input-text formControlName="header" label="Caption" [required]="true" />
               </div>
               <div class="field col-4">
                 <app-input-select [options]="fieldTypeSelectList" formControlName="fieldType" label="Field Type" />
