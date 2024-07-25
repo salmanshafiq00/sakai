@@ -22,8 +22,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // Page Layout Settings Start Start
   isPagelayoutFound: boolean = true;
   appPageLayout: any = {};
-  appPageToolbarActions: AppPageActionModel[] = [];
+  // appPageToolbarActions: AppPageActionModel[] = [];
   leftToolbarActions: AppPageActionModel[] = [];
+  rightToolbarActions: AppPageActionModel[] = [];
+  rowActions: AppPageActionModel[] = [];
   dataFields: AppPageFieldModel[] = [];
   appPageModel: AppPageModel = null;
   globalfiltersTooltip: string = '';
@@ -100,19 +102,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private customDialogService = inject(CustomDialogService);
   private appPagesClient = inject(AppPagesClient);
 
-  // get globalfiltersTooltip(): string {
-  //   // this.click++;
-  //   // console.log('click', this.click)
-  //   // return this.globalFilterFieldNames?.join(', ');
-  //   console.log(this.appPageLayout.appPageFields.filter(field => field.isVisible === true && field.isGlobalFilterable));
-  //   return this.appPageLayout.appPageFields.filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.fieldName).join(', ') ?? '';
-  // }
-
-  // get getPageTitle(){
-  //   return this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
-  // }
-
-
   ngOnInit() {
     this.loadGridLayout();
     this.loadData({ first: this.first, rows: this.rows }, true)
@@ -129,17 +118,19 @@ export class DataGridComponent implements OnInit, OnDestroy {
           if (data) {
             this.appPageModel = data;
             this.appPageLayout = JSON.parse(data.appPageLayout);
-
+            console.log(this.appPageLayout)
+            
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
-            this.dataFields = [...this.appPageLayout.appPageFields?.filter(field => field.isVisible === true)]; 
-            console.log(this.dataFields)
-            this.appPageToolbarActions = [...this.appPageLayout.appPageActions?.filter(field => field.isVisible === true)]; 
-            this.leftToolbarActions = [...this.appPageLayout.appPageActions?.filter(action => action.position === 'left' && action.isVisible === true)]; 
-
-            this.globalFilterFields = [...this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).map(x => x.field)]
+            this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? []; 
+                        
+            this.leftToolbarActions = [...this.appPageLayout?.appPageActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? []; 
             
-            this.appPageLayout.appPageFields.filter(x => x.isGlobalFilterable).forEach(field => {
+            this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? []; 
+
+            this.globalFilterFields = [...this.appPageLayout?.appPageFields?.filter(x => x.isGlobalFilterable)?.map(x => x.field)] ?? []
+            
+            this.appPageLayout?.appPageFields?.filter(x => x.isGlobalFilterable)?.forEach(field => {
               this.globalFilterFieldModels.push(new GlobalFilterFieldModel({
                 field: field.field,
                 fieldType: field.fieldType,
@@ -147,7 +138,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
               }));
             });
 
-            this.globalfiltersTooltip = this.appPageLayout.appPageFields
+            this.globalfiltersTooltip = this.appPageLayout?.appPageFields
               .filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.header)
               .join(', ') ?? '';
 
@@ -268,6 +259,14 @@ export class DataGridComponent implements OnInit, OnDestroy {
       this.openDialog(this.emptyGuid)
     } else if (funcName === 'refresh'){
       this.refreshGrid()
+    }
+  }
+
+  handleRowAction(funcName: string, item: any){
+    if(funcName === 'edit'){
+      this.edit(item)
+    } else if (funcName === 'delete'){
+      this.delete(item)
     }
   }
 

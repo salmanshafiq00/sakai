@@ -4053,6 +4053,7 @@ export class AppPageModel implements IAppPageModel {
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
     appPageActions?: AppPageActionModel[];
+    rowActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IAppPageModel) {
@@ -4080,6 +4081,11 @@ export class AppPageModel implements IAppPageModel {
                 this.appPageActions = [] as any;
                 for (let item of _data["appPageActions"])
                     this.appPageActions!.push(AppPageActionModel.fromJS(item));
+            }
+            if (Array.isArray(_data["rowActions"])) {
+                this.rowActions = [] as any;
+                for (let item of _data["rowActions"])
+                    this.rowActions!.push(AppPageActionModel.fromJS(item));
             }
             if (_data["optionsDataSources"]) {
                 this.optionsDataSources = {} as any;
@@ -4115,6 +4121,11 @@ export class AppPageModel implements IAppPageModel {
             for (let item of this.appPageActions)
                 data["appPageActions"].push(item.toJSON());
         }
+        if (Array.isArray(this.rowActions)) {
+            data["rowActions"] = [];
+            for (let item of this.rowActions)
+                data["rowActions"].push(item.toJSON());
+        }
         if (this.optionsDataSources) {
             data["optionsDataSources"] = {};
             for (let key in this.optionsDataSources) {
@@ -4134,6 +4145,7 @@ export interface IAppPageModel {
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
     appPageActions?: AppPageActionModel[];
+    rowActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 }
 

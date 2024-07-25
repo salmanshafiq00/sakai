@@ -217,7 +217,7 @@
                             </p-sortIcon>
                         </th>
                         </ng-container>
-                    <th></th>
+                    <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
                     </tr>
 
 
@@ -235,10 +235,17 @@
                                 {{items[col.field] | date: 'dd/MM/yyyy'}}
                             </td>
                         </ng-container>
-                        <td>
-                            <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="edit(items)"></button>
-                             <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="delete(items)"></button> 
+                        <td *ngIf="appPageLayout?.showRowActionCol === true">
+                            <div class="flex" *ngIf="appPageLayout?.rowActionType === 'button'">
+                                <ng-container *ngFor="let action of rowActions">
+                                <app-button 
+                                    [icon]="action.icon" 
+                                    [severity]="action.severity" 
+                                    [rounded]="true" 
+                                    size="small" 
+                                    class=" mr-2" 
+                                    (onClick)="handleRowAction(action.actionName, items)" />
+                                </ng-container>
                             </div>
                         </td>
 

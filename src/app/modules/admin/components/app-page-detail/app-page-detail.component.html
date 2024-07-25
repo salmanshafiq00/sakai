@@ -60,15 +60,8 @@
               </div>
               <div class="field col-4">
                 <label for="icon">Icon</label>
-                <p-dropdown [options]="primengIcons"
-                  optionLabel="label"
-                  optionValue="value"
-                  formControlName="icon"
-                  [filter]="true"
-                  filterBy="label"
-                  [showClear]="true"
-                  appendTo="body"
-                  class="icon-drop"
+                <p-dropdown [options]="primengIcons" optionLabel="label" optionValue="value" formControlName="icon"
+                  [filter]="true" filterBy="label" [showClear]="true" appendTo="body" class="icon-drop"
                   placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="flex align-items-center gap-2">
@@ -86,24 +79,18 @@
               </div>
               <div class="field col-4">
                 <label for="severity">Severity</label>
-                <p-dropdown [options]="severitySelectList"
-                  optionLabel="name"
-                  optionValue="id"
-                  formControlName="severity"
-                  [filter]="true"
-                  filterBy="name"
-                  [showClear]="true"
-                  appendTo="body"
-                  class="icon-drop"
-                  placeholder="Select One">
+                <p-dropdown [options]="severitySelectList" optionLabel="name" optionValue="id"
+                  formControlName="severity" [filter]="true" filterBy="name" [showClear]="true" appendTo="body"
+                  class="icon-drop" placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" /> 
+                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
+                        class="severity-drop-btn" />
                     </div>
                   </ng-template>
                   <ng-template let-option pTemplate="item">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> 
+                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
                     </div>
                   </ng-template>
                 </p-dropdown>
@@ -136,6 +123,116 @@
       </div>
     </div>
     <!-- Page Toolbar Actions -->
+
+    <!-- Page Data Row Actions -->
+    <div class="grid m-1">
+      <div class="col-12 group">
+        <div class="div-caption">
+          <span>Row Actions</span>
+          <div (click)="addRowAction()" class="field-plus">
+            <i class="pi pi-plus"></i> Row Action
+          </div>
+        </div>
+        <div class="field col-4">
+          <app-input-switch formControlName="showRowActionCol" label="Show Row Action" />
+        </div>
+        <div class="field col-4">
+          <app-input-select [options]="actionTypeSelectList" formControlName="rowActionType" label="Row Action Type" />
+        </div>
+
+        <div formArrayName="rowActions" *ngFor="let field of rowActions.controls; let i = index">
+          <div [formGroupName]="i" class="col-12 group-row">
+            <div class="div-caption">
+              Action Items
+              <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
+                <i class="pi pi-chevron-down"></i>
+              </a>
+              <a class="collapse-field" *ngIf="showPropertyStatus(field)" (click)="showProperty(field, false)">
+                <i class="pi pi-chevron-up"></i>
+              </a>
+              <a class="remove-field" (click)="removeRowAction(i)">
+                <i class="pi pi-trash"></i>
+              </a>
+            </div>
+            <!-- Show initially -->
+            <div class="grid mt-2" *ngIf="!showPropertyStatus(field)">
+              <div class="col-4">
+                <span>Name: {{ field.value.actionName }}</span>
+              </div>
+              <div class="col-4">
+                <span>Caption: {{ field.value.caption }}</span>
+              </div>
+              <div class="col-4">
+                <span>Function: {{ field.value.functionName }}</span>
+              </div>
+            </div>
+            <!-- Show when click on down chevron icon -->
+            <div class="grid mt-2" *ngIf="showPropertyStatus(field)">
+              <div class="field col-4">
+                <app-input-text formControlName="actionName" label="Action Name" [required]="true" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="caption" label="Caption" [required]="false" />
+              </div>
+              <div class="field col-4">
+                <label for="icon">Icon</label>
+                <p-dropdown [options]="primengIcons" optionLabel="label" optionValue="value" formControlName="icon"
+                  [filter]="true" filterBy="label" [showClear]="true" appendTo="body" class="icon-drop"
+                  placeholder="Select One">
+                  <ng-template let-selectedOption pTemplate="selectedItem">
+                    <div class="flex align-items-center gap-2">
+                      <i [ngClass]="selectedOption?.value"></i>
+                      <div> {{ selectedOption?.label }}</div>
+                    </div>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <i [ngClass]="option.value"></i>
+                      <span class="p-ml-2"> {{ option.label }}</span>
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+              <div class="field col-4">
+                <label for="severity">Severity</label>
+                <p-dropdown [options]="severitySelectList" optionLabel="name" optionValue="id"
+                  formControlName="severity" [filter]="true" filterBy="name" [showClear]="true" appendTo="body"
+                  class="icon-drop" placeholder="Select One">
+                  <ng-template let-selectedOption pTemplate="selectedItem">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
+                        class="severity-drop-btn" />
+                    </div>
+                  </ng-template>
+                  <ng-template let-option pTemplate="item">
+                    <div class="p-d-flex p-ai-center gap-2">
+                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
+                    </div>
+                  </ng-template>
+                </p-dropdown>
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="functionName" label="Function Name" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="navigationUrl" label="Navigation Url" />
+              </div>
+              <div class="field col-4">
+                <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true"
+                  [min]="0" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="isVisible" label="Visible" />
+              </div>
+              <div class="field col-4">
+                <app-input-switch formControlName="showCaption" label="Show Caption" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Page Data Row Actions -->
 
     <!-- Page Data Field -->
     <div class="grid m-1">
