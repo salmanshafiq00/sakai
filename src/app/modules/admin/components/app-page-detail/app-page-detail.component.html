@@ -84,13 +84,15 @@
                   class="icon-drop" placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
-                        class="severity-drop-btn" />
+                      <!-- <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
+                        class="severity-drop-btn" /> -->
+                        <app-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" />
                     </div>
                   </ng-template>
                   <ng-template let-option pTemplate="item">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
+                      <!-- <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> -->
+                      <app-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
                     </div>
                   </ng-template>
                 </p-dropdown>
@@ -200,13 +202,15 @@
                   class="icon-drop" placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
-                        class="severity-drop-btn" />
+                      <!-- <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" /> -->
+                      <app-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" />
                     </div>
                   </ng-template>
                   <ng-template let-option pTemplate="item">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
+                      <!-- <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> -->
+                      <app-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
+
                     </div>
                   </ng-template>
                 </p-dropdown>
@@ -335,9 +339,9 @@
     <!-- Page Data Field -->
 
     <div class="mt-3 p-dialog-footer">
-      <app-button label="Cancel" type="button" icon="pi pi-times" styleClass="p-button-text" severity="warning"
+      <app-button label="Cancel" type="button" icon="pi pi-times" [text]="true" severity="warning"
         (onClick)="cancel()" />
-      <app-button label="Save" type="submit" icon="pi pi-check" styleClass="p-button-text" />
+      <app-button label="Save" type="submit" icon="pi pi-check" [text]="true" />
 
     </div>
   </form>

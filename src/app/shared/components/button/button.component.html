@@ -1,5 +1,4 @@
-<button
-  pButton
+<p-button
   pRipple
   [label]="label"
   [icon]="icon"
@@ -23,6 +22,6 @@
   (click)="handleClick($event)"
   (focus)="handleFocus($event)"
   (blur)="handleBlur($event)"
-  badge="9"
-></button>
+  [badge]="badge"
+/>
 

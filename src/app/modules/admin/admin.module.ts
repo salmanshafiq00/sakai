@@ -38,28 +38,7 @@ import { TreeSelectModule } from 'primeng/treeselect';
     FormsModule,
     ReactiveFormsModule,
     AppSharedModule,
-
-    // PrimeNg Modules //
-    TableModule,
-    ButtonModule,
-    RippleModule,
-    MultiSelectModule,
-    InputTextModule,
-    InputTextareaModule,
-    DropdownModule,
-    RadioButtonModule,
-    InputNumberModule,
-    InputSwitchModule,
-    CalendarModule,
-    TooltipModule,
-    FileUploadModule,
-    ToolbarModule,
-    RatingModule,
-    TagModule,
-    DialogModule,
-    DynamicDialogModule,
-    TreeModule,
-    TreeSelectModule 
+    DropdownModule
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

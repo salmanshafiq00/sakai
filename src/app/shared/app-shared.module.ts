@@ -144,6 +144,7 @@ import { TreeSelectComponent } from './components/tree-select/tree-select.compon
 		ButtonComponent,
 		TreeComponent,
 		TreeSelectComponent
+		
 	]
 })
 export class AppSharedModule { }
