@@ -35,14 +35,14 @@ export class InputNumberComponent implements ControlValueAccessor, Validator {
   @Input() prefix: string = '';
   @Input() suffix: string = '';
   @Input() showButtons: boolean = false;
-  @Input() buttonLayout: string = 'stacked';
-  // @Input() spinnerMode: string = 'stacked';
+  @Input() buttonLayout: string = 'stacked'; // 'stacked' | 'horizontal'
+  @Input() spinnerMode: string = 'stacked';
   @Input() useGrouping: boolean = false;
   @Input() step: number = 1;
-  @Input() decrementButtonClass: string = 'p-button-danger';
-  @Input() incrementButtonClass: string = 'p-button-success';
-  @Input() incrementButtonIcon: string = 'pi pi-plus';
-  @Input() decrementButtonIcon: string = 'pi pi-minus';
+  @Input() decrementButtonClass: string =  'p-button-danger';
+  @Input() incrementButtonClass: string =  'p-button-success';
+  @Input() incrementButtonIcon: string =  'pi pi-plus';
+  @Input() decrementButtonIcon: string =  'pi pi-minus';
 
   value: number | null = null;
   onTouched: any = () => {};
