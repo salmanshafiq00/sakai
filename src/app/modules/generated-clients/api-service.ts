@@ -4052,7 +4052,7 @@ export class AppPageModel implements IAppPageModel {
     componentName?: string;
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
-    appPageActions?: AppPageActionModel[];
+    toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 
@@ -4077,10 +4077,10 @@ export class AppPageModel implements IAppPageModel {
                 for (let item of _data["appPageFields"])
                     this.appPageFields!.push(AppPageFieldModel.fromJS(item));
             }
-            if (Array.isArray(_data["appPageActions"])) {
-                this.appPageActions = [] as any;
-                for (let item of _data["appPageActions"])
-                    this.appPageActions!.push(AppPageActionModel.fromJS(item));
+            if (Array.isArray(_data["toolbarActions"])) {
+                this.toolbarActions = [] as any;
+                for (let item of _data["toolbarActions"])
+                    this.toolbarActions!.push(AppPageActionModel.fromJS(item));
             }
             if (Array.isArray(_data["rowActions"])) {
                 this.rowActions = [] as any;
@@ -4116,10 +4116,10 @@ export class AppPageModel implements IAppPageModel {
             for (let item of this.appPageFields)
                 data["appPageFields"].push(item.toJSON());
         }
-        if (Array.isArray(this.appPageActions)) {
-            data["appPageActions"] = [];
-            for (let item of this.appPageActions)
-                data["appPageActions"].push(item.toJSON());
+        if (Array.isArray(this.toolbarActions)) {
+            data["toolbarActions"] = [];
+            for (let item of this.toolbarActions)
+                data["toolbarActions"].push(item.toJSON());
         }
         if (Array.isArray(this.rowActions)) {
             data["rowActions"] = [];
@@ -4144,7 +4144,7 @@ export interface IAppPageModel {
     componentName?: string;
     appPageLayout?: string;
     appPageFields?: AppPageFieldModel[];
-    appPageActions?: AppPageActionModel[];
+    toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
     optionsDataSources?: { [key: string]: any; };
 }

@@ -20,3 +20,13 @@
   padding: 0 0.5rem;
   border-radius: 3px;
 }
+
+:host textarea {
+  width: 100%;
+}
+
+.textarea-container textarea {
+  width: 100%; // This can be overridden by inline styles
+  // resize: none; // Prevents manual resizing by users
+  overflow: auto; // Show scrollbars when content overflows
+}

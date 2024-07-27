@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { AbstractControl, ControlValueAccessor, NG_VALIDATORS, NG_VALUE_ACCESSOR, ValidationErrors, Validator } from '@angular/forms';
 
 @Component({
@@ -29,9 +29,12 @@ export class InputTextAreaComponent implements ControlValueAccessor, Validator {
   @Input() autofocus: boolean = false;
   @Input() rows: number = 3;
   @Input() cols: number = 30;
-  @Input() autoResize: boolean = true;
+  @Input() autoResize: boolean = false;
   @Input() max: number;
   @Input() showCharLength: boolean = false;
+  @Input() width: string = '';
+  @Input() height: string = '';
+  @Output() onblur = new EventEmitter<string>();
 
   value: string = '';
   onTouched: any = () => {};
@@ -67,13 +70,13 @@ export class InputTextAreaComponent implements ControlValueAccessor, Validator {
   }
 
   onInputChange(event: any): void {
-    const value = event.target.value;
-    this.value = value;
-    this.onChangeFn(value);
+    this.value = event.target.value;
+    this.onChangeFn(this.value);
   }
 
   onBlurEvent(): void {
     this.onTouched();
+    this.onblur.emit(this.value)
   }
 
 

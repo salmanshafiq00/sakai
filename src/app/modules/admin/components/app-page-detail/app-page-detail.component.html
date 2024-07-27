@@ -14,7 +14,13 @@
       </div>
     </div>
 
-    <!-- Page Toolbar Actions -->
+    <div class="grid col-12">
+      <app-button icon="" severity="" label="Design" (onClick)="showSelectedView('design')" />
+      <app-button icon="" severity="help" label="JSON" (onClick)="showSelectedView('json')" />
+    </div>
+
+    <ng-container *ngIf="activeView === 'design'">
+          <!-- Page Toolbar Actions -->
     <div class="grid m-1">
       <div class="col-12 group">
         <div class="div-caption">
@@ -24,8 +30,8 @@
           </div>
         </div>
 
-        <div formArrayName="appPageActions" *ngFor="let field of appPageActions.controls; let i = index">
-          <div [formGroupName]="i" class="col-12 group-row">
+        <div formArrayName="toolbarActions" class=" drop-column" *ngFor="let field of toolbarActions.controls; let i = index" pDroppable (onDrop)="drop($event, i, toolbarActions)"  >
+          <div [formGroupName]="i" class="col-12 group-row" pDraggable (onDragStart)="dragStart($event, i, toolbarActions)" (onDragEnd)="dragEnd($event)"  >
             <div class="div-caption">
               Action Item
               <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
@@ -84,14 +90,11 @@
                   class="icon-drop" placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <!-- <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small"
-                        class="severity-drop-btn" /> -->
                         <app-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" />
                     </div>
                   </ng-template>
                   <ng-template let-option pTemplate="item">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <!-- <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> -->
                       <app-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
                     </div>
                   </ng-template>
@@ -135,15 +138,16 @@
             <i class="pi pi-plus"></i> Row Action
           </div>
         </div>
-        <div class="field col-4">
-          <app-input-switch formControlName="showRowActionCol" label="Show Row Action" />
+        <div class="grid ">
+          <div class="field col-6 md:mt-4">
+            <app-input-switch formControlName="showRowActionCol" label="Show Row Action" />
+          </div>
+          <div class="field col-4">
+            <app-input-select [options]="actionTypeSelectList" formControlName="rowActionType" label="Row Action Type" />
+          </div>
         </div>
-        <div class="field col-4">
-          <app-input-select [options]="actionTypeSelectList" formControlName="rowActionType" label="Row Action Type" />
-        </div>
-
-        <div formArrayName="rowActions" *ngFor="let field of rowActions.controls; let i = index">
-          <div [formGroupName]="i" class="col-12 group-row">
+        <div formArrayName="rowActions" *ngFor="let field of rowActions.controls; let i = index" pDroppable (onDrop)="drop($event, i, rowActions)">
+          <div [formGroupName]="i" class="col-12 group-row" pDraggable (onDragStart)="dragStart($event, i, rowActions)" (onDragEnd)="dragEnd($event)">
             <div class="div-caption">
               Action Items
               <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
@@ -202,13 +206,11 @@
                   class="icon-drop" placeholder="Select One">
                   <ng-template let-selectedOption pTemplate="selectedItem">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <!-- <p-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" /> -->
                       <app-button [label]="selectedOption.name" [severity]="selectedOption.id" size="small" class="severity-drop-btn" />
                     </div>
                   </ng-template>
                   <ng-template let-option pTemplate="item">
                     <div class="p-d-flex p-ai-center gap-2">
-                      <!-- <p-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" /> -->
                       <app-button [label]="option.name" [severity]="option.id" size="small" class="btn-drop" />
 
                     </div>
@@ -248,8 +250,8 @@
           </div>
         </div>
 
-        <div formArrayName="appPageFields" *ngFor="let field of appPageFields.controls; let i = index">
-          <div [formGroupName]="i" class="col-12 group-row">
+        <div formArrayName="appPageFields" *ngFor="let field of appPageFields.controls; let i = index"  pDroppable (onDrop)="drop($event, i, appPageFields)">
+          <div [formGroupName]="i" class="col-12 group-row" pDraggable (onDragStart)="dragStart($event, i, appPageFields)" (onDragEnd)="dragEnd($event)">
             <div class="div-caption">
               Field
               <a class="expand-field" *ngIf="!showPropertyStatus(field)" (click)="showProperty(field, true)">
@@ -337,6 +339,16 @@
       </div>
     </div>
     <!-- Page Data Field -->
+    </ng-container>
+
+    <ng-container *ngIf="activeView === 'json'">
+      <div class="grid tarea">
+        <app-input-textarea [(ngModel)]="pageLayoutJson" [ngModelOptions]="{standalone: true}" (onblur)="onJsonChange()" height="500px" width="400px"  />
+        <div *ngIf="jsonError" class="error">{{ jsonError }}</div>
+      </div>
+    </ng-container>
+
+
 
     <div class="mt-3 p-dialog-footer">
       <app-button label="Cancel" type="button" icon="pi pi-times" [text]="true" severity="warning"

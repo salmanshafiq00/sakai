@@ -124,7 +124,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
             this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? []; 
                         
-            this.leftToolbarActions = [...this.appPageLayout?.appPageActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? []; 
+            this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? []; 
             
             this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? []; 
 

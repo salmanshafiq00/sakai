@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonConstants } from 'src/app/core/contants/common';
 import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
 import { AppPagesClient, AppPageModel, CreateAppPageCommand, UpdateAppPageCommand } from 'src/app/modules/generated-clients/api-service';
@@ -19,16 +19,18 @@ export class AppPageDetailComponent implements OnInit {
   optionDataSources = {};
   form: FormGroup;
   id: string = '';
-
+  activeView: 'design' | 'json' = 'design';
+  jsonError: string | null = null;
   item: AppPageModel = new AppPageModel();
 
   pageLayout: any = {
-    'appPageActions': [],
-    'appPageFields': [],
+    'toolbarActions': [],
     'showRowActionCol': true,
     'rowActionType': 'button',
-    'rowActions': []
+    'rowActions': [],
+    'appPageFields': [],
   };
+  pageLayoutJson: string = '';
 
   primengIcons = PrimengIcon.primeIcons;
 
@@ -65,16 +67,16 @@ export class AppPageDetailComponent implements OnInit {
     let createCommand = new CreateAppPageCommand();
     createCommand = { ...this.form.value }
     this.pageLayout.appPageFields = this.form.get('appPageFields').value;
-    this.pageLayout.appPageActions = this.form.get('appPageActions').value;
+    this.pageLayout.toolbarActions = this.form.get('toolbarActions').value;
     this.pageLayout.showRowActionCol = this.form.get('showRowActionCol').value;
     this.pageLayout.rowActionType = this.form.get('rowActionType').value;
     this.pageLayout.rowActions = this.form.get('rowActions').value;
 
     this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
-    this.pageLayout.appPageActions.forEach(value => value.showProperties = false);
+    this.pageLayout.toolbarActions.forEach(value => value.showProperties = false);
     this.pageLayout.rowActions.forEach(value => value.showProperties = false);
     this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.appPageActions = this.pageLayout.appPageActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+    this.pageLayout.toolbarActions = this.pageLayout.toolbarActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
     this.pageLayout.rowActions = this.pageLayout.rowActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
 
     createCommand.appPageLayout = JSON.stringify(this.pageLayout);
@@ -95,18 +97,19 @@ export class AppPageDetailComponent implements OnInit {
   private update() {
     let command = new UpdateAppPageCommand();
     command = { ...this.form.value }
-    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
-    this.pageLayout.appPageActions = this.form.get('appPageActions').value;
+    this.pageLayout = {};
+    this.pageLayout.toolbarActions = this.form.get('toolbarActions').value;
     this.pageLayout.showRowActionCol = this.form.get('showRowActionCol').value;
     this.pageLayout.rowActionType = this.form.get('rowActionType').value;
     this.pageLayout.rowActions = this.form.get('rowActions').value;
+    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
 
-    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
-    this.pageLayout.appPageActions.forEach(value => value.showProperties = false);
+    this.pageLayout.toolbarActions.forEach(value => value.showProperties = false);
     this.pageLayout.rowActions.forEach(value => value.showProperties = false);
-    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.appPageActions = this.pageLayout.appPageActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
+    this.pageLayout.toolbarActions = this.pageLayout.toolbarActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
     this.pageLayout.rowActions = this.pageLayout.rowActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
+    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
 
     command.appPageLayout = JSON.stringify(this.pageLayout);
     console.log(command);
@@ -130,19 +133,19 @@ export class AppPageDetailComponent implements OnInit {
           this.pageLayout = JSON.parse(res.appPageLayout)
           this.item = res;
           this.item.appPageFields = this.pageLayout.appPageFields || [];
-          this.item.appPageActions = this.pageLayout.appPageActions || [];
+          this.item.toolbarActions = this.pageLayout.toolbarActions || [];
           this.item.rowActions = this.pageLayout.rowActions || [];
           this.item.appPageFields?.forEach(() => {
             this.addAppPageField();
           });
-          this.item.appPageActions?.forEach(() => {
+          this.item.toolbarActions?.forEach(() => {
             this.addAppPageAction();
           });
           this.item.rowActions?.forEach(() => {
             this.addRowAction();
           })
-          console.log(this.item)
           this.form.patchValue(this.item);
+          this.updateJsonFromForm();
         } else {
           console.log('new create')
           this.item.id = this.id;
@@ -164,40 +167,89 @@ export class AppPageDetailComponent implements OnInit {
       subTitle: [''],
       componentName: ['', Validators.required],
       appPageLayout: [''],
-      appPageFields: this.fb.array([]),
-      appPageActions: this.fb.array([]),
+      toolbarActions: this.fb.array([]),
       showRowActionCol: [true],
       rowActionType: ['button'],
-      rowActions: this.fb.array([])
+      rowActions: this.fb.array([]),
+      appPageFields: this.fb.array([])
     });
   }
+
   showProperty(field: AbstractControl, show: boolean): void {
     field.get('showProperties')?.setValue(show);
   }
-
 
   showPropertyStatus(field: any) {
     return field.get('showProperties')?.value;
   }
 
+  // JSON //
+
+  showSelectedView(viewName: 'design' | 'json') {
+    this.activeView = viewName;
+    if (viewName === 'json') {
+      this.updateJsonFromForm();
+    }
+  }
+
+  onJsonChange() {
+    console.log(this.pageLayoutJson)
+    try {
+      const jsonData = JSON.parse(this.pageLayoutJson);
+      this.jsonError = null;
+      this.updateFormFromJson(jsonData);
+    } catch (error) {
+      this.jsonError = 'Invalid JSON format';
+    }
+  }
+
+  private updateJsonFromForm() {
+    this.pageLayoutJson = JSON.stringify(this.pageLayout, null, 2);
+  }
+
+  private updateFormFromJson(jsonData: any) {
+
+    this.toolbarActions.clear();
+    this.rowActions.clear();
+    this.appPageFields.clear();
+
+    jsonData.toolbarActions?.forEach(() => {
+      this.addAppPageAction();
+    });
+    jsonData.rowActions?.forEach(() => {
+      this.addRowAction();
+    })
+    jsonData.appPageFields?.forEach(() => {
+      this.addAppPageField();
+    });
+
+    this.form.patchValue({
+      toolbarActions: jsonData.toolbarActions || [],
+      showRowActionCol: jsonData.showRowActionCol,
+      rowActionType: jsonData.rowActionType,
+      rowActions: jsonData.rowActions || [],
+      appPageFields: jsonData.appPageFields || []
+    });
+  }
+
   // App Page Toolbar Actions //
 
-  get appPageActions(): FormArray {
-    return this.form.get('appPageActions') as FormArray;
+  get toolbarActions(): FormArray {
+    return this.form.get('toolbarActions') as FormArray;
   }
 
 
   addAppPageAction(): void {
-    this.appPageActions.push(this.createAppPageAction());
+    this.toolbarActions.push(this.createAppPageAction());
   }
 
   removeAppPageAction(index: number): void {
-    this.appPageActions.removeAt(index);
+    this.toolbarActions.removeAt(index);
   }
 
   private createAppPageAction(): FormGroup {
     const atn_id = 'atn_' + this.newGuid();
-    const sortOrder = this.appPageActions?.length + 1 ?? 1;
+    const sortOrder = this.toolbarActions?.length + 1 ?? 1;
     return this.fb.group({
       id: [atn_id],
       actionName: ['', Validators.required],
@@ -220,7 +272,7 @@ export class AppPageDetailComponent implements OnInit {
   private defaultAppPageAction() {
     const atn_id_1 = 'atn_' + this.newGuid();
     const atn_id_2 = 'atn_' + this.newGuid();
-    const appPageActions = this.fb.array([
+    const toolbarActions = this.fb.array([
       this.fb.group({
         id: [atn_id_1],
         actionName: ['new', Validators.required],
@@ -256,13 +308,13 @@ export class AppPageDetailComponent implements OnInit {
         showProperties: [false]
       })
     ]);
-  
-    this.form.setControl('appPageActions', appPageActions);
+
+    this.form.setControl('toolbarActions', toolbarActions);
   }
 
   // Row Action //
 
-  get rowActions(): FormArray{
+  get rowActions(): FormArray {
     return this.form.get('rowActions') as FormArray;
   }
 
@@ -273,7 +325,7 @@ export class AppPageDetailComponent implements OnInit {
   removeRowAction(index: number): void {
     this.rowActions.removeAt(index);
   }
-  
+
   private createRowAction(): FormGroup {
     const ract_id = 'ract_' + this.newGuid();
     const sortOrder = this.rowActions?.length + 1 ?? 1;
@@ -392,4 +444,43 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'danger', 'name': 'Danger' },
     { 'id': 'contrast', 'name': 'Contrast' }
   ];
+
+  // Drag & Drop //
+
+  draggedItem: any;
+
+  dragStart(event: DragEvent, index: number, formArray: FormArray) {
+    this.draggedItem = formArray.at(index);
+  }
+
+  dragEnd(event: DragEvent) {
+    this.draggedItem = null;
+  }
+
+  drop(event: DragEvent, index: number, formArray: FormArray) {
+    if (this.draggedItem) {
+      const draggedIndex = this.findFormArrayIndex(formArray, this.draggedItem);
+      this.moveItemInFormArray(formArray, draggedIndex, index);
+      this.updateSortOrder(formArray);
+      this.draggedItem = null;
+    }
+  }
+  findFormArrayIndex(formArray: FormArray<any>, item: AbstractControl): number {
+    return formArray.controls.indexOf(item);
+  }
+
+  moveItemInFormArray(formArray: FormArray, fromIndex: number, toIndex: number) {
+    if (fromIndex === toIndex) return;
+
+    const item = formArray.at(fromIndex);
+    formArray.removeAt(fromIndex);
+    formArray.insert(toIndex, item);
+  }
+
+  updateSortOrder(formArray: FormArray) {
+    formArray.controls.forEach((control, index) => {
+      control.get('sortOrder').setValue(index + 1);
+    });
+  }
+
 }
