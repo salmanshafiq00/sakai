@@ -10,6 +10,7 @@ import { DatePipe } from '@angular/common';
 import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { CustomDialogService } from '../../services/custom-dialog.service';
 import { AppDataGridModel } from '../../models/app-data-grid.model';
+import { AppPageDetailComponent } from 'src/app/modules/admin/components/app-page-detail/app-page-detail.component';
 
 @Component({
   selector: 'app-data-grid',
@@ -425,7 +426,26 @@ export class DataGridComponent implements OnInit, OnDestroy {
   }
 
 
+  // -------------- Page Setting -----------------
+  showPageSetting(){
+    console.log(this.pageId)
+    if (this.pageId && this.pageId !== this.emptyGuid) {
+      this.openPageSettingDialog(this.pageId)
+    }
+  }
 
+  openPageSettingDialog(pageId: string) {
+    this.customDialogService.open<string>(
+      AppPageDetailComponent,
+      pageId,
+      'Page Setting'
+    )
+    .subscribe((isSucceed: boolean) => {
+      if (isSucceed) {
+        this.loadData({ first: this.first, rows: this.rows })       
+      }
+    });
+  }
 
 }
 
