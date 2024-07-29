@@ -2387,7 +2387,7 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfLookupDetailModel) {
         if (data) {
@@ -2410,11 +2410,11 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -2439,11 +2439,11 @@ export class PaginatedResponseOfLookupDetailModel implements IPaginatedResponseO
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -2457,7 +2457,7 @@ export interface IPaginatedResponseOfLookupDetailModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class LookupDetailModel implements ILookupDetailModel {
@@ -2471,7 +2471,7 @@ export class LookupDetailModel implements ILookupDetailModel {
     parentName?: string;
     lookupId?: string | undefined;
     lookupName?: string;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: ILookupDetailModel) {
         if (data) {
@@ -2494,11 +2494,11 @@ export class LookupDetailModel implements ILookupDetailModel {
             this.parentName = _data["parentName"];
             this.lookupId = _data["lookupId"];
             this.lookupName = _data["lookupName"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -2523,11 +2523,11 @@ export class LookupDetailModel implements ILookupDetailModel {
         data["parentName"] = this.parentName;
         data["lookupId"] = this.lookupId;
         data["lookupName"] = this.lookupName;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -2545,7 +2545,7 @@ export interface ILookupDetailModel {
     parentName?: string;
     lookupId?: string | undefined;
     lookupName?: string;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export abstract class DataGridModel implements IDataGridModel {
@@ -2974,7 +2974,7 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfLookupModel) {
         if (data) {
@@ -2997,11 +2997,11 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -3026,11 +3026,11 @@ export class PaginatedResponseOfLookupModel implements IPaginatedResponseOfLooku
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -3044,7 +3044,7 @@ export interface IPaginatedResponseOfLookupModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class LookupModel implements ILookupModel {
@@ -3069,7 +3069,7 @@ export class LookupModel implements ILookupModel {
     singleMenu?: string;
     treeSelectMenus?: string[];
     treeSelectSingleMenu?: string;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: ILookupModel) {
         if (data) {
@@ -3115,11 +3115,11 @@ export class LookupModel implements ILookupModel {
                     this.treeSelectMenus!.push(item);
             }
             this.treeSelectSingleMenu = _data["treeSelectSingleMenu"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -3167,11 +3167,11 @@ export class LookupModel implements ILookupModel {
                 data["treeSelectMenus"].push(item);
         }
         data["treeSelectSingleMenu"] = this.treeSelectSingleMenu;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -3200,7 +3200,7 @@ export interface ILookupModel {
     singleMenu?: string;
     treeSelectMenus?: string[];
     treeSelectSingleMenu?: string;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class GetLookupListQuery extends DataGridModel implements IGetLookupListQuery {
@@ -3525,7 +3525,7 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppMenuModel) {
         if (data) {
@@ -3548,11 +3548,11 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -3577,11 +3577,11 @@ export class PaginatedResponseOfAppMenuModel implements IPaginatedResponseOfAppM
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -3595,7 +3595,7 @@ export interface IPaginatedResponseOfAppMenuModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class AppMenuModel implements IAppMenuModel {
@@ -3972,7 +3972,7 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppPageModel) {
         if (data) {
@@ -3995,11 +3995,11 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -4024,11 +4024,11 @@ export class PaginatedResponseOfAppPageModel implements IPaginatedResponseOfAppP
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -4042,7 +4042,7 @@ export interface IPaginatedResponseOfAppPageModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class AppPageModel implements IAppPageModel {
@@ -4514,7 +4514,7 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfRoleModel) {
         if (data) {
@@ -4537,11 +4537,11 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -4566,11 +4566,11 @@ export class PaginatedResponseOfRoleModel implements IPaginatedResponseOfRoleMod
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -4584,7 +4584,7 @@ export interface IPaginatedResponseOfRoleModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class RoleModel implements IRoleModel {
@@ -4825,7 +4825,7 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 
     constructor(data?: IPaginatedResponseOfAppUserModel) {
         if (data) {
@@ -4848,11 +4848,11 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
             this.totalCount = _data["totalCount"];
             this.hasPreviousPage = _data["hasPreviousPage"];
             this.hasNextPage = _data["hasNextPage"];
-            if (_data["optionDataSources"]) {
-                this.optionDataSources = {} as any;
-                for (let key in _data["optionDataSources"]) {
-                    if (_data["optionDataSources"].hasOwnProperty(key))
-                        (<any>this.optionDataSources)![key] = _data["optionDataSources"][key];
+            if (_data["optionsDataSources"]) {
+                this.optionsDataSources = {} as any;
+                for (let key in _data["optionsDataSources"]) {
+                    if (_data["optionsDataSources"].hasOwnProperty(key))
+                        (<any>this.optionsDataSources)![key] = _data["optionsDataSources"][key];
                 }
             }
         }
@@ -4877,11 +4877,11 @@ export class PaginatedResponseOfAppUserModel implements IPaginatedResponseOfAppU
         data["totalCount"] = this.totalCount;
         data["hasPreviousPage"] = this.hasPreviousPage;
         data["hasNextPage"] = this.hasNextPage;
-        if (this.optionDataSources) {
-            data["optionDataSources"] = {};
-            for (let key in this.optionDataSources) {
-                if (this.optionDataSources.hasOwnProperty(key))
-                    (<any>data["optionDataSources"])[key] = (<any>this.optionDataSources)[key];
+        if (this.optionsDataSources) {
+            data["optionsDataSources"] = {};
+            for (let key in this.optionsDataSources) {
+                if (this.optionsDataSources.hasOwnProperty(key))
+                    (<any>data["optionsDataSources"])[key] = (<any>this.optionsDataSources)[key];
             }
         }
         return data;
@@ -4895,7 +4895,7 @@ export interface IPaginatedResponseOfAppUserModel {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
-    optionDataSources?: { [key: string]: any; };
+    optionsDataSources?: { [key: string]: any; };
 }
 
 export class AppUserModel implements IAppUserModel {

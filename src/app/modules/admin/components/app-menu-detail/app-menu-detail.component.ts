@@ -1,108 +1,25 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CommonConstants } from 'src/app/core/contants/common';
-import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { AppMenusClient, AppUserModel, CreateAppMenuCommand, UpdateAppMenuCommand, AppMenuModel } from 'src/app/modules/generated-clients/api-service';
-import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
+import { Component } from '@angular/core';
+import { Validators } from '@angular/forms';
+import { AppMenusClient } from 'src/app/modules/generated-clients/api-service';
+import { BaseDetailComponent } from 'src/app/shared/components/base-detail/base-detail.component';
+import { ENTITY_CLIENT } from 'src/app/shared/injection-tokens/tokens';
 import { PrimengIcon } from 'src/app/shared/services/primeng-icon';
-import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
   selector: 'app-app-menu-detail',
   templateUrl: './app-menu-detail.component.html',
   styleUrl: './app-menu-detail.component.scss',
-  providers: [ToastService , AppMenusClient]
+  providers: [{provide: ENTITY_CLIENT, useClass: AppMenusClient}]
 })
-export class AppMenuDetailComponent  implements OnInit {
-  VMsg = CommonValidationMessage;
-  comConst = CommonConstants;
-  optionDataSources = {};
-
-  form: FormGroup;
-
-  id: string = '';
-  item: AppUserModel = new AppUserModel();
-
-  get f() {
-    return this.form.controls;
-  }
+export class AppMenuDetailComponent extends BaseDetailComponent {
 
   primengIcons = PrimengIcon.primeIcons;
 
-  private customDialogService: CustomDialogService = inject(CustomDialogService);
-  private toast: ToastService = inject(ToastService);
-  private fb: FormBuilder = inject(FormBuilder);
-
-  private entityClient: AppMenusClient = inject(AppMenusClient);
-
-
-
-  ngOnInit() {
-    this.id = this.customDialogService.getConfigData();
-    this.initializeFormGroup();
-    this.getById(this.id);
+  constructor(entityClient: AppMenusClient){
+    super(entityClient)
   }
 
-  onSubmit() {
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.save();
-    } else {
-      this.update();
-    }
-  }
-
-  cancel() {
-    this.customDialogService.close(false);
-  }
-
-  private save() {
-    let createCommand = new CreateAppMenuCommand();
-    createCommand = { ...this.form.value }
-    this.entityClient.create(createCommand).subscribe({
-      next: () => {
-        this.toast.created()
-        this.customDialogService.close(true);
-      },
-      error: (error) => {
-        console.log(error)
-        this.toast.showError(error.errors[0]?.description)
-      }
-    });
-
-  }
-
-  private update() {
-    let updateCommand = new UpdateAppMenuCommand();
-    console.log(this.form.value)
-    updateCommand = { ...this.form.value };
-    console.log(updateCommand)
-    this.entityClient.update(updateCommand).subscribe({
-      next: () => {
-        this.toast.updated()
-        this.customDialogService.close(true);
-      },
-      error: (error) => {
-        this.toast.showError(error.errors[0]?.description)
-        console.log(error);
-      }
-    });
-  }
-
-  private getById(id: string) {
-    this.entityClient.get(id).subscribe({
-      next: (res: AppMenuModel) => {
-        this.item = res;
-         this.optionDataSources = res.optionsDataSources;
-         if(id && id !== this.comConst.EmptyGuid){
-          this.form.patchValue({
-            ...this.item
-          });
-         }
-      }
-    });
-  }
-
-  private initializeFormGroup() {
+  override initializeFormGroup() {
     this.form = this.fb.group({
       id: [''],
       label: ['', Validators.required],
@@ -114,10 +31,7 @@ export class AppMenuDetailComponent  implements OnInit {
       visible: [true],
       orderNo: [''],
       parentId: [null],
-      menuTypeId: [null],
-      test: ['test value']
+      menuTypeId: [null]
     });
-
   }
-
 }

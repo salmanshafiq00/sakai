@@ -51,6 +51,7 @@ import { TreeModule } from 'primeng/tree';
 import { TreeComponent } from './components/tree/tree.component';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeSelectComponent } from './components/tree-select/tree-select.component';
+import { ToastService } from './services/toast.service';
 
 
 @NgModule({
@@ -116,7 +117,8 @@ import { TreeSelectComponent } from './components/tree-select/tree-select.compon
 		MessageService,
 		ConfirmationService,
 		DialogService,
-		CustomDialogService
+		CustomDialogService,
+		ToastService
 	],
 	exports: [
 		ConfirmDialogComponent,

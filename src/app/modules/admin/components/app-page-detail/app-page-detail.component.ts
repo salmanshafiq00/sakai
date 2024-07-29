@@ -16,7 +16,7 @@ import { ToastService } from 'src/app/shared/services/toast.service';
 export class AppPageDetailComponent implements OnInit {
   VMsg = CommonValidationMessage;
   comConst = CommonConstants;
-  optionDataSources = {};
+  optionsDataSources = {};
   form: FormGroup;
   id: string = '';
   activeView: 'design' | 'json' = 'design';

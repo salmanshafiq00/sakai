@@ -158,7 +158,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
-                                        [options]="optionDataSources[col?.dSName]" 
+                                        [options]="optionsDataSources[col?.dSName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
                                         [optionLabel]="'name'" 
@@ -188,7 +188,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
-                                        [options]="optionDataSources[col?.dSName]" 
+                                        [options]="optionsDataSources[col?.dSName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
                                         optionLabel="name"

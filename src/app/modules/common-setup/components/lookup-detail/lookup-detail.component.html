@@ -69,7 +69,7 @@
                 <app-input-checkbox
                     label="Select Subject"
                     formControlName="subjects"
-                    [options]="optionDataSources['subjectSelectList']"
+                    [options]="optionsDataSources['subjectSelectList']"
                     [column]="true"
                     [required]="true" />
             </div>
@@ -78,7 +78,7 @@
                 <app-input-radio
                     label="Choose Subject"
                     formControlName="subjectRadio"
-                    [options]="optionDataSources['subjectRadioSelectList']"
+                    [options]="optionsDataSources['subjectRadioSelectList']"
                     [required]="true" />
             </div>
 
@@ -86,14 +86,14 @@
                 <app-input-select
                     label="Select Parent"
                     formControlName="parentId"
-                    [options]="optionDataSources['parentSelectList']"
+                    [options]="optionsDataSources['parentSelectList']"
                     [required]="true" />
             </div>
             <div class="field col-12 md:col-6">
                 <app-input-multiselect
                     label="Select Multi Parent"
                     formControlName="multiParent"
-                    [options]="optionDataSources['multiParentSelectList']"
+                    [options]="optionsDataSources['multiParentSelectList']"
                     [required]="true" />
             </div>
             <div class="field col-12 md:col-6 md:flex align-items-center md:mt-4">
@@ -147,7 +147,7 @@
                     inputId="menuId"
                     formControlName="menus"
                     getset="key"
-                    [options]="optionDataSources['appMenuTreeList']"
+                    [options]="optionsDataSources['appMenuTreeList']"
                 />
 
             </div>
@@ -159,7 +159,7 @@
                     formControlName="singleMenu"
                     getset="key"
                     selectionMode="single"
-                    [options]="optionDataSources['singleMenuTreeList']"
+                    [options]="optionsDataSources['singleMenuTreeList']"
                 />
 
             </div>
@@ -171,7 +171,7 @@
                     formControlName="treeSelectMenus"
                     selectionMode="multiple"
                     getset="key"
-                    [options]="optionDataSources['treeSelectMenuseSelectList']"
+                    [options]="optionsDataSources['treeSelectMenuseSelectList']"
                 />
 
             </div>
@@ -183,7 +183,7 @@
                     formControlName="treeSelectSingleMenu"
                     selectionMode="single"
                     getset="key"
-                    [options]="optionDataSources['treeSelectSingleMenuSelectList']"
+                    [options]="optionsDataSources['treeSelectSingleMenuSelectList']"
                 />
 
             </div>

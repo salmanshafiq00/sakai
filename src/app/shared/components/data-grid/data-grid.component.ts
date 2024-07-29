@@ -70,7 +70,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   debounceTimeout: number = 500;
 
 
-  optionDataSources = {};
+  optionsDataSources = {};
 
   items: any[] = [];
   selectedItems: any[] = [];
@@ -190,7 +190,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
         this.currentPageReportTemplate = `Showing {first} to {last} of ${this.totalRecords} entries`;
         // option datasource only assign initially not second time
         if (!this.isInitialLoaded) {
-          this.optionDataSources = res.optionDataSources;
+          this.optionsDataSources = res.optionsDataSources;
           this.isInitialLoaded = true;
         }
       },

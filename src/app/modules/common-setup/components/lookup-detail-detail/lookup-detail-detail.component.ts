@@ -1,100 +1,22 @@
-import { Component, OnInit, inject } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { CommonConstants } from 'src/app/core/contants/common';
-import { CommonValidationMessage } from 'src/app/core/contants/forms-validaiton-msg';
-import { LookupModel, LookupDetailsClient, CreateLookupDetailCommand, UpdateLookupDetailCommand, LookupDetailModel } from 'src/app/modules/generated-clients/api-service';
-import { CustomDialogService } from 'src/app/shared/services/custom-dialog.service';
-import { ToastService } from 'src/app/shared/services/toast.service';
+import { Component, Inject, OnInit } from '@angular/core';
+import {  Validators } from '@angular/forms';
+import { LookupDetailsClient } from 'src/app/modules/generated-clients/api-service';
+import { BaseDetailComponent } from 'src/app/shared/components/base-detail/base-detail.component';
+import { ENTITY_CLIENT } from 'src/app/shared/injection-tokens/tokens';
 
 @Component({
   selector: 'app-lookup-detail-detail',
   templateUrl: './lookup-detail-detail.component.html',
   styleUrl: './lookup-detail-detail.component.scss',
-  providers: [ToastService, LookupDetailsClient]
+  providers: [ {provide: ENTITY_CLIENT, useClass: LookupDetailsClient}]
 })
-export class LookupDetailDetailComponent implements OnInit {
-  VMsg = CommonValidationMessage;
-  comConst = CommonConstants;
-  optionDataSources = {};
-
-  form: FormGroup;
-
-  id: string = '';
-  item: LookupModel = new LookupModel();
-
-  get f() {
-    return this.form.controls;
+export class LookupDetailDetailComponent extends BaseDetailComponent {
+  
+  constructor(@Inject(ENTITY_CLIENT) entityClient: LookupDetailsClient){
+    super(entityClient)
   }
 
-  private customDialogService: CustomDialogService = inject(CustomDialogService);
-  private toast: ToastService = inject(ToastService);
-  private fb: FormBuilder = inject(FormBuilder);
-
-  private entityClient: LookupDetailsClient = inject(LookupDetailsClient);
-
-  ngOnInit() {
-    this.id = this.customDialogService.getConfigData(); 
-    this.initializeFormGroup();
-    this.getById(this.id);
-  }
-
-  onSubmit() {
-    if (!this.id || this.id === this.comConst.EmptyGuid) {
-      this.save();
-    } else {
-      this.update();
-    }
-  }
-
-  cancel() {
-    this.customDialogService.close(false);
-  }
-
-  private save() {
-    let createLookupCommand = new CreateLookupDetailCommand();
-    createLookupCommand = { ...this.form.value }
-
-    this.entityClient.create(createLookupCommand).subscribe({
-      next: () => {
-        this.toast.created()
-        this.customDialogService.close(true);
-      },
-      error: (error) => {
-        this.toast.showError(error.errors[0]?.description)
-        console.log(error);
-      }
-    });
-
-  }
-
-  private update() {
-    let updateLookupCommand = new UpdateLookupDetailCommand();
-    updateLookupCommand = { ...this.form.value }
-
-    this.entityClient.update(updateLookupCommand).subscribe({
-      next: () => {
-        this.toast.updated()
-        this.customDialogService.close(true);
-      },
-      error: (error) => {
-        this.toast.showError(error.errors[0]?.description)
-        console.log(error);
-      }
-    });
-  }
-
-  private getById(id: string) {
-    this.entityClient.get(id).subscribe({
-      next: (res: LookupDetailModel) => {
-        this.item = res;
-        this.optionDataSources = res.optionDataSources;
-        console.log(res);
-        this.form.patchValue(this.item);
-      }
-    });
-  }
-
-  private initializeFormGroup() {
+  override initializeFormGroup() {
     this.form = this.fb.group({
       id: [''],
       name: ['', Validators.required],
@@ -105,5 +27,4 @@ export class LookupDetailDetailComponent implements OnInit {
       lookupId: [null],
     });
   }
-
 }
