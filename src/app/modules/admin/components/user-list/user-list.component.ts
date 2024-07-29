@@ -10,7 +10,6 @@ import { UserDetailComponent } from '../user-detail/user-detail.component';
 })
 export class UserListComponent {
   detailComponent = UserDetailComponent;
-  getFuncName = 'getUsers';
   pageId = '4007d345-6ede-43f3-3f91-08dca9b2d959';
   
   constructor(public entityClient: UsersClient) {

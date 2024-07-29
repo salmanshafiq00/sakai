@@ -10,7 +10,6 @@ import { LookupDetailComponent } from '../lookup-detail/lookup-detail.component'
 })
 export class LookupListComponent  {
   detailComponent = LookupDetailComponent;
-  getFuncName = 'getLookups';
   pageId = '1bea0afd-ebcc-491f-3424-08dca9afe0ca';
 
   constructor(public entityClient: LookupsClient) {

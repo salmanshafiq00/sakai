@@ -64,25 +64,12 @@ export class AppPageDetailComponent implements OnInit {
   }
 
   private save() {
-    let createCommand = new CreateAppPageCommand();
-    createCommand = { ...this.form.value }
-    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
-    this.pageLayout.toolbarActions = this.form.get('toolbarActions').value;
-    this.pageLayout.showRowActionCol = this.form.get('showRowActionCol').value;
-    this.pageLayout.rowActionType = this.form.get('rowActionType').value;
-    this.pageLayout.rowActions = this.form.get('rowActions').value;
+    const command: CreateAppPageCommand = {
+      ...this.form.value,
+      appPageLayout: JSON.stringify(this.preparePageLayout())
+    };
 
-    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
-    this.pageLayout.toolbarActions.forEach(value => value.showProperties = false);
-    this.pageLayout.rowActions.forEach(value => value.showProperties = false);
-    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.toolbarActions = this.pageLayout.toolbarActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.rowActions = this.pageLayout.rowActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-
-    createCommand.appPageLayout = JSON.stringify(this.pageLayout);
-    console.log(createCommand);
-
-    this.entityClient.createAppPage(createCommand).subscribe({
+    this.entityClient.create(command).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -95,28 +82,13 @@ export class AppPageDetailComponent implements OnInit {
   }
 
   private update() {
-    let command = new UpdateAppPageCommand();
-    command = { ...this.form.value }
-    this.pageLayout = {};
-    this.pageLayout.toolbarActions = this.form.get('toolbarActions').value;
-    this.pageLayout.showRowActionCol = this.form.get('showRowActionCol').value;
-    this.pageLayout.rowActionType = this.form.get('rowActionType').value;
-    this.pageLayout.rowActions = this.form.get('rowActions').value;
-    this.pageLayout.appPageFields = this.form.get('appPageFields').value;
-
-    this.pageLayout.toolbarActions.forEach(value => value.showProperties = false);
-    this.pageLayout.rowActions.forEach(value => value.showProperties = false);
-    this.pageLayout.appPageFields.forEach(value => value.showProperties = false);
-    this.pageLayout.toolbarActions = this.pageLayout.toolbarActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.rowActions = this.pageLayout.rowActions.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-    this.pageLayout.appPageFields = this.pageLayout.appPageFields.sort((a, b) => (a.sortOrder < b.sortOrder) ? -1 : 1);
-
-    command.appPageLayout = JSON.stringify(this.pageLayout);
-    console.log(command);
-
-    this.entityClient.updateAppPage(command).subscribe({
+    const command: UpdateAppPageCommand = {
+      ...this.form.value,
+      appPageLayout: JSON.stringify(this.preparePageLayout())
+    };
+    this.entityClient.update(command).subscribe({
       next: () => {
-        this.toast.created()
+        this.toast.updated()
         this.customDialogService.close(true);
       },
       error: (error) => {
@@ -127,7 +99,7 @@ export class AppPageDetailComponent implements OnInit {
   }
 
   private getById(id: any) {
-    this.entityClient.getAppPage(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: AppPageModel) => {
         if (id && id !== CommonConstants.EmptyGuid) {
           this.pageLayout = JSON.parse(res.appPageLayout)
@@ -147,7 +119,6 @@ export class AppPageDetailComponent implements OnInit {
           this.form.patchValue(this.item);
           this.updateJsonFromForm();
         } else {
-          console.log('new create')
           this.item.id = this.id;
           this.defaultAppPageAction();
           this.form.patchValue(this.item);
@@ -158,6 +129,25 @@ export class AppPageDetailComponent implements OnInit {
         this.toast.showError(error)
       }
     });
+  }
+
+  private preparePageLayout() {
+    const pageLayout = {
+      toolbarActions: this.form.get('toolbarActions').value,
+      showRowActionCol: this.form.get('showRowActionCol').value,
+      rowActionType: this.form.get('rowActionType').value,
+      rowActions: this.form.get('rowActions').value,
+      appPageFields: this.form.get('appPageFields').value,
+    };
+  
+    // Reset showProperties and sort by sortOrder
+    ['toolbarActions', 'rowActions', 'appPageFields'].forEach((key) => {
+      pageLayout[key] = pageLayout[key]
+        .map(item => ({ ...item, showProperties: false }))
+        .sort((a, b) => a.sortOrder - b.sortOrder);
+    });
+  
+    return pageLayout;
   }
 
   private initializeFormGroup() {
@@ -204,7 +194,7 @@ export class AppPageDetailComponent implements OnInit {
   }
 
   private updateJsonFromForm() {
-    this.pageLayoutJson = JSON.stringify(this.pageLayout, null, 2);
+    this.pageLayoutJson = JSON.stringify(this.preparePageLayout(), null, 2);
   }
 
   private updateFormFromJson(jsonData: any) {
@@ -461,7 +451,7 @@ export class AppPageDetailComponent implements OnInit {
     if (this.draggedItem) {
       const draggedIndex = this.findFormArrayIndex(formArray, this.draggedItem);
       this.moveItemInFormArray(formArray, draggedIndex, index);
-      this.updateSortOrder(formArray);
+      this.updateSortOrder(formArray); // for sortorder start from 1 instead of 0
       this.draggedItem = null;
     }
   }

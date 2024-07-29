@@ -58,7 +58,7 @@ export class AppMenuDetailComponent  implements OnInit {
   private save() {
     let createCommand = new CreateAppMenuCommand();
     createCommand = { ...this.form.value }
-    this.entityClient.createMenu(createCommand).subscribe({
+    this.entityClient.create(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -76,7 +76,7 @@ export class AppMenuDetailComponent  implements OnInit {
     console.log(this.form.value)
     updateCommand = { ...this.form.value };
     console.log(updateCommand)
-    this.entityClient.updateMenu(updateCommand).subscribe({
+    this.entityClient.update(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -89,7 +89,7 @@ export class AppMenuDetailComponent  implements OnInit {
   }
 
   private getById(id: string) {
-    this.entityClient.getAppMenu(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: AppMenuModel) => {
         this.item = res;
          this.optionDataSources = res.optionsDataSources;

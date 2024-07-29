@@ -59,7 +59,7 @@ export class LookupDetailComponent implements OnInit {
 
     console.log(createCommand);
 
-    this.entityClient.createLookup(createCommand).subscribe({
+    this.entityClient.create(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -74,7 +74,7 @@ export class LookupDetailComponent implements OnInit {
   private update() {
     let updateCommand = new UpdateLookupCommand();
     updateCommand = { ...this.form.value }
-    this.entityClient.updateLookup(updateCommand).subscribe({
+    this.entityClient.update(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -87,7 +87,7 @@ export class LookupDetailComponent implements OnInit {
   }
 
   private getById(id: any) {
-    this.entityClient.getLookup(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: LookupModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;

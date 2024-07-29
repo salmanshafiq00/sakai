@@ -73,7 +73,7 @@ export class UserDetailComponent implements OnInit {
     console.log(this.form.value)
     let createCommand = new CreateAppUserCommand();
     createCommand = { ...this.form.value }
-    this.entityClient.createUser(createCommand).subscribe({
+    this.entityClient.create(createCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -89,7 +89,7 @@ export class UserDetailComponent implements OnInit {
   private update() {
     let updateCommand = new UpdateAppUserCommand();
     updateCommand = { ...this.form.value };
-    this.entityClient.updateUser(updateCommand).subscribe({
+    this.entityClient.update(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -102,7 +102,7 @@ export class UserDetailComponent implements OnInit {
   }
 
   private getById(id: string) {
-    this.entityClient.getUser(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: AppUserModel) => {
         this.item = res;
         console.log(res);

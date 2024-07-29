@@ -16,11 +16,11 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ILookupDetailsClient {
-    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel>;
-    getLookupDetail(id: string): Observable<LookupDetailModel>;
-    deleteLookupDetail(id: string): Observable<void>;
-    createLookupDetail(command: CreateLookupDetailCommand): Observable<string>;
-    updateLookupDetail(command: UpdateLookupDetailCommand): Observable<void>;
+    getAll(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel>;
+    get(id: string): Observable<LookupDetailModel>;
+    create(command: CreateLookupDetailCommand): Observable<string>;
+    update(command: UpdateLookupDetailCommand): Observable<void>;
+    delete(id: string): Observable<void>;
 }
 
 @Injectable()
@@ -34,8 +34,8 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookupDetails(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel> {
-        let url_ = this.baseUrl + "/api/LookupDetails/GetLookupDetails";
+    getAll(query: GetLookupDetailListQuery): Observable<PaginatedResponseOfLookupDetailModel> {
+        let url_ = this.baseUrl + "/api/LookupDetails/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -52,11 +52,11 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookupDetails(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetLookupDetails(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupDetailModel>;
                 }
@@ -65,7 +65,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         }));
     }
 
-    protected processGetLookupDetails(response: HttpResponseBase): Observable<PaginatedResponseOfLookupDetailModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfLookupDetailModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -87,8 +87,8 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         return _observableOf(null as any);
     }
 
-    getLookupDetail(id: string): Observable<LookupDetailModel> {
-        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
+    get(id: string): Observable<LookupDetailModel> {
+        let url_ = this.baseUrl + "/api/LookupDetails/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -104,11 +104,11 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookupDetail(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetLookupDetail(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<LookupDetailModel>;
                 }
@@ -117,7 +117,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         }));
     }
 
-    protected processGetLookupDetail(response: HttpResponseBase): Observable<LookupDetailModel> {
+    protected processGet(response: HttpResponseBase): Observable<LookupDetailModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -139,63 +139,8 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         return _observableOf(null as any);
     }
 
-    deleteLookupDetail(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/LookupDetails/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteLookupDetail(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteLookupDetail(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processDeleteLookupDetail(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    createLookupDetail(command: CreateLookupDetailCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/LookupDetails";
+    create(command: CreateLookupDetailCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/LookupDetails/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -212,11 +157,11 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateLookupDetail(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateLookupDetail(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -225,7 +170,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         }));
     }
 
-    protected processCreateLookupDetail(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -255,8 +200,8 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         return _observableOf(null as any);
     }
 
-    updateLookupDetail(command: UpdateLookupDetailCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/LookupDetails";
+    update(command: UpdateLookupDetailCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/LookupDetails/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -272,11 +217,11 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateLookupDetail(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateLookupDetail(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -285,7 +230,7 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         }));
     }
 
-    protected processUpdateLookupDetail(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -314,14 +259,69 @@ export class LookupDetailsClient implements ILookupDetailsClient {
         }
         return _observableOf(null as any);
     }
+
+    delete(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/LookupDetails/Delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
 }
 
 export interface ILookupsClient {
-    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel>;
-    getLookup(id: string): Observable<LookupModel>;
-    deleteLookup(id: string): Observable<void>;
-    createLookup(command: CreateLookupCommand): Observable<string>;
-    updateLookup(command: UpdateLookupCommand): Observable<void>;
+    getAll(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel>;
+    get(id: string): Observable<LookupModel>;
+    create(command: CreateLookupCommand): Observable<string>;
+    update(command: UpdateLookupCommand): Observable<void>;
+    delete(id: string): Observable<void>;
 }
 
 @Injectable()
@@ -335,8 +335,8 @@ export class LookupsClient implements ILookupsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getLookups(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel> {
-        let url_ = this.baseUrl + "/api/Lookups/GetLookups";
+    getAll(query: GetLookupListQuery): Observable<PaginatedResponseOfLookupModel> {
+        let url_ = this.baseUrl + "/api/Lookups/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -353,11 +353,11 @@ export class LookupsClient implements ILookupsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookups(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetLookups(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfLookupModel>;
                 }
@@ -366,7 +366,7 @@ export class LookupsClient implements ILookupsClient {
         }));
     }
 
-    protected processGetLookups(response: HttpResponseBase): Observable<PaginatedResponseOfLookupModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfLookupModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -388,8 +388,8 @@ export class LookupsClient implements ILookupsClient {
         return _observableOf(null as any);
     }
 
-    getLookup(id: string): Observable<LookupModel> {
-        let url_ = this.baseUrl + "/api/Lookups/{id}";
+    get(id: string): Observable<LookupModel> {
+        let url_ = this.baseUrl + "/api/Lookups/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -405,11 +405,11 @@ export class LookupsClient implements ILookupsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetLookup(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetLookup(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<LookupModel>;
                 }
@@ -418,7 +418,7 @@ export class LookupsClient implements ILookupsClient {
         }));
     }
 
-    protected processGetLookup(response: HttpResponseBase): Observable<LookupModel> {
+    protected processGet(response: HttpResponseBase): Observable<LookupModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -440,63 +440,8 @@ export class LookupsClient implements ILookupsClient {
         return _observableOf(null as any);
     }
 
-    deleteLookup(id: string): Observable<void> {
-        let url_ = this.baseUrl + "/api/Lookups/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            withCredentials: true,
-            headers: new HttpHeaders({
-            })
-        };
-
-        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processDeleteLookup(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processDeleteLookup(response_ as any);
-                } catch (e) {
-                    return _observableThrow(e) as any as Observable<void>;
-                }
-            } else
-                return _observableThrow(response_) as any as Observable<void>;
-        }));
-    }
-
-    protected processDeleteLookup(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (response as any).error instanceof Blob ? (response as any).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return _observableOf(null as any);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf(null as any);
-    }
-
-    createLookup(command: CreateLookupCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/Lookups";
+    create(command: CreateLookupCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/Lookups/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -513,11 +458,11 @@ export class LookupsClient implements ILookupsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateLookup(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateLookup(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -526,7 +471,7 @@ export class LookupsClient implements ILookupsClient {
         }));
     }
 
-    protected processCreateLookup(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -556,8 +501,8 @@ export class LookupsClient implements ILookupsClient {
         return _observableOf(null as any);
     }
 
-    updateLookup(command: UpdateLookupCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/Lookups";
+    update(command: UpdateLookupCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Lookups/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -573,11 +518,11 @@ export class LookupsClient implements ILookupsClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateLookup(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateLookup(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -586,7 +531,7 @@ export class LookupsClient implements ILookupsClient {
         }));
     }
 
-    protected processUpdateLookup(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -607,6 +552,61 @@ export class LookupsClient implements ILookupsClient {
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             return throwException("A server side error occurred.", status, _responseText, _headers);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    delete(id: string): Observable<void> {
+        let url_ = this.baseUrl + "/api/Lookups/Delete/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -1002,11 +1002,11 @@ export class TreeNodeListsClient implements ITreeNodeListsClient {
 }
 
 export interface IAppMenusClient {
-    getAppMenus(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel>;
+    getAll(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel>;
     getSidebarMenus(): Observable<SidebarMenuModel[]>;
-    getAppMenu(id: string): Observable<AppMenuModel>;
-    createMenu(command: CreateAppMenuCommand): Observable<string>;
-    updateMenu(command: UpdateAppMenuCommand): Observable<void>;
+    get(id: string): Observable<AppMenuModel>;
+    create(command: CreateAppMenuCommand): Observable<string>;
+    update(command: UpdateAppMenuCommand): Observable<void>;
 }
 
 @Injectable()
@@ -1020,8 +1020,8 @@ export class AppMenusClient implements IAppMenusClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getAppMenus(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel> {
-        let url_ = this.baseUrl + "/api/AppMenus";
+    getAll(query: GetAppMenuListQuery): Observable<PaginatedResponseOfAppMenuModel> {
+        let url_ = this.baseUrl + "/api/AppMenus/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -1038,11 +1038,11 @@ export class AppMenusClient implements IAppMenusClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAppMenus(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAppMenus(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfAppMenuModel>;
                 }
@@ -1051,7 +1051,7 @@ export class AppMenusClient implements IAppMenusClient {
         }));
     }
 
-    protected processGetAppMenus(response: HttpResponseBase): Observable<PaginatedResponseOfAppMenuModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfAppMenuModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1136,8 +1136,8 @@ export class AppMenusClient implements IAppMenusClient {
         return _observableOf(null as any);
     }
 
-    getAppMenu(id: string): Observable<AppMenuModel> {
-        let url_ = this.baseUrl + "/api/AppMenus/GetMenu/{id}";
+    get(id: string): Observable<AppMenuModel> {
+        let url_ = this.baseUrl + "/api/AppMenus/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1153,11 +1153,11 @@ export class AppMenusClient implements IAppMenusClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAppMenu(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAppMenu(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<AppMenuModel>;
                 }
@@ -1166,7 +1166,7 @@ export class AppMenusClient implements IAppMenusClient {
         }));
     }
 
-    protected processGetAppMenu(response: HttpResponseBase): Observable<AppMenuModel> {
+    protected processGet(response: HttpResponseBase): Observable<AppMenuModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1195,8 +1195,8 @@ export class AppMenusClient implements IAppMenusClient {
         return _observableOf(null as any);
     }
 
-    createMenu(command: CreateAppMenuCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/AppMenus/CreateMenu";
+    create(command: CreateAppMenuCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppMenus/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1213,11 +1213,11 @@ export class AppMenusClient implements IAppMenusClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateMenu(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateMenu(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -1226,7 +1226,7 @@ export class AppMenusClient implements IAppMenusClient {
         }));
     }
 
-    protected processCreateMenu(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1256,8 +1256,8 @@ export class AppMenusClient implements IAppMenusClient {
         return _observableOf(null as any);
     }
 
-    updateMenu(command: UpdateAppMenuCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/AppMenus/UpdateMenu";
+    update(command: UpdateAppMenuCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/AppMenus/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1273,11 +1273,11 @@ export class AppMenusClient implements IAppMenusClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateMenu(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateMenu(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1286,7 +1286,7 @@ export class AppMenusClient implements IAppMenusClient {
         }));
     }
 
-    protected processUpdateMenu(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1314,10 +1314,10 @@ export class AppMenusClient implements IAppMenusClient {
 }
 
 export interface IAppPagesClient {
-    getAppPages(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel>;
-    getAppPage(id: string): Observable<AppPageModel>;
-    createAppPage(command: CreateAppPageCommand): Observable<string>;
-    updateAppPage(command: UpdateAppPageCommand): Observable<void>;
+    getAll(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel>;
+    get(id: string): Observable<AppPageModel>;
+    create(command: CreateAppPageCommand): Observable<string>;
+    update(command: UpdateAppPageCommand): Observable<void>;
     upsertAppPage(command: UpsertAppPageCommand): Observable<string>;
 }
 
@@ -1332,8 +1332,8 @@ export class AppPagesClient implements IAppPagesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getAppPages(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel> {
-        let url_ = this.baseUrl + "/api/AppPages";
+    getAll(query: GetAppPageListQuery): Observable<PaginatedResponseOfAppPageModel> {
+        let url_ = this.baseUrl + "/api/AppPages/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -1350,11 +1350,11 @@ export class AppPagesClient implements IAppPagesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAppPages(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAppPages(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfAppPageModel>;
                 }
@@ -1363,7 +1363,7 @@ export class AppPagesClient implements IAppPagesClient {
         }));
     }
 
-    protected processGetAppPages(response: HttpResponseBase): Observable<PaginatedResponseOfAppPageModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfAppPageModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1385,8 +1385,8 @@ export class AppPagesClient implements IAppPagesClient {
         return _observableOf(null as any);
     }
 
-    getAppPage(id: string): Observable<AppPageModel> {
-        let url_ = this.baseUrl + "/api/AppPages/GetPage/{id}";
+    get(id: string): Observable<AppPageModel> {
+        let url_ = this.baseUrl + "/api/AppPages/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1402,11 +1402,11 @@ export class AppPagesClient implements IAppPagesClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAppPage(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAppPage(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<AppPageModel>;
                 }
@@ -1415,7 +1415,7 @@ export class AppPagesClient implements IAppPagesClient {
         }));
     }
 
-    protected processGetAppPage(response: HttpResponseBase): Observable<AppPageModel> {
+    protected processGet(response: HttpResponseBase): Observable<AppPageModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1444,8 +1444,8 @@ export class AppPagesClient implements IAppPagesClient {
         return _observableOf(null as any);
     }
 
-    createAppPage(command: CreateAppPageCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/AppPages/CreateAppPage";
+    create(command: CreateAppPageCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/AppPages/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1462,11 +1462,11 @@ export class AppPagesClient implements IAppPagesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateAppPage(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateAppPage(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -1475,7 +1475,7 @@ export class AppPagesClient implements IAppPagesClient {
         }));
     }
 
-    protected processCreateAppPage(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1505,8 +1505,8 @@ export class AppPagesClient implements IAppPagesClient {
         return _observableOf(null as any);
     }
 
-    updateAppPage(command: UpdateAppPageCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/AppPages/UpdateAppPage";
+    update(command: UpdateAppPageCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/AppPages/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1522,11 +1522,11 @@ export class AppPagesClient implements IAppPagesClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateAppPage(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateAppPage(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1535,7 +1535,7 @@ export class AppPagesClient implements IAppPagesClient {
         }));
     }
 
-    protected processUpdateAppPage(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1624,10 +1624,10 @@ export class AppPagesClient implements IAppPagesClient {
 }
 
 export interface IRolesClient {
-    getRoles(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel>;
-    getRole(id: string): Observable<RoleModel>;
+    getAll(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel>;
+    get(id: string): Observable<RoleModel>;
     create(command: CreateRoleCommand): Observable<string>;
-    updateRole(command: UpdateRoleCommand): Observable<void>;
+    update(command: UpdateRoleCommand): Observable<void>;
     getRolePermissions(id: string): Observable<TreeNodeModel[]>;
 }
 
@@ -1642,8 +1642,8 @@ export class RolesClient implements IRolesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getRoles(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel> {
-        let url_ = this.baseUrl + "/api/Roles";
+    getAll(query: GetRoleListQuery): Observable<PaginatedResponseOfRoleModel> {
+        let url_ = this.baseUrl + "/api/Roles/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -1660,11 +1660,11 @@ export class RolesClient implements IRolesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetRoles(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetRoles(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfRoleModel>;
                 }
@@ -1673,7 +1673,7 @@ export class RolesClient implements IRolesClient {
         }));
     }
 
-    protected processGetRoles(response: HttpResponseBase): Observable<PaginatedResponseOfRoleModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfRoleModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1695,8 +1695,8 @@ export class RolesClient implements IRolesClient {
         return _observableOf(null as any);
     }
 
-    getRole(id: string): Observable<RoleModel> {
-        let url_ = this.baseUrl + "/api/Roles/GetRole/{id}";
+    get(id: string): Observable<RoleModel> {
+        let url_ = this.baseUrl + "/api/Roles/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -1712,11 +1712,11 @@ export class RolesClient implements IRolesClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetRole(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetRole(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<RoleModel>;
                 }
@@ -1725,7 +1725,7 @@ export class RolesClient implements IRolesClient {
         }));
     }
 
-    protected processGetRole(response: HttpResponseBase): Observable<RoleModel> {
+    protected processGet(response: HttpResponseBase): Observable<RoleModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1815,8 +1815,8 @@ export class RolesClient implements IRolesClient {
         return _observableOf(null as any);
     }
 
-    updateRole(command: UpdateRoleCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/Roles/UpdateRole";
+    update(command: UpdateRoleCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Roles/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1832,11 +1832,11 @@ export class RolesClient implements IRolesClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateRole(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateRole(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -1845,7 +1845,7 @@ export class RolesClient implements IRolesClient {
         }));
     }
 
-    protected processUpdateRole(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1939,10 +1939,10 @@ export class RolesClient implements IRolesClient {
 }
 
 export interface IUsersClient {
-    getUsers(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel>;
-    getUser(id: string): Observable<AppUserModel>;
-    createUser(command: CreateAppUserCommand): Observable<string>;
-    updateUser(command: UpdateAppUserCommand): Observable<void>;
+    getAll(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel>;
+    get(id: string): Observable<AppUserModel>;
+    create(command: CreateAppUserCommand): Observable<string>;
+    update(command: UpdateAppUserCommand): Observable<void>;
     addToRoles(command: AddToRolesCommand): Observable<void>;
 }
 
@@ -1957,8 +1957,8 @@ export class UsersClient implements IUsersClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    getUsers(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel> {
-        let url_ = this.baseUrl + "/api/Users";
+    getAll(query: GetAppUserListQuery): Observable<PaginatedResponseOfAppUserModel> {
+        let url_ = this.baseUrl + "/api/Users/GetAll";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(query);
@@ -1975,11 +1975,11 @@ export class UsersClient implements IUsersClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUsers(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetUsers(response_ as any);
+                    return this.processGetAll(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<PaginatedResponseOfAppUserModel>;
                 }
@@ -1988,7 +1988,7 @@ export class UsersClient implements IUsersClient {
         }));
     }
 
-    protected processGetUsers(response: HttpResponseBase): Observable<PaginatedResponseOfAppUserModel> {
+    protected processGetAll(response: HttpResponseBase): Observable<PaginatedResponseOfAppUserModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2010,8 +2010,8 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    getUser(id: string): Observable<AppUserModel> {
-        let url_ = this.baseUrl + "/api/Users/GetUser/{id}";
+    get(id: string): Observable<AppUserModel> {
+        let url_ = this.baseUrl + "/api/Users/Get/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
@@ -2027,11 +2027,11 @@ export class UsersClient implements IUsersClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetUser(response_);
+            return this.processGet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetUser(response_ as any);
+                    return this.processGet(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<AppUserModel>;
                 }
@@ -2040,7 +2040,7 @@ export class UsersClient implements IUsersClient {
         }));
     }
 
-    protected processGetUser(response: HttpResponseBase): Observable<AppUserModel> {
+    protected processGet(response: HttpResponseBase): Observable<AppUserModel> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2069,8 +2069,8 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    createUser(command: CreateAppUserCommand): Observable<string> {
-        let url_ = this.baseUrl + "/api/Users/CreateUser";
+    create(command: CreateAppUserCommand): Observable<string> {
+        let url_ = this.baseUrl + "/api/Users/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -2087,11 +2087,11 @@ export class UsersClient implements IUsersClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreateUser(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processCreateUser(response_ as any);
+                    return this.processCreate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<string>;
                 }
@@ -2100,7 +2100,7 @@ export class UsersClient implements IUsersClient {
         }));
     }
 
-    protected processCreateUser(response: HttpResponseBase): Observable<string> {
+    protected processCreate(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2130,8 +2130,8 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    updateUser(command: UpdateAppUserCommand): Observable<void> {
-        let url_ = this.baseUrl + "/api/Users/UpdateUser";
+    update(command: UpdateAppUserCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Users/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -2147,11 +2147,11 @@ export class UsersClient implements IUsersClient {
         };
 
         return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateUser(response_);
+            return this.processUpdate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdateUser(response_ as any);
+                    return this.processUpdate(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<void>;
                 }
@@ -2160,7 +2160,7 @@ export class UsersClient implements IUsersClient {
         }));
     }
 
-    protected processUpdateUser(response: HttpResponseBase): Observable<void> {
+    protected processUpdate(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2244,7 +2244,7 @@ export class UsersClient implements IUsersClient {
 }
 
 export interface IAccountsClient {
-    login(command: LoginRequestCommand): Observable<AuthenticatedResponse>;
+    accounts(command: LoginRequestCommand): Observable<AuthenticatedResponse>;
     refreshToken(): Observable<AuthenticatedResponse>;
 }
 
@@ -2259,7 +2259,7 @@ export class AccountsClient implements IAccountsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    login(command: LoginRequestCommand): Observable<AuthenticatedResponse> {
+    accounts(command: LoginRequestCommand): Observable<AuthenticatedResponse> {
         let url_ = this.baseUrl + "/api/Accounts";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2277,11 +2277,11 @@ export class AccountsClient implements IAccountsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processLogin(response_);
+            return this.processAccounts(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processLogin(response_ as any);
+                    return this.processAccounts(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<AuthenticatedResponse>;
                 }
@@ -2290,7 +2290,7 @@ export class AccountsClient implements IAccountsClient {
         }));
     }
 
-    protected processLogin(response: HttpResponseBase): Observable<AuthenticatedResponse> {
+    protected processAccounts(response: HttpResponseBase): Observable<AuthenticatedResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :

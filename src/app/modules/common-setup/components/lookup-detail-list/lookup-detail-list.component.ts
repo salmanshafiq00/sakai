@@ -12,7 +12,6 @@ import { LookupDetailsClient, } from 'src/app/modules/generated-clients/api-serv
 })
 export class LookupDetailListComponent  {
   detailComponent = LookupDetailDetailComponent;
-  getFuncName = 'getLookupDetails';
   pageId = '687c6b12-763a-47d7-3f90-08dca9b2d959'
 
   constructor(public entityClient: LookupDetailsClient) {

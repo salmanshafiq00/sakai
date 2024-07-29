@@ -86,7 +86,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() entityClient: any;
   @Input() detailComponent: any;
   @Input() dialogSize: any = '900px';
-  @Input() getFuncName = '';
+  @Input() getFuncName = 'getAll';
   @Input() pageTitle: string = null;
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
@@ -114,12 +114,11 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   loadGridLayout() {
     if (this.pageId) {
-      this.appPagesClient.getAppPage(this.pageId).subscribe({
+      this.appPagesClient.get(this.pageId).subscribe({
         next: (data: AppPageModel) => {
           if (data) {
             this.appPageModel = data;
             this.appPageLayout = JSON.parse(data.appPageLayout);
-            console.log(this.appPageLayout)
             
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
@@ -144,8 +143,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
               .join(', ') ?? '';
 
               this.createDataFilterModelList();
-
-            console.log(this.appPageLayout)
           } else {
             this.isPagelayoutFound = false;
             // TODO: createNewpageLayout()
@@ -393,7 +390,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   }
 
   private deleteItem(id: string) {
-    this.entityClient.deleteLookup(id).subscribe({
+    this.entityClient.delete(id).subscribe({
       next: () => {
         this.toast.deleted();
         this.loadData({ first: this.first, rows: this.rows }, false)
@@ -442,7 +439,8 @@ export class DataGridComponent implements OnInit, OnDestroy {
     )
     .subscribe((isSucceed: boolean) => {
       if (isSucceed) {
-        this.loadData({ first: this.first, rows: this.rows })       
+        this.loadGridLayout();
+        this.loadData({ first: this.first, rows: this.rows }, false)     
       }
     });
   }

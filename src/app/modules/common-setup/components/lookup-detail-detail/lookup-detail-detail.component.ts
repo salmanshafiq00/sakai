@@ -54,7 +54,7 @@ export class LookupDetailDetailComponent implements OnInit {
     let createLookupCommand = new CreateLookupDetailCommand();
     createLookupCommand = { ...this.form.value }
 
-    this.entityClient.createLookupDetail(createLookupCommand).subscribe({
+    this.entityClient.create(createLookupCommand).subscribe({
       next: () => {
         this.toast.created()
         this.customDialogService.close(true);
@@ -71,7 +71,7 @@ export class LookupDetailDetailComponent implements OnInit {
     let updateLookupCommand = new UpdateLookupDetailCommand();
     updateLookupCommand = { ...this.form.value }
 
-    this.entityClient.updateLookupDetail(updateLookupCommand).subscribe({
+    this.entityClient.update(updateLookupCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -84,7 +84,7 @@ export class LookupDetailDetailComponent implements OnInit {
   }
 
   private getById(id: string) {
-    this.entityClient.getLookupDetail(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: LookupDetailModel) => {
         this.item = res;
         this.optionDataSources = res.optionDataSources;

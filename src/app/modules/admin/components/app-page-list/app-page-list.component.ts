@@ -10,8 +10,6 @@ import { AppPagesClient } from 'src/app/modules/generated-clients/api-service';
 })
 export class AppPageListComponent {
   detailComponent = AppPageDetailComponent;
-  getFuncName = 'getAppPages';
-  pageTitle = ''
   pageId = 'bfeb0511-908d-4b9f-b936-08dca9805463';
   constructor(public entityClient: AppPagesClient) {
 

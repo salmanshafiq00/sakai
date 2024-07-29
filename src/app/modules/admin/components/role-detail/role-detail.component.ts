@@ -83,7 +83,7 @@ export class RoleDetailComponent {
   private update() {
     let updateCommand = new UpdateRoleCommand();
     updateCommand = { ...this.form.value };
-    this.entityClient.updateRole(updateCommand).subscribe({
+    this.entityClient.update(updateCommand).subscribe({
       next: () => {
         this.toast.updated()
         this.customDialogService.close(true);
@@ -96,7 +96,7 @@ export class RoleDetailComponent {
   }
 
   private getById(id: string) {
-    this.entityClient.getRole(id).subscribe({
+    this.entityClient.get(id).subscribe({
       next: (res: RoleModel) => {
         this.item = res;
         console.log(res);

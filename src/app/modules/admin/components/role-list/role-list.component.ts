@@ -11,7 +11,6 @@ import { RoleDetailComponent } from '../role-detail/role-detail.component';
 })
 export class RoleListComponent {
   detailComponent = RoleDetailComponent;
-  getFuncName = 'getRoles';
   pageId = '9a08e9a6-c641-44b1-3f92-08dca9b2d959';
 
   constructor(public entityClient: RolesClient) {
