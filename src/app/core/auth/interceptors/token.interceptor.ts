@@ -22,7 +22,7 @@ export class TokenInterceptor implements HttpInterceptor{
       });
       return next.handle(clonedRequest);
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/login']);
     }
     return next.handle(req);
   }
