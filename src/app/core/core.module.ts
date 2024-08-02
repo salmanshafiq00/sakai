@@ -25,10 +25,10 @@ import { ToastModule } from 'primeng/toast';
     MessageService,
     {provide: API_BASE_URL, useValue: environment.API_BASE_URL},
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: RefreshTokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: CorrelationIdInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true }
   ],
   exports: [
     ToastModule

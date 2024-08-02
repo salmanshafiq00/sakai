@@ -31,9 +31,9 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
   }
 
   private processError(error: any, httpError: HttpErrorResponse): Observable<any> {
-    if (error.statusCode === 403) {
+    if (error.status === 403) {
       this.router.navigate(['notfound']);
-    } else if (error.statusCode === 404) {
+    } else if (error.status === 404) {
       this.showError(error.errorMessage);
     } else if (error.errorMessage) {
       this.showError(error.errorMessage);
