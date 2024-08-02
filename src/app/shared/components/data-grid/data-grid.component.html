@@ -55,7 +55,7 @@
                     </p-fileUpload>
                     <app-button icon="pi pi-file" size="small" tooltip="CSV" tooltipPos="bottom" styleClass="ml-2" (onClick)="dt.exportCSV()"  />
                     <app-button severity="warning" size="small" icon="pi pi-file-pdf" tooltip="PDF" tooltipPos="bottom" styleClass="ml-2" (onClick)="exportPdf()"  />
-                    <app-button icon="pi pi-wrench" [rounded]="true" [outlined]="true" size="small" (onClick)="showPageSetting()" styleClass="ml-2" />
+                    <app-button icon="pi pi-wrench" [rounded]="true" [outlined]="true" size="small" tooltip="Page Setting" tooltipPos="bottom" (onClick)="showPageSetting()" styleClass="ml-2" />
                 </ng-template>
             </p-toolbar>
 
