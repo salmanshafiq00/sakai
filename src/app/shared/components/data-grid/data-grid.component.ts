@@ -119,17 +119,17 @@ export class DataGridComponent implements OnInit, OnDestroy {
           if (data) {
             this.appPageModel = data;
             this.appPageLayout = JSON.parse(data.appPageLayout);
-            
+
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
-            this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? []; 
-                        
-            this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? []; 
-            
-            this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? []; 
+            this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? [];
+
+            this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? [];
+
+            this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? [];
 
             this.globalFilterFields = [...this.appPageLayout?.appPageFields?.filter(x => x.isGlobalFilterable)?.map(x => x.field)] ?? []
-            
+
             this.appPageLayout?.appPageFields?.filter(x => x.isGlobalFilterable)?.forEach(field => {
               this.globalFilterFieldModels.push(new GlobalFilterFieldModel({
                 field: field.field,
@@ -142,7 +142,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
               .filter(field => field.isVisible && field.isGlobalFilterable)?.map(x => x.header)
               .join(', ') ?? '';
 
-              this.createDataFilterModelList();
+            this.createDataFilterModelList();
           } else {
             this.isPagelayoutFound = false;
             // TODO: createNewpageLayout()
@@ -252,18 +252,18 @@ export class DataGridComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleAction(funcName: string){
-    if(funcName === 'new'){
+  handleAction(funcName: string) {
+    if (funcName === 'new') {
       this.openDialog(this.emptyGuid)
-    } else if (funcName === 'refresh'){
+    } else if (funcName === 'refresh') {
       this.refreshGrid()
     }
   }
 
-  handleRowAction(funcName: string, item: any){
-    if(funcName === 'edit'){
+  handleRowAction(funcName: string, item: any) {
+    if (funcName === 'edit') {
       this.edit(item)
-    } else if (funcName === 'delete'){
+    } else if (funcName === 'delete') {
       this.delete(item)
     }
   }
@@ -415,16 +415,16 @@ export class DataGridComponent implements OnInit, OnDestroy {
       data,
       this.dialogTitle
     )
-    .subscribe((isSucceed: boolean) => {
-      if (isSucceed) {
-        this.loadData({ first: this.first, rows: this.rows })
-      }
-    });
+      .subscribe((isSucceed: boolean) => {
+        if (isSucceed) {
+          this.loadData({ first: this.first, rows: this.rows })
+        }
+      });
   }
 
 
   // -------------- Page Setting -----------------
-  showPageSetting(){
+  showPageSetting() {
     console.log(this.pageId)
     if (this.pageId && this.pageId !== this.emptyGuid) {
       this.openPageSettingDialog(this.pageId)
@@ -437,13 +437,46 @@ export class DataGridComponent implements OnInit, OnDestroy {
       pageId,
       'Page Setting'
     )
-    .subscribe((isSucceed: boolean) => {
-      if (isSucceed) {
-        this.loadGridLayout();
-        this.loadData({ first: this.first, rows: this.rows }, false)     
-      }
+      .subscribe((isSucceed: boolean) => {
+        if (isSucceed) {
+          this.loadGridLayout();
+          this.loadData({ first: this.first, rows: this.rows }, false)
+        }
+      });
+  }
+
+  // --------- Export to PDF ---------------------
+
+  exportPdf() {
+    const headers = this.dataFields.filter(col => col.isVisible).map(col => col.header);
+    const fields = this.dataFields.filter(col => col.isVisible).map(col => col.field);
+  
+    const data = this.items.map(row => {
+      return fields.map(field => row[field]);
+    });
+  
+    import("jspdf").then(jsPDF => {
+      import("jspdf-autotable").then(autoTable => {
+        const doc = new jsPDF.default();
+  
+        // Page Title
+        doc.setFontSize(16);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const textWidth = doc.getTextWidth(this.pageTitle);
+        const textX = (pageWidth - textWidth) / 2;
+        doc.text(this.pageTitle, textX, 10);
+    
+        // Page Grid
+        autoTable.default(doc, {
+          head: [headers],
+          body: data
+        });
+  
+        doc.save(`${this.pageTitle}.pdf`);
+        });
     });
   }
+  
 
 }
 

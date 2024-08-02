@@ -28,6 +28,8 @@ export class ButtonComponent {
   @Input() badgeClass: string | null = null;
   @Input() ariaLabel: string | null = null;
   @Input() autofocus: boolean = false;
+  @Input() tooltip: string = '';
+  @Input() tooltipPos: string = 'top';
 
   @Output() onClick = new EventEmitter<MouseEvent>();
   @Output() onFocus = new EventEmitter<FocusEvent>();

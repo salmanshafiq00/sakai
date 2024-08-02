@@ -51,18 +51,10 @@
                         label="Import" 
                         styleClass="p-button-sm"
                         chooseLabel="Import" 
-                        class="mr-2 inline-block">
+                        class="inline-block">
                     </p-fileUpload>
-                    <p-button 
-                        pRipple 
-                        [raised]="true"
-                        severity="help" 
-                        label="Export" 
-                        icon="pi pi-upload" 
-                        styleClass="p-button-sm"
-                        class="p-button-help" 
-                        (click)="dt.exportCSV()">
-                    </p-button>
+                    <app-button icon="pi pi-file" size="small" tooltip="CSV" tooltipPos="bottom" styleClass="ml-2" (onClick)="dt.exportCSV()"  />
+                    <app-button severity="warning" size="small" icon="pi pi-file-pdf" tooltip="PDF" tooltipPos="bottom" styleClass="ml-2" (onClick)="exportPdf()"  />
                     <app-button icon="pi pi-wrench" [rounded]="true" [outlined]="true" size="small" (onClick)="showPageSetting()" styleClass="ml-2" />
                 </ng-template>
             </p-toolbar>
