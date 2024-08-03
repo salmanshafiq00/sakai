@@ -183,7 +183,6 @@ export class AppPageDetailComponent implements OnInit {
   }
 
   onJsonChange() {
-    console.log(this.pageLayoutJson)
     try {
       const jsonData = JSON.parse(this.pageLayoutJson);
       this.jsonError = null;
