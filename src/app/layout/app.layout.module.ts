@@ -22,6 +22,7 @@ import { environment } from 'src/environments/environment';
 import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AppMenuService } from './sidebar/app-menu.service';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 @NgModule({
     declarations: [
@@ -46,7 +47,8 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
         RippleModule,
         AppConfigModule,
         RouterModule,
-        BreadcrumbModule
+        BreadcrumbModule,
+        OverlayPanelModule
     ],
     providers: [
         { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

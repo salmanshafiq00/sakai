@@ -1,0 +1,17 @@
+.unseen-msg-badge{
+  color: var(--pink-500);
+    position: relative;
+    left: -5px;
+    top: -10px;
+    font-weight: 700;
+}
+
+::ng-deep .notify-panel.p-overlaypanel {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+// .notification-container{
+//   max-height: 250px;
+//   overflow: auto;
+// }

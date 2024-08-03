@@ -11,6 +11,7 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { ErrorHandlingInterceptor } from './interceptors/error-handling.interceptor';
 import { MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
+import { NotificationService } from './services/notification.service';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { ToastModule } from 'primeng/toast';
     AuthService,
     AccountsClient,
     MessageService,
+    NotificationService,
     {provide: API_BASE_URL, useValue: environment.API_BASE_URL},
     { provide: HTTP_INTERCEPTORS, useClass: TokenInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },
@@ -31,7 +33,7 @@ import { ToastModule } from 'primeng/toast';
     { provide: HTTP_INTERCEPTORS, useClass: LoggingInterceptor, multi: true },
   ],
   exports: [
-    ToastModule
+    ToastModule,
   ]
 })
 export class CoreModule { }
