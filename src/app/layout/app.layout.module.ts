@@ -23,6 +23,7 @@ import { BreadcrumbModule } from 'primeng/breadcrumb';
 import { AppMenuService } from './sidebar/app-menu.service';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ToastModule } from 'primeng/toast';
 
 @NgModule({
     declarations: [
@@ -48,7 +49,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
         AppConfigModule,
         RouterModule,
         BreadcrumbModule,
-        OverlayPanelModule
+        OverlayPanelModule,
+        ToastModule
     ],
     providers: [
         { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

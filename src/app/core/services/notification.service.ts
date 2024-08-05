@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr'
+import { Subject } from 'rxjs';
+import { AppNotificationModel } from 'src/app/modules/generated-clients/api-service';
 import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class NotificationService {
   private hubConnection: signalR.HubConnection;
+  public newNotification: Subject<AppNotificationModel> = new Subject<AppNotificationModel>();
 
   constructor() {
     this.hubConnection = new signalR.HubConnectionBuilder()
@@ -14,8 +17,9 @@ export class NotificationService {
       })
       .build();
 
-    this.hubConnection.on('ReceiveNotification', (message: string) => {
-      console.log(`Notification received: ${message}`);
+    this.hubConnection.on('ReceiveNotification', (notification: AppNotificationModel) => {
+      console.log(`Notification received: ${notification}`);
+      this.newNotification.next(notification);
     });
 
     this.startConnection();

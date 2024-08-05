@@ -16,7 +16,7 @@ export class AppMenuComponent implements OnInit {
 
     constructor(public layoutService: LayoutService,
         private appMenuClient: AppMenusClient,
-        private appMenuService: AppMenuService
+        private appMenuService: AppMenuService,
     ) { }
 
     ngOnInit() {
