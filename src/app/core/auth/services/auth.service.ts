@@ -1,53 +1,35 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of, tap } from 'rxjs';
 import { AccountsClient, AuthenticatedResponse, LoginRequestCommand } from './auth-client.service';
-import { er } from '@fullcalendar/core/internal-common';
+import { Router } from '@angular/router';
+import { jwtDecode } from "jwt-decode";
 
 
-const access_token = 'access_token';
+const Access_Token = 'Access_Token';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AuthService {
 
-  isAuthenticated: boolean = false;
+  // private _authenticated: boolean = false;
   redirectUrl: string | null = null;
 
   private accountsClient: AccountsClient = inject(AccountsClient);
+  private router: Router = inject(Router);
 
-  // login(loginRequest: LoginRequestCommand): Observable<boolean> {
-  //   return new Observable<boolean>((observer) => {
-  //     this.accountsClient.login(loginRequest).subscribe({
-  //       next: (authResponse) => {
-  //         console.log(authResponse);
-  //         if (!authResponse) {
-  //           observer.next(false);
-  //         }
-  //         else {
-  //           localStorage.setItem(access_token, `${authResponse.accessToken}`);
-  //           this.isAuthenticated = true;
-  //           observer.next(false);
-  //         }
-  //       },
-  //       error: (error) => {
-  //         console.error(`login error`, error);
-  //         observer.error(error);
-  //       }
-  //     });
-  //   });
-  // }
+  get isAuthenticated(): boolean{
+    return !!this.getAccessToken();
+  }
 
   login(loginRequest: LoginRequestCommand): Observable<boolean> {
     return this.accountsClient.login(loginRequest).pipe(
-      tap((res) => {
-        console.log(res);
-      }),
       map((response) => {
         if(!response){
           return false;
         }
         else{
-          localStorage.setItem(access_token, `${response.accessToken}`);
-          this.isAuthenticated = true;
+          this.setAccessToken(response.accessToken);
           return true;
         }
       }),
@@ -59,14 +41,23 @@ export class AuthService {
   }
 
   logout() {
-
+    this.accountsClient.logout().subscribe({
+      next: () => {
+        this.clearAccessToken();
+        this.router.navigate(['/auth/login'])
+      }, 
+      error: (err) => {
+        this.clearAccessToken();
+        this.router.navigate(['/auth/login'])
+      }
+    });
   }
 
   refreshToken(): Observable<AuthenticatedResponse> {
     return this.accountsClient.refreshToken()
       .pipe(
         map((authResponse) => {
-          localStorage.setItem(access_token, `${authResponse.accessToken}`);
+          localStorage.setItem(Access_Token, `${authResponse.accessToken}`);
           return authResponse;
         }),
         catchError((error) => {
@@ -76,16 +67,47 @@ export class AuthService {
   }
 
 
+  decodeToken(): JwtPayload{
+    try{
+      return jwtDecode<JwtPayload>(this.getAccessToken());
+    } catch (error){
+      console.log('Invalid Token', error)
+      return null;
+    }
+  }
+
+  getUserRoles(): string[]{
+    const decodedToken = this.decodeToken();
+    return decodedToken ? decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] : [];
+  }
+
+  getUserId(): string{
+    const decodedToken = this.decodeToken();
+    return decodedToken ? decodedToken.sub : '';
+  }
 
   getAccessToken(): string | null {
-    return localStorage.getItem(access_token);;
+    return localStorage.getItem(Access_Token);
   }
 
   setAccessToken(value: string) {
-    localStorage.setItem(access_token, value);;
+    localStorage.setItem(Access_Token, value);
   }
 
   clearAccessToken(): void {
-    localStorage.removeItem(access_token);
+    localStorage.removeItem(Access_Token);
   }
 }
+
+export interface JwtPayload {
+  sub: string;  // Subject (User ID)
+  email: string;  // User's email
+  jti: string;  // JWT ID
+  username: string;  // Username
+  ip: string;  // IP address
+  "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];  // Array of roles
+  exp: number;  // Expiration time (Unix timestamp)
+  iss: string;  // Issuer
+  aud: string;  // Audience
+}
+

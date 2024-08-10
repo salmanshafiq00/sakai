@@ -36,3 +36,8 @@
     }
   }
 }
+
+::ng-deep .profile-panel.p-overlaypanel .p-overlaypanel-content {
+  padding: 1rem;
+  width: 150px;
+}

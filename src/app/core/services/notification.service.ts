@@ -3,23 +3,26 @@ import * as signalR from '@microsoft/signalr'
 import { Subject } from 'rxjs';
 import { AppNotificationModel } from 'src/app/modules/generated-clients/api-service';
 import { environment } from 'src/environments/environment';
+import { AuthService } from '../auth/services/auth.service';
 
 @Injectable()
 export class NotificationService {
   private hubConnection: signalR.HubConnection;
   public newNotification: Subject<AppNotificationModel> = new Subject<AppNotificationModel>();
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(`${environment.API_BASE_URL}/notificationHub`, {
+        accessTokenFactory: () => this.authService.getAccessToken(),
         skipNegotiation: true,
         transport: signalR.HttpTransportType.WebSockets
       })
       .build();
 
     this.hubConnection.on('ReceiveNotification', (notification: AppNotificationModel) => {
-      console.log(`Notification received: ${notification}`);
-      this.newNotification.next(notification);
+      if(notification.recieverId?.toLowerCase() === this.authService.getUserId()?.toLowerCase()){
+        this.newNotification.next(notification);
+      }
     });
 
     this.startConnection();

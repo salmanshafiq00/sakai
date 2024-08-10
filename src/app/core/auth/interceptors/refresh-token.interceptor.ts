@@ -2,21 +2,21 @@ import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest
 import { BehaviorSubject, Observable, catchError, filter, switchMap, take, throwError } from "rxjs";
 import { AuthService } from "../services/auth.service";
 import { Injectable, inject } from "@angular/core";
+import { Router } from "@angular/router";
 
 @Injectable()
-export class RefreshTokenInterceptor implements HttpInterceptor{
+export class RefreshTokenInterceptor implements HttpInterceptor {
 
   private isRefreshing = false;
   private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
 
-
-authService: AuthService = inject(AuthService);
+  authService: AuthService = inject(AuthService);
+  router: Router = inject(Router);
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(request).pipe(
-      catchError(error => {
-        console.error(error);
-        if (error instanceof HttpErrorResponse && error.status === 401 && !this.authService.isAuthenticated) {
+      catchError((error) => {
+        if (error instanceof HttpErrorResponse && error.status === 401) {
           return this.handleTokenExpiration(request, next);
         }
         return throwError(() => error);
@@ -34,16 +34,12 @@ authService: AuthService = inject(AuthService);
           this.isRefreshing = false;
           this.authService.setAccessToken(authResponse.accessToken);
           this.refreshTokenSubject.next(authResponse.accessToken);
-          request = request.clone({
-            setHeaders: {
-              Authorization: `Bearer ${authResponse.accessToken}`
-            },
-          });
-          return next.handle(request);
+          return next.handle(this.addAuthorizationHeader(request, authResponse.accessToken));
         }),
-        catchError((refreshError: any) => {
+        catchError((refreshError) => {
           this.isRefreshing = false;
           this.authService.logout();
+          this.router.navigate(['/auth/login']);
           return throwError(() => refreshError);
         })
       );
@@ -51,15 +47,16 @@ authService: AuthService = inject(AuthService);
       return this.refreshTokenSubject.pipe(
         filter(token => token !== null),
         take(1),
-        switchMap((token) => {
-          request = request.clone({
-            setHeaders: {
-              Authorization: `Bearer ${token}`
-            },
-          });
-          return next.handle(request);
-        })
+        switchMap((token) => next.handle(this.addAuthorizationHeader(request, token!)))
       );
     }
+  }
+
+  private addAuthorizationHeader(request: HttpRequest<any>, token: string): HttpRequest<any> {
+    return request.clone({
+      setHeaders: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   }
 }

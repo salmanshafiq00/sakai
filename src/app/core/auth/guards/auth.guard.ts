@@ -11,7 +11,7 @@ export const AuthGuard = (state: RouterStateSnapshot) => {
   }
   else {
     authService.redirectUrl = state.url;
-    router.navigate['/auth/login'];
+    router.navigate(['/auth/login']);
     return false;
   }
 }

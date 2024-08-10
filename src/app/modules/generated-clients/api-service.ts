@@ -2374,8 +2374,9 @@ export class UsersClient implements IUsersClient {
 }
 
 export interface IAccountsClient {
-    accounts(command: LoginRequestCommand): Observable<AuthenticatedResponse>;
+    login(command: LoginRequestCommand): Observable<AuthenticatedResponse>;
     refreshToken(): Observable<AuthenticatedResponse>;
+    logout(): Observable<void>;
 }
 
 @Injectable()
@@ -2389,8 +2390,8 @@ export class AccountsClient implements IAccountsClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    accounts(command: LoginRequestCommand): Observable<AuthenticatedResponse> {
-        let url_ = this.baseUrl + "/api/Accounts";
+    login(command: LoginRequestCommand): Observable<AuthenticatedResponse> {
+        let url_ = this.baseUrl + "/api/Accounts/Login";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -2407,11 +2408,11 @@ export class AccountsClient implements IAccountsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAccounts(response_);
+            return this.processLogin(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processAccounts(response_ as any);
+                    return this.processLogin(response_ as any);
                 } catch (e) {
                     return _observableThrow(e) as any as Observable<AuthenticatedResponse>;
                 }
@@ -2420,7 +2421,7 @@ export class AccountsClient implements IAccountsClient {
         }));
     }
 
-    protected processAccounts(response: HttpResponseBase): Observable<AuthenticatedResponse> {
+    protected processLogin(response: HttpResponseBase): Observable<AuthenticatedResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2500,6 +2501,62 @@ export class AccountsClient implements IAccountsClient {
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    logout(): Observable<void> {
+        let url_ = this.baseUrl + "/api/Accounts/Logout";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processLogout(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processLogout(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processLogout(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("A server side error occurred.", status, _responseText, _headers);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {

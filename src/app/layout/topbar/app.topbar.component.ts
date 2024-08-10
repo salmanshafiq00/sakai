@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MenuItem, MessageService } from 'primeng/api';
 import { LayoutService } from "../service/app.layout.service";
 import { OverlayPanel } from 'primeng/overlaypanel';
@@ -6,15 +6,17 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { AppNotificationModel } from 'src/app/modules/generated-clients/api-service';
 import { NotificationService } from 'src/app/core/services/notification.service';
+import { Router } from '@angular/router';
+import { AuthService } from 'src/app/core/auth/services/auth.service';
 
 @Component({
     selector: 'app-topbar',
     templateUrl: './app.topbar.component.html',
     styleUrls: ['./app.topbar.component.scss']
 })
-export class AppTopBarComponent {
+export class AppTopBarComponent implements OnInit {
 
-    items!: MenuItem[];
+    userItems!: MenuItem[];
 
     @ViewChild('menubutton') menuButton!: ElementRef;
     @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
@@ -38,10 +40,37 @@ export class AppTopBarComponent {
         public layoutService: LayoutService,
         private http: HttpClient,
         private notificationService: NotificationService,
-        private messageService: MessageService
+        private messageService: MessageService,
+        private authService: AuthService
     ) {
         this.initializeNotifications();
         this.handleNewNotification();
+    }
+
+    ngOnInit(): void {
+        this.userItems = [
+            {
+
+                label: 'Refresh',
+                icon: 'pi pi-refresh'
+
+            },
+            {
+                separator: true
+            },
+            {
+                label: 'Logout',
+                icon: 'pi pi-sign-out',
+                shortcut: '⌘+Q',
+                command: () => {
+                    this.logout();
+                }
+            },
+        ];
+    }
+
+    private logout(){
+        this.authService.logout();
     }
 
     private initializeNotifications(): void {
@@ -77,7 +106,7 @@ export class AppTopBarComponent {
         });
     }
 
-    private handleNewNotification(){
+    private handleNewNotification() {
         this.notificationService.newNotification.subscribe({
             next: (notify: AppNotificationModel) => {
                 this.notifications.unshift(notify);

@@ -49,10 +49,11 @@
                 </div>
             </div>
         </p-overlayPanel>
-        <button class="p-link layout-topbar-button">
+        <button class="p-link layout-topbar-button" (click)="userMenu.toggle($event)">
             <i class="pi pi-user"></i>
             <span>Profile</span>
         </button>
+        <p-menu #userMenu [model]="userItems" [popup]="true" />
         <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
             <i class="pi pi-cog"></i>
             <span>Settings</span>

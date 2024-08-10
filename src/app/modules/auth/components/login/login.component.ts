@@ -28,9 +28,6 @@ export class LoginComponent {
   private router: Router = inject(Router)
 
   login(){
-    console.log(this.password);
-    console.log(this.email);
-    console.log(this.isRemember);
     const loginRequest = new LoginRequestCommand({userName: this.email, password: this.password, isRemember: this.isRemember})
     this.authService.login(loginRequest).subscribe({
       next: (isSuccessful) => {
