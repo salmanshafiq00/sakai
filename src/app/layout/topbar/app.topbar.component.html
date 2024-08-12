@@ -49,24 +49,39 @@
                 </div>
             </div>
         </p-overlayPanel>
-        <button class="p-link layout-topbar-button" (click)="userMenu.toggle($event)">
+        <button class="p-link layout-topbar-button" (click)="profilePanel.toggle($event)">
             <i class="pi pi-user"></i>
             <span>Profile</span>
         </button>
-        <p-menu #userMenu [model]="userItems" [popup]="true" />
+        <p-overlayPanel #profilePanel styleClass="profile-panel">
+            <div class="ng-trigger ng-trigger-overlayAnimation ng-animate-disabled menu-drawer p-menu p-component">
+                <ul role="menu" class="p-menu-list p-reset">
+                    <li  class="p-element p-menuitem">
+                        <div class="p-menuitem-content">
+                            <a pRipple  class="p-menuitem-link">
+                                <span class="pi pi-user"></span>
+                                <span class="ml-2">Profile</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="p-element p-menuitem">
+                        <div class="p-menuitem-content">
+                            <a pRipple  (click)="logout()" class="p-menuitem-link">
+                                <span class="pi pi-sign-out"></span>
+                                <span class="ml-2">Logout</span>
+                            </a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </p-overlayPanel>
+        <!-- <p-menu #userMenu [model]="userItems" [popup]="true" /> -->
         <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
         </button>
     </div>
 </div>
-
-<!-- <p-toast 
-    key="notification" 
-    [showTransformOptions]="'translateY(100%)'" 
-    [showTransitionOptions]="'1000ms'" 
-    [hideTransitionOptions]="'1000ms'" 
-    [showTransformOptions]="'translateX(100%)'" /> -->
 
 <p-toast key="notification" [showTransformOptions]="'translateY(100%)'" [showTransitionOptions]="'1000ms'"
     [hideTransitionOptions]="'1000ms'" [showTransformOptions]="'translateX(100%)'">

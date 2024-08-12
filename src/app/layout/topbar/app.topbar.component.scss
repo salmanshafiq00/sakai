@@ -38,6 +38,14 @@
 }
 
 ::ng-deep .profile-panel.p-overlaypanel .p-overlaypanel-content {
-  padding: 1rem;
-  width: 150px;
+  padding: .2rem;
+}
+
+::ng-deep .menu-drawer.p-menu{
+  padding: 0;
+  background: none;
+  color: rgba(255, 255, 255, 0.87);
+  border: none;
+  width: 100%;
+  min-width: 10rem;
 }

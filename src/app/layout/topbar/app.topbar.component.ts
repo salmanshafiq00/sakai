@@ -16,7 +16,7 @@ import { AuthService } from 'src/app/core/auth/services/auth.service';
 })
 export class AppTopBarComponent implements OnInit {
 
-    userItems!: MenuItem[];
+    profileDrawerItems!: MenuItem[];
 
     @ViewChild('menubutton') menuButton!: ElementRef;
     @ViewChild('topbarmenubutton') topbarMenuButton!: ElementRef;
@@ -48,15 +48,12 @@ export class AppTopBarComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        this.userItems = [
+        this.profileDrawerItems = [
             {
 
-                label: 'Refresh',
-                icon: 'pi pi-refresh'
+                label: 'Profile',
+                icon: 'pi pi-user'
 
-            },
-            {
-                separator: true
             },
             {
                 label: 'Logout',
@@ -69,7 +66,7 @@ export class AppTopBarComponent implements OnInit {
         ];
     }
 
-    private logout(){
+    public logout(){
         this.authService.logout();
     }
 
