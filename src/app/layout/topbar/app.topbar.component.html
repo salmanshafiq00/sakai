@@ -54,17 +54,17 @@
             <span>Profile</span>
         </button>
         <p-overlayPanel #profilePanel styleClass="profile-panel">
-            <div class="ng-trigger ng-trigger-overlayAnimation ng-animate-disabled menu-drawer p-menu p-component">
+            <div class=" menu-drawer p-menu">
                 <ul role="menu" class="p-menu-list p-reset">
-                    <li  class="p-element p-menuitem">
+                    <li  class="p-menuitem">
                         <div class="p-menuitem-content">
-                            <a pRipple  class="p-menuitem-link">
+                            <a pRipple routerLink="/admin/user-profile"  class="p-menuitem-link">
                                 <span class="pi pi-user"></span>
                                 <span class="ml-2">Profile</span>
                             </a>
                         </div>
                     </li>
-                    <li class="p-element p-menuitem">
+                    <li class="p-menuitem">
                         <div class="p-menuitem-content">
                             <a pRipple  (click)="logout()" class="p-menuitem-link">
                                 <span class="pi pi-sign-out"></span>

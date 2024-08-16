@@ -2,9 +2,10 @@
   <label class="label" *ngIf="label">{{ label }} <span class="required-star" *ngIf="required">*</span></label>
   <input 
     type="text" 
+    [id]="id"
     pInputText
     [placeholder]="placeholder"
-    [disabled]="disabled" 
+    [disabled]="disabled ? true : false" 
     [readonly]="readonly" 
     [autofocus]="autofocus"
     variant="filled"
@@ -14,4 +15,6 @@
     [value]="value"
   />
 </div>
+<!-- [variant]="disabled ? 'filled' : variant" -->
+ <!-- [variant]="variant" -->
 

@@ -21,11 +21,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, NG_VALIDATORS, AbstractControl
 export class InputTextComponent implements ControlValueAccessor, Validator {
   @Input() label: string = '';
   @Input() placeholder: string = '';
+  @Input() id: string = '';
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
   @Input() hidden: boolean = false;
-  @Input() variant: 'outlined' | 'filled' = 'outlined';
+  @Input() variant: "outlined" | "filled" = 'filled';
   @Input() autofocus: boolean = false;
 
   value: string = '';
@@ -44,9 +45,9 @@ export class InputTextComponent implements ControlValueAccessor, Validator {
     this.onTouched = fn;
   }
 
-  setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
-  }
+  // setDisabledState(isDisabled: boolean): void {
+  //   this.disabled = isDisabled;
+  // }
 
   validate(control: AbstractControl): ValidationErrors | null {
     if (this.required && !control.value) {

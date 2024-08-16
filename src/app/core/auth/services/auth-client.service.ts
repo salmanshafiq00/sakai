@@ -196,6 +196,66 @@ export class AccountsClient implements IAccountsClient {
     }
     return _observableOf(null as any);
   }
+
+  changePassword(command: ChangePasswordCommand): Observable<void> {
+    let url_ = this.baseUrl + "/api/Accounts/ChangePassword";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify(command);
+
+    let options_: any = {
+      body: content_,
+      observe: "response",
+      responseType: "blob",
+      withCredentials: true,
+      headers: new HttpHeaders({
+        "Content-Type": "application/json",
+      })
+    };
+
+    return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_: any) => {
+      return this.processChangePassword(response_);
+    })).pipe(_observableCatch((response_: any) => {
+      if (response_ instanceof HttpResponseBase) {
+        try {
+          return this.processChangePassword(response_ as any);
+        } catch (e) {
+          return _observableThrow(e) as any as Observable<void>;
+        }
+      } else
+        return _observableThrow(response_) as any as Observable<void>;
+    }));
+  }
+
+  protected processChangePassword(response: HttpResponseBase): Observable<void> {
+    const status = response.status;
+    const responseBlob =
+      response instanceof HttpResponse ? response.body :
+        (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+    let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); } }
+    if (status === 204) {
+      return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+        return _observableOf(null as any);
+      }));
+    } else if (status === 400) {
+      return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+        let result400: any = null;
+        let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+        result400 = ProblemDetails.fromJS(resultData400);
+        return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+      }));
+    } else if (status === 404) {
+      return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+        return throwException("A server side error occurred.", status, _responseText, _headers);
+      }));
+    } else if (status !== 200 && status !== 204) {
+      return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+        return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+      }));
+    }
+    return _observableOf(null as any);
+  }
 }
 
 function throwException(message: string, status: number, response: string, headers: { [key: string]: any; }, result?: any): Observable<any> {
@@ -394,6 +454,46 @@ export class ProblemDetails implements IProblemDetails {
     data["instance"] = this.instance;
     return data;
   }
+}
+
+export class ChangePasswordCommand implements IChangePasswordCommand {
+  currentPassword?: string;
+  newPassword?: string;
+
+  constructor(data?: IChangePasswordCommand) {
+      if (data) {
+          for (var property in data) {
+              if (data.hasOwnProperty(property))
+                  (<any>this)[property] = (<any>data)[property];
+          }
+      }
+  }
+
+  init(_data?: any) {
+      if (_data) {
+          this.currentPassword = _data["currentPassword"];
+          this.newPassword = _data["newPassword"];
+      }
+  }
+
+  static fromJS(data: any): ChangePasswordCommand {
+      data = typeof data === 'object' ? data : {};
+      let result = new ChangePasswordCommand();
+      result.init(data);
+      return result;
+  }
+
+  toJSON(data?: any) {
+      data = typeof data === 'object' ? data : {};
+      data["currentPassword"] = this.currentPassword;
+      data["newPassword"] = this.newPassword;
+      return data;
+  }
+}
+
+export interface IChangePasswordCommand {
+  currentPassword?: string;
+  newPassword?: string;
 }
 
 export interface IProblemDetails {

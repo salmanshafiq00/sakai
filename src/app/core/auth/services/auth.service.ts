@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, map, of, tap } from 'rxjs';
-import { AccountsClient, AuthenticatedResponse, LoginRequestCommand } from './auth-client.service';
+import { AccountsClient, AuthenticatedResponse, ChangePasswordCommand, IChangePasswordCommand, LoginRequestCommand } from './auth-client.service';
 import { Router } from '@angular/router';
 import { jwtDecode } from "jwt-decode";
 
@@ -51,6 +51,15 @@ export class AuthService {
         this.router.navigate(['/auth/login'])
       }
     });
+  }
+
+  changePassword(currentPassword: string, newPassword: string): Observable<void> {
+    const command = new ChangePasswordCommand({
+      currentPassword: currentPassword,
+      newPassword: newPassword,
+    });
+
+    return this.accountsClient.changePassword(command);
   }
 
   refreshToken(): Observable<AuthenticatedResponse> {

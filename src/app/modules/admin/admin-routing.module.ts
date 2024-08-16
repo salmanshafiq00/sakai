@@ -8,12 +8,16 @@ import { AppMenuListComponent } from "./components/app-menu-list/app-menu-list.c
 import { AppMenuDetailComponent } from "./components/app-menu-detail/app-menu-detail.component";
 import { AppPageDetailComponent } from "./components/app-page-detail/app-page-detail.component";
 import { AppPageListComponent } from "./components/app-page-list/app-page-list.component";
+import { UserProfileComponent } from "./components/user-profile/user-profile.component";
+import { UserBasicComponent } from "./components/user-profile/components/user-basic/user-basic.component";
+import { ChangePasswordComponent } from "./components/user-profile/components/change-password/change-password.component";
 
 const routes: Routes = [
   {path: 'users', component: UserListComponent},
   {path: 'roles', component: RoleListComponent},
   {path: 'app-menus', component: AppMenuListComponent},
   {path: 'app-pages', component: AppPageListComponent},
+  {path: 'user-profile', component: UserProfileComponent},
 ]
 
 @NgModule({
@@ -33,6 +37,9 @@ export const adminRoutingComponents = [
   AppMenuListComponent,
   AppMenuDetailComponent,
   AppPageListComponent,
-  AppPageDetailComponent
+  AppPageDetailComponent,
+  UserProfileComponent,
+  UserBasicComponent,
+  ChangePasswordComponent
 
 ]

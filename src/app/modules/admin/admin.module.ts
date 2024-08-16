@@ -7,6 +7,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { API_BASE_URL } from '../generated-clients/api-service';
 import { environment } from 'src/environments/environment';
 import { DragDropModule } from 'primeng/dragdrop';
+import { TabMenuModule } from 'primeng/tabmenu';
+import { InputTextModule } from 'primeng/inputtext';
 
 
 @NgModule({
@@ -20,7 +22,9 @@ import { DragDropModule } from 'primeng/dragdrop';
     ReactiveFormsModule,
     AppSharedModule,
     DropdownModule,
-    DragDropModule  
+    DragDropModule,
+    TabMenuModule,
+    InputTextModule 
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

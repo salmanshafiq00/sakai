@@ -49,3 +49,11 @@
   width: 100%;
   min-width: 10rem;
 }
+
+::ng-deep .menu-drawer ul li a{
+  padding: 0 0.75rem;
+}
+
+::ng-deep .menu-drawer ul li .p-menuitem-content{
+  padding: 0.5rem 0;
+}
