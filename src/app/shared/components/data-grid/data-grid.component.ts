@@ -11,6 +11,7 @@ import { ConfirmDialogService } from '../../services/confirm-dialog.service';
 import { CustomDialogService } from '../../services/custom-dialog.service';
 import { AppDataGridModel } from '../../models/app-data-grid.model';
 import { AppPageDetailComponent } from 'src/app/modules/admin/components/app-page-detail/app-page-detail.component';
+import { PermissionService } from 'src/app/core/auth/services/permission.service';
 
 @Component({
   selector: 'app-data-grid',
@@ -102,6 +103,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private datePipe = inject(DatePipe);
   private customDialogService = inject(CustomDialogService);
   private appPagesClient = inject(AppPagesClient);
+  public permit = inject(PermissionService);
 
   ngOnInit() {
     this.loadGridLayout();

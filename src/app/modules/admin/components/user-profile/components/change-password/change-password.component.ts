@@ -6,7 +6,7 @@ import { AppUserModel } from 'src/app/modules/generated-clients/api-service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
-  selector: 'app-change-password',
+  selector: 'user-change-password',
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.scss',
   providers: [AuthService]

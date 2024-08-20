@@ -26,12 +26,19 @@
     <div *ngIf="activeItem?.label === 'Change Password'">
         <ng-container *ngTemplateOutlet="changePassword"></ng-container>
     </div>
+    <div *ngIf="activeItem?.label === 'Change Photo'">
+        <ng-container *ngTemplateOutlet="changePhoto"></ng-container>
+    </div>
 </div>
 
 <ng-template #about>
-    <app-user-basic />
+    <user-user-basic />
 </ng-template>
 
 <ng-template #changePassword>
-    <app-change-password />
+    <user-change-password />
+</ng-template>
+
+<ng-template #changePhoto>
+    <user-change-profile-photo />
 </ng-template>

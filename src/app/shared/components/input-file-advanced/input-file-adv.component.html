@@ -1,0 +1,22 @@
+<div [ngClass]="{'p-hidden': hidden}" class="cust-field input-file">
+  <div class="flex gap-2">
+    <p-fileUpload 
+      #fileInput
+      [name]="name"
+      [(ngModel)]="files"
+      [url]="url"
+      [accept]="accept"
+      [disabled]="disabled"
+      [multiple]="multiple"
+      [chooseLabel]="chooseLabel"
+      [chooseIcon]="chooseIcon"
+      [mode]="mode"
+      [fileLimit]="fileLimit"
+      [maxFileSize]="maxFileSize"
+      [customUpload]="customUpload"
+      [showCancelButton]="showCancelButton"
+      (onUpload)="onFileUpload($event)"
+      (onSelect)="onFileUpload($event)"
+    />
+  </div>
+</div>

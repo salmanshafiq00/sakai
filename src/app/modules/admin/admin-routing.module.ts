@@ -11,6 +11,7 @@ import { AppPageListComponent } from "./components/app-page-list/app-page-list.c
 import { UserProfileComponent } from "./components/user-profile/user-profile.component";
 import { UserBasicComponent } from "./components/user-profile/components/user-basic/user-basic.component";
 import { ChangePasswordComponent } from "./components/user-profile/components/change-password/change-password.component";
+import { ChangeProfilePhotoComponent } from "./components/user-profile/components/change-profile-photo/change-profile-photo.component";
 
 const routes: Routes = [
   {path: 'users', component: UserListComponent},
@@ -40,6 +41,7 @@ export const adminRoutingComponents = [
   AppPageDetailComponent,
   UserProfileComponent,
   UserBasicComponent,
-  ChangePasswordComponent
+  ChangePasswordComponent,
+  ChangeProfilePhotoComponent
 
 ]

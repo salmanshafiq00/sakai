@@ -18,7 +18,7 @@
       <app-button icon="" severity="" label="Design" (onClick)="showSelectedView('design')" />
       <app-button icon="" severity="help" label="JSON" (onClick)="showSelectedView('json')" />
     </div>
-
+    <!-- Design -->
     <ng-container *ngIf="activeView === 'design'">
           <!-- Page Toolbar Actions -->
     <div class="grid m-1">
@@ -53,7 +53,7 @@
                 <span>Caption: {{ field.value.caption }}</span>
               </div>
               <div class="col-4">
-                <span>Function: {{ field.value.functionName }}</span>
+                <span>Permissions: {{ field.value.permissions }}</span>
               </div>
             </div>
             <!-- Show when click on down chevron icon -->
@@ -104,7 +104,7 @@
                 <app-input-select [options]="actionTypeSelectList" formControlName="actionType" label="Action Type" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="functionName" label="Function Name" />
+                <app-input-text formControlName="permissions" label="Permission" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="navigationUrl" label="Navigation Url" />
@@ -169,7 +169,7 @@
                 <span>Caption: {{ field.value.caption }}</span>
               </div>
               <div class="col-4">
-                <span>Function: {{ field.value.functionName }}</span>
+                <span>Function: {{ field.value.permissions }}</span>
               </div>
             </div>
             <!-- Show when click on down chevron icon -->
@@ -218,7 +218,7 @@
                 </p-dropdown>
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="functionName" label="Function Name" />
+                <app-input-text formControlName="permissions" label="Permissions" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="navigationUrl" label="Navigation Url" />
@@ -340,7 +340,7 @@
     </div>
     <!-- Page Data Field -->
     </ng-container>
-
+    <!-- JSON -->
     <ng-container *ngIf="activeView === 'json'">
       <div class="grid tarea">
         <app-input-textarea [(ngModel)]="pageLayoutJson" [ngModelOptions]="{standalone: true}" (onblur)="onJsonChange()" height="500px" width="400px"  />

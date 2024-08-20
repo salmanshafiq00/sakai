@@ -52,6 +52,9 @@ import { TreeComponent } from './components/tree/tree.component';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { TreeSelectComponent } from './components/tree-select/tree-select.component';
 import { ToastService } from './services/toast.service';
+import { InputFileAdvComponent } from './components/input-file-advanced/input-file-adv.component';
+import { SelectButtonModule } from 'primeng/selectbutton';
+import { InputSelectButtonComponent } from './components/input-select-button/input-select-button.component';
 
 
 @NgModule({
@@ -75,12 +78,14 @@ import { ToastService } from './services/toast.service';
 		InputMultiselectComponent,
 		InputColorComponent,
 		InputFileComponent,
+		InputFileAdvComponent,
 		InputMaskComponent,
 		InputPasswordComponent,
 		InputEditorComponent,
 		ButtonComponent,
 		TreeComponent,
-		TreeSelectComponent
+		TreeSelectComponent,
+		InputSelectButtonComponent
 	],
 	imports: [
 		CommonModule,
@@ -111,7 +116,8 @@ import { ToastService } from './services/toast.service';
 		InputMaskModule,
 		PasswordModule,
 		TreeModule ,
-		TreeSelectModule 
+		TreeSelectModule,
+		SelectButtonModule 
 	],
 	providers: [
 		MessageService,
@@ -140,12 +146,14 @@ import { ToastService } from './services/toast.service';
 		InputMultiselectComponent,
 		InputColorComponent,
 		InputFileComponent,
+		InputFileAdvComponent,
 		InputMaskComponent,
 		InputPasswordComponent,
 		InputEditorComponent,
 		ButtonComponent,
 		TreeComponent,
-		TreeSelectComponent
+		TreeSelectComponent,
+		InputSelectButtonComponent
 		
 	]
 })

@@ -4,7 +4,7 @@ import { AppUserModel, UsersClient } from 'src/app/modules/generated-clients/api
 import { ToastService } from 'src/app/shared/services/toast.service';
 
 @Component({
-  selector: 'app-user-basic',
+  selector: 'user-user-basic',
   templateUrl: './user-basic.component.html',
   styleUrl: './user-basic.component.scss',
   providers: [UsersClient]

@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { LayoutService } from '../../../service/app.layout.service';
 import { AppMenusClient, SidebarMenuModel } from 'src/app/modules/generated-clients/api-service';
 import { AppMenuService } from '../../app-menu.service';
+import { PermissionService } from 'src/app/core/auth/services/permission.service';
 
 @Component({
     selector: 'app-menu',
@@ -17,6 +18,7 @@ export class AppMenuComponent implements OnInit {
     constructor(public layoutService: LayoutService,
         private appMenuClient: AppMenusClient,
         private appMenuService: AppMenuService,
+        private permissionService: PermissionService,
     ) { }
 
     ngOnInit() {
@@ -33,6 +35,8 @@ export class AppMenuComponent implements OnInit {
                 console.log(error);
             }
         });
+
+        this.permissionService.loadPermissions();
 
         this.model = [
             {

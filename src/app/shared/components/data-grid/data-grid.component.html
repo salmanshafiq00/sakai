@@ -9,6 +9,7 @@
                     <div >
                         <ng-container *ngFor="let action of leftToolbarActions">
                             <app-button 
+                                *ngIf="permit.hasPermission(action.permissions)"
                                 [id]="action.actionName + '_btn'"
                                 [label]="action.caption" 
                                 class="mr-2" 
@@ -232,6 +233,7 @@
                             <div class="flex" *ngIf="appPageLayout?.rowActionType === 'button'">
                                 <ng-container *ngFor="let action of rowActions">
                                 <app-button 
+                                    *ngIf="permit.hasPermission(action.permissions)"
                                     [icon]="action.icon" 
                                     [severity]="action.severity" 
                                     [rounded]="true" 
