@@ -80,8 +80,8 @@
                 [lazyLoadOnInit]="false"
                 [lazy]="lazyLoading"
                 [resizableColumns]="resizableColumns"
+                columnResizeMode="expand" 
                 [styleClass]="styleClass"
-                styleClass="p-datatable-striped" 
                 (onLazyLoad)="loadData($event)">
 
                 <ng-template pTemplate="caption">
@@ -126,7 +126,7 @@
                             <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                         </th> -->
                         <ng-container *ngFor="let col of columns">
-                            <th [pSortableColumn]="col.isSortable ? col.field : ''" >
+                            <th [pSortableColumn]="col.isSortable ? col.field : ''" pResizableColumn >
                             
                             <!-- FieldType.string -->
                             <p-columnFilter 
