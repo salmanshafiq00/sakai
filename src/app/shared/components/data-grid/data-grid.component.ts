@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { FilterMatchMode, FilterMetadata, FilterService } from 'primeng/api';
 import { Table, TableLazyLoadEvent } from 'primeng/table';
 import { timer } from 'rxjs';
@@ -92,6 +92,9 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() pageTitle: string = null;
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
+  @Input() resizableColumns: boolean = true;
+  @Input() styleClass: string = null;
+  @Output() handleToolbarAction: EventEmitter<AppPageActionModel> = new EventEmitter<AppPageActionModel>();
 
   get hasSelectOrDateType(): boolean {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
@@ -122,6 +125,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
         next: (data: AppPageModel) => {
           if (data) {
             this.appPageModel = data;
+            
             this.appPageLayout = JSON.parse(data.appPageLayout);
 
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
@@ -256,11 +260,13 @@ export class DataGridComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleAction(funcName: string) {
-    if (funcName === 'new') {
+  handleAction(action: AppPageActionModel) {
+    if (action.actionName === 'new') {
       this.openDialog(this.emptyGuid)
-    } else if (funcName === 'refresh') {
+    } else if (action.actionName === 'refresh') {
       this.refreshGrid()
+    } else {
+      this.handleToolbarAction.emit(action)
     }
   }
 
