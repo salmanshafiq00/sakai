@@ -55,6 +55,7 @@ import { ToastService } from './services/toast.service';
 import { InputFileAdvComponent } from './components/input-file-advanced/input-file-adv.component';
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputSelectButtonComponent } from './components/input-select-button/input-select-button.component';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 
 
 @NgModule({
@@ -117,7 +118,8 @@ import { InputSelectButtonComponent } from './components/input-select-button/inp
 		PasswordModule,
 		TreeModule ,
 		TreeSelectModule,
-		SelectButtonModule 
+		SelectButtonModule,
+		OverlayPanelModule
 	],
 	providers: [
 		MessageService,

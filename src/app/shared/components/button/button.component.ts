@@ -7,6 +7,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class ButtonComponent {
   @Input() label: string | null = null;
+  @Input() showLabel: boolean = true;
   @Input() icon: string | null = null;
   @Input() iconPos: 'left' | 'right' | 'top' | 'bottom' = 'left';
   @Input() type: string = 'button';

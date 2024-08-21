@@ -107,6 +107,8 @@ export class AppPageDetailComponent implements OnInit {
           this.item.appPageFields = this.pageLayout.appPageFields || [];
           this.item.toolbarActions = this.pageLayout.toolbarActions || [];
           this.item.rowActions = this.pageLayout.rowActions || [];
+          this.item.showRowActionCol = this.pageLayout.showRowActionCol;
+          this.item.rowActionType = this.pageLayout.rowActionType;
           this.item.appPageFields?.forEach(() => {
             this.addAppPageField();
           });
@@ -253,7 +255,7 @@ export class AppPageDetailComponent implements OnInit {
       sortOrder: [sortOrder],
       isVisible: [true],
       showCaption: [true],
-      ParentId: [null],
+      params: [''],
       showProperties: [true]
     });
   }
@@ -275,7 +277,7 @@ export class AppPageDetailComponent implements OnInit {
         sortOrder: [1],
         isVisible: [true],
         showCaption: [true],
-        ParentId: [null],
+        params: [''],
         showProperties: [false]
       }),
       this.fb.group({
@@ -291,7 +293,7 @@ export class AppPageDetailComponent implements OnInit {
         sortOrder: [2],
         isVisible: [true],
         showCaption: [true],
-        ParentId: [null],
+        params: [''],
         showProperties: [false]
       })
     ]);
@@ -323,6 +325,7 @@ export class AppPageDetailComponent implements OnInit {
       icon: [null],
       permissions: [''],
       navigationUrl: [''],
+      params: [''],
       severity: ['primary'],
       sortOrder: [sortOrder],
       isVisible: [true],
@@ -372,8 +375,6 @@ export class AppPageDetailComponent implements OnInit {
       showProperties: [true],
     });
   }
-
-
 
   private newGuid() {
     return 'xxx4x'.replace(/[xy]/g, function (c) {

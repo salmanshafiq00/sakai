@@ -110,6 +110,9 @@
                 <app-input-text formControlName="navigationUrl" label="Navigation Url" />
               </div>
               <div class="field col-4">
+                <app-input-text formControlName="params" label="Params" />
+              </div>
+              <div class="field col-4">
                 <app-input-select [options]="alignSelectList" formControlName="position" label="Position" />
               </div>
               <div class="field col-4">
@@ -169,7 +172,7 @@
                 <span>Caption: {{ field.value.caption }}</span>
               </div>
               <div class="col-4">
-                <span>Function: {{ field.value.permissions }}</span>
+                <span>Permissions: {{ field.value.permissions }}</span>
               </div>
             </div>
             <!-- Show when click on down chevron icon -->
@@ -222,6 +225,9 @@
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="navigationUrl" label="Navigation Url" />
+              </div>
+              <div class="field col-4">
+                <app-input-text formControlName="params" label="Params" />
               </div>
               <div class="field col-4">
                 <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true" buttonLayout="horizontal"

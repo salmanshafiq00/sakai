@@ -12,6 +12,7 @@ import { CustomDialogService } from '../../services/custom-dialog.service';
 import { AppDataGridModel } from '../../models/app-data-grid.model';
 import { AppPageDetailComponent } from 'src/app/modules/admin/components/app-page-detail/app-page-detail.component';
 import { PermissionService } from 'src/app/core/auth/services/permission.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-data-grid',
@@ -103,6 +104,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   private datePipe = inject(DatePipe);
   private customDialogService = inject(CustomDialogService);
   private appPagesClient = inject(AppPagesClient);
+  private router: Router = inject(Router);
   public permit = inject(PermissionService);
 
   ngOnInit() {
@@ -268,6 +270,21 @@ export class DataGridComponent implements OnInit, OnDestroy {
     } else if (funcName === 'delete') {
       this.delete(item)
     }
+  }
+
+  handleRowRouterLinkAction(routerLink: string, item: any, params: string = '') {
+    let paramsName = [];
+    if(params){
+       paramsName = params?.split(',');
+    }
+    if (paramsName && paramsName.length > 0) {
+      paramsName.forEach(param => {
+        const paramValue = item[param.trim()];
+        routerLink += `/${paramValue}`;
+      });
+    }
+    console.log(routerLink)
+    this.router.navigate([routerLink])
   }
 
   private onGlobalFilter(searchText: string, matchMode: string = 'contains'): void {
@@ -452,33 +469,33 @@ export class DataGridComponent implements OnInit, OnDestroy {
   exportPdf() {
     const headers = this.dataFields.filter(col => col.isVisible).map(col => col.header);
     const fields = this.dataFields.filter(col => col.isVisible).map(col => col.field);
-  
+
     const data = this.items.map(row => {
       return fields.map(field => row[field]);
     });
-  
+
     import("jspdf").then(jsPDF => {
       import("jspdf-autotable").then(autoTable => {
         const doc = new jsPDF.default();
-  
+
         // Page Title
         doc.setFontSize(16);
         const pageWidth = doc.internal.pageSize.getWidth();
         const textWidth = doc.getTextWidth(this.pageTitle);
         const textX = (pageWidth - textWidth) / 2;
         doc.text(this.pageTitle, textX, 10);
-    
+
         // Page Grid
         autoTable.default(doc, {
           head: [headers],
           body: data
         });
-  
+
         doc.save(`${this.pageTitle}.pdf`);
-        });
+      });
     });
   }
-  
+
 
 }
 

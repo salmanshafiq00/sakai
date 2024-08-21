@@ -4856,6 +4856,8 @@ export class AppPageModel implements IAppPageModel {
     subTitle?: string;
     componentName?: string;
     appPageLayout?: string;
+    showRowActionCol?: boolean;
+    rowActionType?: string | undefined;
     appPageFields?: AppPageFieldModel[];
     toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
@@ -4877,6 +4879,8 @@ export class AppPageModel implements IAppPageModel {
             this.subTitle = _data["subTitle"];
             this.componentName = _data["componentName"];
             this.appPageLayout = _data["appPageLayout"];
+            this.showRowActionCol = _data["showRowActionCol"];
+            this.rowActionType = _data["rowActionType"];
             if (Array.isArray(_data["appPageFields"])) {
                 this.appPageFields = [] as any;
                 for (let item of _data["appPageFields"])
@@ -4916,6 +4920,8 @@ export class AppPageModel implements IAppPageModel {
         data["subTitle"] = this.subTitle;
         data["componentName"] = this.componentName;
         data["appPageLayout"] = this.appPageLayout;
+        data["showRowActionCol"] = this.showRowActionCol;
+        data["rowActionType"] = this.rowActionType;
         if (Array.isArray(this.appPageFields)) {
             data["appPageFields"] = [];
             for (let item of this.appPageFields)
@@ -4948,6 +4954,8 @@ export interface IAppPageModel {
     subTitle?: string;
     componentName?: string;
     appPageLayout?: string;
+    showRowActionCol?: boolean;
+    rowActionType?: string | undefined;
     appPageFields?: AppPageFieldModel[];
     toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
@@ -5073,9 +5081,11 @@ export class AppPageActionModel implements IAppPageActionModel {
     severity?: string;
     permissions?: string;
     caption?: string;
+    showCaption?: boolean;
     icon?: string;
     functionName?: string;
     navigationUrl?: string;
+    params?: string;
     position?: string;
     parentId?: string | undefined;
     sortOrder?: number;
@@ -5098,9 +5108,11 @@ export class AppPageActionModel implements IAppPageActionModel {
             this.severity = _data["severity"];
             this.permissions = _data["permissions"];
             this.caption = _data["caption"];
+            this.showCaption = _data["showCaption"];
             this.icon = _data["icon"];
             this.functionName = _data["functionName"];
             this.navigationUrl = _data["navigationUrl"];
+            this.params = _data["params"];
             this.position = _data["position"];
             this.parentId = _data["parentId"];
             this.sortOrder = _data["sortOrder"];
@@ -5123,9 +5135,11 @@ export class AppPageActionModel implements IAppPageActionModel {
         data["severity"] = this.severity;
         data["permissions"] = this.permissions;
         data["caption"] = this.caption;
+        data["showCaption"] = this.showCaption;
         data["icon"] = this.icon;
         data["functionName"] = this.functionName;
         data["navigationUrl"] = this.navigationUrl;
+        data["params"] = this.params;
         data["position"] = this.position;
         data["parentId"] = this.parentId;
         data["sortOrder"] = this.sortOrder;
@@ -5141,9 +5155,11 @@ export interface IAppPageActionModel {
     severity?: string;
     permissions?: string;
     caption?: string;
+    showCaption?: boolean;
     icon?: string;
     functionName?: string;
     navigationUrl?: string;
+    params?: string;
     position?: string;
     parentId?: string | undefined;
     sortOrder?: number;

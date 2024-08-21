@@ -232,15 +232,42 @@
                         <td *ngIf="appPageLayout?.showRowActionCol === true">
                             <div class="flex" *ngIf="appPageLayout?.rowActionType === 'button'">
                                 <ng-container *ngFor="let action of rowActions">
-                                <app-button 
-                                    *ngIf="permit.hasPermission(action.permissions)"
-                                    [icon]="action.icon" 
-                                    [severity]="action.severity" 
-                                    [rounded]="true" 
-                                    size="small" 
-                                    class=" mr-2" 
-                                    (onClick)="handleRowAction(action.actionName, items)" />
+                                    <app-button 
+                                        *ngIf="permit.hasPermission(action.permissions)"
+                                        [icon]="action.icon" 
+                                        [severity]="action.severity" 
+                                        [rounded]="true" 
+                                        [label]="action.caption"
+                                        [showLabel]="action.showCaption"
+                                        size="small" 
+                                        class=" mr-2" 
+                                        (onClick)="handleRowAction(action.actionName, items)" />
                                 </ng-container>
+                            </div>
+                            <div *ngIf="appPageLayout?.rowActionType === 'dropdown'">
+                                <app-button styleClass="p-link layout-topbar-button" size="small" [rounded]="true" [outlined]="true" icon="pi pi-ellipsis-v" (onClick)="profilePanel.toggle($event)" />
+                                <p-overlayPanel #profilePanel styleClass="profile-panel">
+                                    <div class=" menu-drawer p-menu">
+                                        <ul role="menu" class="p-menu-list p-reset">
+                                            <ng-container *ngFor="let action of rowActions">
+                                                <li  class="p-menuitem">
+                                                    <div class="p-menuitem-content" *ngIf="action.navigationUrl" (click)="handleRowRouterLinkAction(action.navigationUrl, items, action.params)">
+                                                        <a class="p-menuitem-link">
+                                                            <span [class]="action.icon"></span>
+                                                            <span class="ml-2">{{action.caption}}</span>
+                                                        </a>
+                                                    </div>
+                                                    <div class="p-menuitem-content" *ngIf="!action.navigationUrl" (click)="handleRowAction(action.actionName, items)">
+                                                        <a pRipple  class="p-menuitem-link">
+                                                            <span [class]="action.icon"></span>
+                                                            <span class="ml-2">{{action.caption}}</span>
+                                                        </a>
+                                                    </div>
+                                                </li>
+                                            </ng-container>
+                                        </ul>
+                                    </div>
+                                </p-overlayPanel>
                             </div>
                         </td>
 

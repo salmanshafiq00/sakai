@@ -15,3 +15,26 @@
     margin-top: 1rem;
   }
 }
+
+::ng-deep{
+  .profile-panel.p-overlaypanel .p-overlaypanel-content {
+    padding: .2rem;
+  }
+
+  .menu-drawer.p-menu{
+    padding: 0;
+    background: none;
+    color: rgba(255, 255, 255, 0.87);
+    border: none;
+    width: 100%;
+    min-width: 10rem;
+  }
+
+  .menu-drawer ul li a{
+    padding: 0 0.75rem;
+  }
+
+  .menu-drawer ul li .p-menuitem-content{
+    padding: 0.5rem 0;
+  }
+}
