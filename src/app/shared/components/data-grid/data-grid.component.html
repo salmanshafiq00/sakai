@@ -8,15 +8,31 @@
                 <ng-template pTemplate="left">
                     <div >
                         <ng-container *ngFor="let action of leftToolbarActions">
+                            <span>
                             <app-button 
-                                *ngIf="permit.hasPermission(action.permissions)"
+                                *ngIf="permit.hasPermission(action.permissions) && action.actionType !== 'multi-select' "
                                 [id]="action.actionName + '_btn'"
-                                [label]="action.caption" 
+                                [label]="action.showCaption ? action.caption : null" 
                                 class="mr-2" 
                                 [size]="'small'"
                                 [icon]="action.icon"
                                 [severity]="action.severity"
-                                (onClick)="handleAction(action)" />
+                                [outlined]="true"
+                                (onClick)="handleToolbarActions(action)" />
+                            </span>
+                            <span>
+                            <app-button 
+                                *ngIf="permit.hasPermission(action.permissions) && action.actionType === 'multi-select'"
+                                [id]="action.actionName + '_btn'"
+                                [label]="action.showCaption ? action.caption : null" 
+                                class="mr-2" 
+                                [size]="'small'"
+                                [icon]="action.icon"
+                                [severity]="action.severity"
+                                [outlined]="true"
+                                [disabled]="!selectedRows || !selectedRows.length"
+                                (onClick)="handleToolbarActions(action)" />
+                            </span>
                         </ng-container>                   
                         <!-- <p-button 
                             pRipple
@@ -29,17 +45,6 @@
                             [loading]="loading" 
                             [disabled]="loading"
                             (click)="refreshGrid()">
-                        </p-button>
-                        <p-button 
-                            pRipple 
-                            [raised]="true"
-                            severity="danger" 
-                            label="Delete" 
-                            icon="pi pi-trash" 
-                            class="mr-2" 
-                            styleClass="p-button-sm"
-                            (click)="deleteSelectedItems()" 
-                            [disabled]="!selectedItems || !selectedItems.length">
                         </p-button> -->
                     </div>
                 </ng-template>
@@ -71,7 +76,7 @@
                 [showCurrentPageReport]="showCurrentPageReport" 
                 [currentPageReportTemplate]="currentPageReportTemplate" 
                 [totalRecords]="totalRecords"
-                [(selection)]="selectedItems" 
+                [(selection)]="selectedRows"  
                 [selectionMode]="selectionMode" 
                 [rowHover]="rowHover" 
                 [dataKey]="dataKey"
@@ -115,16 +120,16 @@
                                 [outlined]="true" 
                                 icon="pi pi-filter-slash" 
                                 (click)="clear()" />
-                            <!-- <i class="pi pi-filter-slash ml-2"  (click)="clear(dt)"></i> -->
                         </span>
                     </div>
                 </ng-template>
 
             <ng-template pTemplate="header" let-columns>
                     <tr>
-                        <!-- <th style="width: 3rem" *ngIf="!hasDropdownOrDateType">
-                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                        </th> -->
+                        <th style="width: 3rem" *ngIf="appPageLayout?.showSelectCheckbox">
+                            <p-tableHeaderCheckbox />
+                        </th>
+
                         <ng-container *ngFor="let col of columns">
                             <th [pSortableColumn]="col.isSortable ? col.field : ''" pResizableColumn >
                             
@@ -220,9 +225,9 @@
                 </ng-template>
                 <ng-template pTemplate="body" let-items let-columns="columns">
                     <tr >
-                        <!-- <td >
-                            <p-tableCheckbox [value]="items"></p-tableCheckbox>
-                        </td> -->
+                        <td *ngIf="appPageLayout?.showSelectCheckbox">
+                            <p-tableCheckbox [value]="items" />
+                        </td>
                         <ng-container *ngFor="let col of columns">
                             <td *ngIf="col.fieldType !== FieldType.date">
                                 {{items[col.field]}}
@@ -241,9 +246,10 @@
                                         [rounded]="true" 
                                         [label]="action.caption"
                                         [showLabel]="action.showCaption"
+                                        [outlined]="true"
                                         size="small" 
                                         class=" mr-2" 
-                                        (onClick)="handleRowAction(action.actionName, items)" />
+                                        (onClick)="handleRowAction(action, items)" />
                                 </ng-container>
                             </div>
                             <div *ngIf="appPageLayout?.rowActionType === 'dropdown'">
@@ -259,7 +265,7 @@
                                                             <span class="ml-2">{{action.caption}}</span>
                                                         </a>
                                                     </div>
-                                                    <div class="p-menuitem-content" *ngIf="!action.navigationUrl" (click)="handleRowAction(action.actionName, items)">
+                                                    <div class="p-menuitem-content" *ngIf="!action.navigationUrl" (click)="handleRowAction(action, items)">
                                                         <a pRipple  class="p-menuitem-link">
                                                             <span [class]="action.icon"></span>
                                                             <span class="ml-2">{{action.caption}}</span>
@@ -288,8 +294,6 @@
 
             </p-table>
         </div>
-
-
     </div>
 </div>
 

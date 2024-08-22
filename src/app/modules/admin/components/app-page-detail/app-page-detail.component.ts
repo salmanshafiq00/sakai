@@ -26,6 +26,7 @@ export class AppPageDetailComponent implements OnInit {
   pageLayout: any = {
     'toolbarActions': [],
     'showRowActionCol': true,
+    'showSelectCheckbox': false,
     'rowActionType': 'button',
     'rowActions': [],
     'appPageFields': [],
@@ -108,6 +109,7 @@ export class AppPageDetailComponent implements OnInit {
           this.item.toolbarActions = this.pageLayout.toolbarActions || [];
           this.item.rowActions = this.pageLayout.rowActions || [];
           this.item.showRowActionCol = this.pageLayout.showRowActionCol;
+          this.item.showSelectCheckbox = this.pageLayout.showSelectCheckbox;
           this.item.rowActionType = this.pageLayout.rowActionType;
           this.item.appPageFields?.forEach(() => {
             this.addAppPageField();
@@ -137,6 +139,7 @@ export class AppPageDetailComponent implements OnInit {
     const pageLayout = {
       toolbarActions: this.form.get('toolbarActions').value,
       showRowActionCol: this.form.get('showRowActionCol').value,
+      showSelectCheckbox: this.form.get('showSelectCheckbox').value,
       rowActionType: this.form.get('rowActionType').value,
       rowActions: this.form.get('rowActions').value,
       appPageFields: this.form.get('appPageFields').value,
@@ -161,6 +164,7 @@ export class AppPageDetailComponent implements OnInit {
       appPageLayout: [''],
       toolbarActions: this.fb.array([]),
       showRowActionCol: [true],
+      showSelectCheckbox: [false],
       rowActionType: ['button'],
       rowActions: this.fb.array([]),
       appPageFields: this.fb.array([])
@@ -217,6 +221,7 @@ export class AppPageDetailComponent implements OnInit {
     this.form.patchValue({
       toolbarActions: jsonData.toolbarActions || [],
       showRowActionCol: jsonData.showRowActionCol,
+      showSelectCheckbox: jsonData.showSelectCheckbox,
       rowActionType: jsonData.rowActionType,
       rowActions: jsonData.rowActions || [],
       appPageFields: jsonData.appPageFields || []
@@ -417,6 +422,7 @@ export class AppPageDetailComponent implements OnInit {
 
   actionTypeSelectList = [
     { 'id': 'button', 'name': 'Button' },
+    { 'id': 'multi-select', 'name': 'Multi-Select' },
     { 'id': 'dropdown', 'name': 'Dropdown' },
     { 'id': 'upload', 'name': 'Upload' }
   ];

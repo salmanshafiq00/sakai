@@ -21,7 +21,7 @@ export class PermissionService {
     });
   }
 
-  hasPermission(permission: string): boolean {
+  hasPermission(permission: string = ''): boolean {
     if(permission.trim() === '') return true;
     return this.permissions.has(permission.trim());
   }

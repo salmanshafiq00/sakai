@@ -75,7 +75,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   optionsDataSources = {};
 
   items: any[] = [];
-  selectedItems: any[] = [];
+  _selectedRows: any[] = [];
 
   // Dropdwon Selected value
   selectedParent: any;
@@ -94,7 +94,19 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() dialogTitle: string = 'Entity Detail';
   @Input() resizableColumns: boolean = true;
   @Input() styleClass: string = null;
+
   @Output() handleToolbarAction: EventEmitter<AppPageActionModel> = new EventEmitter<AppPageActionModel>();
+  @Output() handleGridRowAction: EventEmitter<{ action: AppPageActionModel, data: any }> = new EventEmitter<{ action: AppPageActionModel, data: any }>();
+
+  @Input() get selectedRows(): any[]{
+    return this._selectedRows;
+  }
+  set selectedRows(value: any[]){
+    this._selectedRows = value;
+    this.selectedRowsChange.emit(this._selectedRows)
+  }
+
+  @Output() selectedRowsChange = new EventEmitter<any[]>();
 
   get hasSelectOrDateType(): boolean {
     return this.dataFields.some(col => col.fieldType === FieldType.select || col.fieldType === FieldType.multiSelect);
@@ -125,7 +137,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
         next: (data: AppPageModel) => {
           if (data) {
             this.appPageModel = data;
-            
+
             this.appPageLayout = JSON.parse(data.appPageLayout);
 
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
@@ -260,28 +272,45 @@ export class DataGridComponent implements OnInit, OnDestroy {
     }
   }
 
-  handleAction(action: AppPageActionModel) {
+  // handleAction(action: AppPageActionModel) {
+  handleToolbarActions(action: AppPageActionModel) {
     if (action.actionName === 'new') {
       this.openDialog(this.emptyGuid)
     } else if (action.actionName === 'refresh') {
       this.refreshGrid()
-    } else {
+    } else if (action.actionName === 'multiple-delete') {
+      this.deleteSelectedItems();
+    }
+    // else if(action.actionType === 'multi-select') {
+    //   this.handleToolbarAction.emit(action)
+    // } 
+    else {
       this.handleToolbarAction.emit(action)
     }
   }
 
-  handleRowAction(funcName: string, item: any) {
-    if (funcName === 'edit') {
+  // onRowSelect(event: any) {
+  //   this.selectedRows.emit(this.selectedItems);
+  // }
+
+  // onRowUnselect(event: any) {
+  //   this.selectedRows.emit(this.selectedItems)
+  // };
+
+  handleRowAction(action: AppPageActionModel, item: any) {
+    if (action.actionName === 'edit') {
       this.edit(item)
-    } else if (funcName === 'delete') {
+    } else if (action.actionName === 'delete') {
       this.delete(item)
+    } else {
+      this.handleGridRowAction.emit({ action: action, data: item })
     }
   }
 
   handleRowRouterLinkAction(routerLink: string, item: any, params: string = '') {
     let paramsName = [];
-    if(params){
-       paramsName = params?.split(',');
+    if (params) {
+      paramsName = params?.split(',');
     }
     if (paramsName && paramsName.length > 0) {
       paramsName.forEach(param => {
@@ -428,6 +457,23 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
 
   deleteSelectedItems() {
+
+    const selectedIds = this.selectedRows.map(x => x.id);
+
+    this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
+      if (confirmed) {
+        this.entityClient.deleteMultiple(selectedIds).subscribe({
+          next: () => {
+            this.toast.deleted("Multiple Deleted!");
+            this.loadData({ first: this.first, rows: this.rows }, false)
+          },
+          error: (error) => {
+            this.toast.showError('Fail to delete.')
+          }
+        });
+      }
+    });
+
 
   }
 

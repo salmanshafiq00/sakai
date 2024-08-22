@@ -4,4 +4,6 @@
     [entityClient]="entityClient" 
     [detailComponent]="detailComponent" 
     [listComponent]="this"    
+    (handleToolbarAction)="onHandleToolbarAction($event)"
+    [(selectedRows)]="selectedRows"
 ></app-data-grid>

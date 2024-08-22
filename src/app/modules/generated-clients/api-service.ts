@@ -21,6 +21,7 @@ export interface ILookupDetailsClient {
     create(command: CreateLookupDetailCommand): Observable<string>;
     update(command: UpdateLookupDetailCommand): Observable<void>;
     delete(id: string): Observable<void>;
+    deleteMultiple(ids: string[]): Observable<void>;
 }
 
 @Injectable()
@@ -290,6 +291,62 @@ export class LookupDetailsClient implements ILookupDetailsClient {
     }
 
     protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    deleteMultiple(ids: string[]): Observable<void> {
+        let url_ = this.baseUrl + "/api/LookupDetails/DeleteMultiple";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(ids);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteMultiple(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteMultiple(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processDeleteMultiple(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -4858,6 +4915,7 @@ export class AppPageModel implements IAppPageModel {
     appPageLayout?: string;
     showRowActionCol?: boolean;
     rowActionType?: string | undefined;
+    showSelectCheckbox?: boolean;
     appPageFields?: AppPageFieldModel[];
     toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
@@ -4881,6 +4939,7 @@ export class AppPageModel implements IAppPageModel {
             this.appPageLayout = _data["appPageLayout"];
             this.showRowActionCol = _data["showRowActionCol"];
             this.rowActionType = _data["rowActionType"];
+            this.showSelectCheckbox = _data["showSelectCheckbox"];
             if (Array.isArray(_data["appPageFields"])) {
                 this.appPageFields = [] as any;
                 for (let item of _data["appPageFields"])
@@ -4922,6 +4981,7 @@ export class AppPageModel implements IAppPageModel {
         data["appPageLayout"] = this.appPageLayout;
         data["showRowActionCol"] = this.showRowActionCol;
         data["rowActionType"] = this.rowActionType;
+        data["showSelectCheckbox"] = this.showSelectCheckbox;
         if (Array.isArray(this.appPageFields)) {
             data["appPageFields"] = [];
             for (let item of this.appPageFields)
@@ -4956,6 +5016,7 @@ export interface IAppPageModel {
     appPageLayout?: string;
     showRowActionCol?: boolean;
     rowActionType?: string | undefined;
+    showSelectCheckbox?: boolean;
     appPageFields?: AppPageFieldModel[];
     toolbarActions?: AppPageActionModel[];
     rowActions?: AppPageActionModel[];
@@ -5076,8 +5137,8 @@ export interface IAppPageFieldModel {
 
 export class AppPageActionModel implements IAppPageActionModel {
     id?: string;
-    actionTypeId?: number | undefined;
     actionName?: string;
+    actionType?: string;
     severity?: string;
     permissions?: string;
     caption?: string;
@@ -5103,8 +5164,8 @@ export class AppPageActionModel implements IAppPageActionModel {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.actionTypeId = _data["actionTypeId"];
             this.actionName = _data["actionName"];
+            this.actionType = _data["actionType"];
             this.severity = _data["severity"];
             this.permissions = _data["permissions"];
             this.caption = _data["caption"];
@@ -5130,8 +5191,8 @@ export class AppPageActionModel implements IAppPageActionModel {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["actionTypeId"] = this.actionTypeId;
         data["actionName"] = this.actionName;
+        data["actionType"] = this.actionType;
         data["severity"] = this.severity;
         data["permissions"] = this.permissions;
         data["caption"] = this.caption;
@@ -5150,8 +5211,8 @@ export class AppPageActionModel implements IAppPageActionModel {
 
 export interface IAppPageActionModel {
     id?: string;
-    actionTypeId?: number | undefined;
     actionName?: string;
+    actionType?: string;
     severity?: string;
     permissions?: string;
     caption?: string;

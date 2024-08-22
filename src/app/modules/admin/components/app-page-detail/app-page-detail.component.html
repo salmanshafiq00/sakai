@@ -107,10 +107,10 @@
                 <app-input-text formControlName="permissions" label="Permission" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="navigationUrl" label="Navigation Url" />
+                <app-input-text formControlName="navigationUrl" label="Navigation Url" placeholder="e.g. /admin/users" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="params" label="Params" />
+                <app-input-text formControlName="params" label="Params" placeholder="e.g. id, name" />
               </div>
               <div class="field col-4">
                 <app-input-select [options]="alignSelectList" formControlName="position" label="Position" />
@@ -119,10 +119,10 @@
                 <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true" buttonLayout="horizontal"
                   [min]="0" />
               </div>
-              <div class="field col-4">
+              <div class="field col-4 md:mt-5">
                 <app-input-switch formControlName="isVisible" label="Visible" />
               </div>
-              <div class="field col-4">
+              <div class="field col-4 md:mt-5">
                 <app-input-switch formControlName="showCaption" label="Show Caption" />
               </div>
             </div>
@@ -142,8 +142,11 @@
           </div>
         </div>
         <div class="grid ">
-          <div class="field col-6 md:mt-4">
-            <app-input-switch formControlName="showRowActionCol" label="Show Row Action" />
+          <div class="field col-4 md:mt-4">
+            <app-input-switch formControlName="showRowActionCol" label="Row Action" />
+          </div>
+          <div class="field col-4 md:mt-4">
+            <app-input-switch formControlName="showSelectCheckbox" label="SelectCheckbox" />
           </div>
           <div class="field col-4">
             <app-input-select [options]="actionTypeSelectList" formControlName="rowActionType" label="Row Action Type" />
@@ -224,19 +227,19 @@
                 <app-input-text formControlName="permissions" label="Permissions" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="navigationUrl" label="Navigation Url" />
+                <app-input-text formControlName="navigationUrl" label="Navigation Url" placeholder="e.g. /admin/users" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="params" label="Params" />
+                <app-input-text formControlName="params" label="Params" placeholder="e.g. id, name" />
               </div>
               <div class="field col-4">
                 <app-input-number formControlName="sortOrder" label="Sort Order" [textRight]="true" [showButtons]="true" buttonLayout="horizontal"
                   [min]="0" />
               </div>
-              <div class="field col-4">
+              <div class="field col-4 md:mt-5">
                 <app-input-switch formControlName="isVisible" label="Visible" />
               </div>
-              <div class="field col-4">
+              <div class="field col-4 md:mt-5">
                 <app-input-switch formControlName="showCaption" label="Show Caption" />
               </div>
             </div>
