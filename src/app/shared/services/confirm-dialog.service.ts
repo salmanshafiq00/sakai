@@ -5,22 +5,24 @@ import { Observable, Subject } from "rxjs";
 @Injectable()
 export class ConfirmDialogService{
 
-  private confirmSubject = new Subject<boolean>();
   private confirmService: ConfirmationService = inject(ConfirmationService);
 
   confirm(message: string, header: string = 'Confirm', icon: string = 'pi pi-question'): Observable<boolean>{
+    const confirmSubject = new Subject<boolean>();
     this.confirmService.confirm({
       message: message,
       header: header,
       icon: icon,
       accept: () => {
-        this.confirmSubject.next(true);
+        confirmSubject.next(true);
+        confirmSubject.complete();
       },
       reject: () => {
-        this.confirmSubject.next(false);
+        confirmSubject.next(false);
+        confirmSubject.complete();
       }
     });
 
-    return this.confirmSubject.asObservable();
+    return confirmSubject.asObservable();
   }
 }

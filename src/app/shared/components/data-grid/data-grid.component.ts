@@ -114,12 +114,12 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
 
   private backoffService = inject(BackoffService);
-  private toast = inject(ToastService);
-  private confirmDialogService = inject(ConfirmDialogService);
-  private datePipe = inject(DatePipe);
-  private customDialogService = inject(CustomDialogService);
+  public toast = inject(ToastService);
+  public confirmDialogService = inject(ConfirmDialogService);
+  public datePipe = inject(DatePipe);
+  public customDialogService = inject(CustomDialogService);
   private appPagesClient = inject(AppPagesClient);
-  private router: Router = inject(Router);
+  public router: Router = inject(Router);
   public permit = inject(PermissionService);
 
   ngOnInit() {
@@ -457,9 +457,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
 
   deleteSelectedItems() {
-
     const selectedIds = this.selectedRows.map(x => x.id);
-
     this.confirmDialogService.confirm(`Do you want to delete this?`).subscribe((confirmed) => {
       if (confirmed) {
         this.entityClient.deleteMultiple(selectedIds).subscribe({
@@ -473,8 +471,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
         });
       }
     });
-
-
   }
 
 
