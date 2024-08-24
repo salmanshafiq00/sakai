@@ -57,6 +57,7 @@ import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputSelectButtonComponent } from './components/input-select-button/input-select-button.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 
 
 @NgModule({
@@ -87,7 +88,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
 		ButtonComponent,
 		TreeComponent,
 		TreeSelectComponent,
-		InputSelectButtonComponent
+		InputSelectButtonComponent,
+		ProgressBarComponent
 	],
 	imports: [
 		CommonModule,

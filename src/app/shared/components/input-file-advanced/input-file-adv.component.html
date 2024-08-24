@@ -35,7 +35,8 @@
                 {{ file.name }} - {{ file.size }} bytes
             </li>
         </ul>
-        <p-progressBar [value]="progressValue" *ngIf="showProgress && progressValue > 0" [showValue]="false" />
+        <!-- <p-progressBar [value]="progressValue" *ngIf="showProgress && progressValue > 0" [showValue]="false" /> -->
+        <app-progress-bar [value]="progressValue" *ngIf="showProgress && progressValue > 0" [showValue]="false" />
     </ng-template>
     </p-fileUpload>
 </div>

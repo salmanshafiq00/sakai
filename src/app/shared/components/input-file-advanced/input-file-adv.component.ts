@@ -2,6 +2,7 @@
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-input-file-adv',
@@ -50,7 +51,7 @@ export class InputFileAdvComponent {
   @Output() selectedFiles = new EventEmitter<any>();
   @Output() uploadError = new EventEmitter<any>();
 
-  private baseUrl = 'https://localhost:5001/api/users';
+  private baseUrl = `${environment.API_BASE_URL}/api/users`;
 
   progressValue: number = 0;
   uploadFiles: any[] = [];
