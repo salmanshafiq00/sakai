@@ -1,3 +1,4 @@
+import { HttpEvent } from '@angular/common/http';
 import { Component, Inject, OnInit } from '@angular/core';
 import {  Validators } from '@angular/forms';
 import { LookupDetailsClient } from 'src/app/modules/generated-clients/api-service';
@@ -12,6 +13,8 @@ import { ENTITY_CLIENT } from 'src/app/shared/injection-tokens/tokens';
 })
 export class LookupDetailDetailComponent extends BaseDetailComponent {
   
+  progressValue: number = 0;
+
   constructor(@Inject(ENTITY_CLIENT) entityClient: LookupDetailsClient){
     super(entityClient)
   }
@@ -28,4 +31,21 @@ export class LookupDetailDetailComponent extends BaseDetailComponent {
     });
   }
 
+  uploadedFiles: any[] = [];
+
+  onUpload(event: any) {
+    for (let file of event.files) {
+      this.uploadedFiles.push(file);
+    }
+  }
+
+  onProgress(event: any) {
+    this.progressValue = event.progres;
+  }
+
+}
+
+interface FileUploadEvent {
+  originalEvent: HttpEvent<any>;
+  files: File[];
 }

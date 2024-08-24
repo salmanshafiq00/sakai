@@ -1,22 +1,41 @@
 <div [ngClass]="{'p-hidden': hidden}" class="cust-field input-file">
-  <div class="flex gap-2">
-    <p-fileUpload 
-      #fileInput
+    <p-fileUpload
       [name]="name"
-      [(ngModel)]="files"
       [url]="url"
       [accept]="accept"
-      [disabled]="disabled"
       [multiple]="multiple"
+      [maxFileSize]="maxFileSize"
+      [fileLimit]="fileLimit"
       [chooseLabel]="chooseLabel"
       [chooseIcon]="chooseIcon"
-      [mode]="mode"
-      [fileLimit]="fileLimit"
-      [maxFileSize]="maxFileSize"
-      [customUpload]="customUpload"
+      [cancelLabel]="cancelLabel"
+      [cancelIcon]="cancelIcon"
+      [uploadLabel]="uploadLabel"
+      [uploadIcon]="uploadIcon"
       [showCancelButton]="showCancelButton"
-      (onUpload)="onFileUpload($event)"
-      (onSelect)="onFileUpload($event)"
-    />
-  </div>
+      [showUploadButton]="showUploadButton"
+      [mode]="mode"
+      [customUpload]="customUpload"
+      [disabled]="disabled"
+      [style]="style"
+      [styleClass]="styleClass"
+      [previewWidth]="previewWidth"
+      [uploadStyleClass]="uploadStyleClass"
+      [cancelStyleClass]="cancelStyleClass"
+      [removeStyleClass]="removeStyleClass"
+      [chooseStyleClass]="chooseStyleClass"
+      (onProgress)="onProgress($event)"
+      (onError)="onError($event)"
+      (onSelect)="onSelect($event)"
+      (uploadHandler)="onUploadHandler($event)"
+    >
+      <ng-template pTemplate="content">
+        <ul *ngIf="uploadFiles.length">
+            <li *ngFor="let file of uploadFiles">
+                {{ file.name }} - {{ file.size }} bytes
+            </li>
+        </ul>
+        <p-progressBar [value]="progressValue" *ngIf="showProgress && progressValue > 0" [showValue]="false" />
+    </ng-template>
+    </p-fileUpload>
 </div>

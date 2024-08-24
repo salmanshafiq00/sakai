@@ -2446,7 +2446,8 @@ export interface IUsersClient {
     get(id: string): Observable<AppUserModel>;
     getProfile(): Observable<AppUserModel>;
     create(command: CreateAppUserCommand): Observable<string>;
-    upload(file: FileParameter | null | undefined): Observable<string>;
+    upload(): Observable<FileResponse>;
+    removeFile(removeFileReq: RemoveFileRequest): Observable<FileResponse>;
     update(command: UpdateAppUserCommand): Observable<void>;
     updateBasic(command: UpdateAppUserBasicCommand): Observable<void>;
     addToRoles(command: AddToRolesCommand): Observable<void>;
@@ -2692,16 +2693,11 @@ export class UsersClient implements IUsersClient {
         return _observableOf(null as any);
     }
 
-    upload(file: FileParameter | null | undefined): Observable<string> {
+    upload(): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Users/Upload";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = new FormData();
-        if (file !== null && file !== undefined)
-            content_.append("file", file.data, file.fileName ? file.fileName : "file");
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             withCredentials: true,
@@ -2717,14 +2713,14 @@ export class UsersClient implements IUsersClient {
                 try {
                     return this.processUpload(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<string>;
+                    return _observableThrow(e) as any as Observable<FileResponse>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<string>;
+                return _observableThrow(response_) as any as Observable<FileResponse>;
         }));
     }
 
-    protected processUpload(response: HttpResponseBase): Observable<string> {
+    protected processUpload(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2735,8 +2731,7 @@ export class UsersClient implements IUsersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-                result200 = resultData200 !== undefined ? resultData200 : <any>null;
-    
+            result200 = FileResponse.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status === 400) {
@@ -2745,6 +2740,73 @@ export class UsersClient implements IUsersClient {
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result400 = ProblemDetails.fromJS(resultData400);
             return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    removeFile(removeFileReq: RemoveFileRequest): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Users/RemoveFile";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(removeFileReq);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processRemoveFile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processRemoveFile(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<FileResponse>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<FileResponse>;
+        }));
+    }
+
+    protected processRemoveFile(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = FileResponse.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 500) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result500: any = null;
+            let resultData500 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result500 = ProblemDetails.fromJS(resultData500);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result500);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
@@ -5987,6 +6049,78 @@ export interface ICreateAppUserCommand {
     roles?: string[] | undefined;
 }
 
+export class FileResponse implements IFileResponse {
+    path?: string;
+
+    constructor(data?: IFileResponse) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.path = _data["path"];
+        }
+    }
+
+    static fromJS(data: any): FileResponse {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileResponse();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["path"] = this.path;
+        return data;
+    }
+}
+
+export interface IFileResponse {
+    path?: string;
+}
+
+export class RemoveFileRequest implements IRemoveFileRequest {
+    relativePath?: string;
+
+    constructor(data?: IRemoveFileRequest) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.relativePath = _data["relativePath"];
+        }
+    }
+
+    static fromJS(data: any): RemoveFileRequest {
+        data = typeof data === 'object' ? data : {};
+        let result = new RemoveFileRequest();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["relativePath"] = this.relativePath;
+        return data;
+    }
+}
+
+export interface IRemoveFileRequest {
+    relativePath?: string;
+}
+
 export class UpdateAppUserCommand implements IUpdateAppUserCommand {
     id?: string;
     username?: string;
@@ -6167,11 +6301,6 @@ function formatDate(d: Date) {
     return d.getFullYear() + '-' + 
         (d.getMonth() < 9 ? ('0' + (d.getMonth()+1)) : (d.getMonth()+1)) + '-' +
         (d.getDate() < 10 ? ('0' + d.getDate()) : d.getDate());
-}
-
-export interface FileParameter {
-    data: any;
-    fileName: string;
 }
 
 export class LMSException extends Error {

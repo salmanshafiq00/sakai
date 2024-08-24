@@ -1,5 +1,7 @@
 // input-file.component.ts
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Observable, map } from 'rxjs';
 
 @Component({
   selector: 'app-input-file-adv',
@@ -12,43 +14,113 @@ export class InputFileAdvComponent {
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
   @Input() hidden: boolean = false;
-  @Input() autofocus: boolean = false;
-  @Input() inputId: string = null;
   @Input() accept: string = null;
   @Input() multiple: boolean = true;
   @Input() name: string = null;
   @Input() url: string = null;
+  @Input() auto: boolean = false;
   @Input() maxFileSize: number = 2000000; // two mb
   @Input() fileLimit: number = 2;
   @Input() maxWidth: number = null;
   @Input() maxHeight: number = null;
+  @Input() uploadLabel: string = 'Upload';
   @Input() chooseLabel: string = 'Browse';
-  @Input() chooseIcon: string = 'pi pi-upload';
+  @Input() chooseIcon: string = 'pi pi-plus';
   @Input() cancelLabel: string = null;
   @Input() cancelText: boolean = false;
   @Input() cancelIcon: string = 'pi pi-times';
+  @Input() uploadIcon: string = 'pi pi-upload';
   @Input() showCancelButton: boolean = true;
+  @Input() showUploadButton: boolean = true;
+  @Input() showProgress: boolean = true;
   @Input() mode: 'basic' | 'advanced' = 'advanced';
   @Input() customUpload: boolean = true;
   @Input() showTemplate: boolean = true;
+  @Input() style: any = null;
+  @Input() styleClass: string = null;
+  @Input() previewWidth: number = 50;
+  @Input() uploadStyleClass: string = null;
+  @Input() cancelStyleClass: string = null;
+  @Input() removeStyleClass: string = null;
+  @Input() chooseStyleClass: string = null; 
   @Input() invalidFileTypeMessageSummary: string = 'Invalid File Type';
   @Input() invalidFileSizeMessageSummary: string = 'File Max Size Exceeded';
   @Input() invalidFileLimitMessageSummary: string = 'File Limit Exceed';
-  @Output() onUploadedFiles: EventEmitter<any> = new EventEmitter<any>();
+  @Output() uploadedFiles = new EventEmitter<any>();
+  @Output() selectedFiles = new EventEmitter<any>();
+  @Output() uploadError = new EventEmitter<any>();
 
-  files: any[] = [];
+  private baseUrl = 'https://localhost:5001/api/users';
 
-  onClearFiles() {
-    this.files = [];
+  progressValue: number = 0;
+  uploadFiles: any[] = [];
+
+  private http = inject(HttpClient)
+
+  onUpload(event: any) {
+    this.uploadedFiles.emit(event.files);
   }
 
-  onFileUpload(event: any): void {
-    console.log(event)
-    // for (let file of event.currentFiles) {
-    //   this.files.push(file);
-    // }
-    this.onUploadedFiles.emit(this.files);
+  onProgress(event: any) {
+    this.progressValue = event.progres;
   }
+
+  onError(event: any){
+    this.uploadError.emit(event)
+  }
+
+  onSelect(event: any){
+    this.selectedFiles.emit(event);
+  }
+
+  onUploadHandler(event: any){
+
+    this.upload(event.files).subscribe({
+      next: (response) => {
+        if (response.status === 'success') {
+          console.log('File uploaded successfully, path:', response.body);
+          // Do something with the file path (e.g., display a message or update UI)
+        } else if (response.status === 'progress') {
+          this.progressValue = response.progress; // Update progress bar
+        }
+      },
+      error: (error) => {
+        console.error('Upload error:', error);
+      }
+    });
+
+  }
+
+  private upload(files: File[]): Observable<any> {
+    const formData = new FormData();
+    files.forEach(file => {
+      formData.append('files', file, file.name);
+    });
+    return this.http.post(`${this.baseUrl}/upload`, formData, {
+      reportProgress: true,
+      withCredentials: true,
+      observe: 'events'
+    }).pipe(
+      map((event: HttpEvent<any>) => {
+        switch (event.type) {
+          case HttpEventType.UploadProgress:
+            return {
+              status: 'progress',
+              progress: Math.round(100 * event.loaded / (event.total || 1))
+            };
+          case HttpEventType.Response:
+            return {
+              status: 'success',
+              body: event.body // The server should return the file path here.
+            };
+          default:
+            return { status: 'unknown' };
+        }
+      })
+    );
+  }
+  
+  
 }
 
 

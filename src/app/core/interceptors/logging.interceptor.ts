@@ -12,7 +12,7 @@ export class LoggingInterceptor implements HttpInterceptor {
     // Combine request headers and body into a single JSON object
     const requestLog = {
       headers: Object.fromEntries(req.headers.keys().map(key => [key, req.headers.get(key)])),
-      body: JSON.parse(req.body)
+      body: this.isFormData(req.body) ? '[FormData]' : req.body
     };
 
     // Log the combined request object
@@ -79,6 +79,10 @@ export class LoggingInterceptor implements HttpInterceptor {
     } else {
       return ''
     }
+  }
+
+  private isFormData(body: any): boolean {
+    return body instanceof FormData;
   }
 
 }

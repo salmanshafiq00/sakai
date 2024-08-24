@@ -8,12 +8,19 @@
   </div>
 </div> -->
 
-<div class="card mt-4 flex justify-content-center">
+<div class="mt-3">
   <p-fileUpload 
-      name="demo[]" 
-      (onUpload)="onUpload($event)" 
-      [multiple]="true" 
-      accept="image/*" 
+      name="files[]" 
+      method="post"       
+      [multiple]="false" 
+      [auto]="false"
+      [disabled]="false"
+      [withCredentials]="true"
+      [maxFileSize]="100000000"
+      [customUpload]="true"
+      (onProgress)="onProgress($event)"
+      (onError)="onError($event)"
+      (uploadHandler)="onUploadHandler($event)"
       maxFileSize="1000000">
           <ng-template pTemplate="content">
               <ul *ngIf="uploadedFiles.length">
@@ -21,9 +28,16 @@
                       {{ file.name }} - {{ file.size }} bytes
                   </li>
               </ul>
+              <p-progressBar [value]="progressValue" *ngIf="progressValue > 0" [showValue]="false" />
           </ng-template>
   </p-fileUpload>
 </div>
+
+<div class="mt-3">
+  <app-input-file-adv />
+</div>
+
+
 
 
 

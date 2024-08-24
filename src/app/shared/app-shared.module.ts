@@ -56,6 +56,7 @@ import { InputFileAdvComponent } from './components/input-file-advanced/input-fi
 import { SelectButtonModule } from 'primeng/selectbutton';
 import { InputSelectButtonComponent } from './components/input-select-button/input-select-button.component';
 import { OverlayPanelModule } from 'primeng/overlaypanel';
+import { ProgressBarModule } from 'primeng/progressbar';
 
 
 @NgModule({
@@ -119,7 +120,8 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
 		TreeModule ,
 		TreeSelectModule,
 		SelectButtonModule,
-		OverlayPanelModule
+		OverlayPanelModule,
+		ProgressBarModule 
 	],
 	providers: [
 		MessageService,
