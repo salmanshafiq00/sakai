@@ -23,16 +23,19 @@ interface LayoutState {
     providedIn: 'root',
 })
 export class LayoutService {
+
+    private readonly LOCAL_STORAGE_KEY = 'appConfig';
+
     _config: AppConfig = {
         ripple: false,
         inputStyle: 'outlined',
         menuMode: 'static',
         colorScheme: 'dark',
-        theme: 'bootstrap4-dark-blue',
+        theme: 'bootstrap4-light-blue',
         scale: 14,
     };
 
-    config = signal<AppConfig>(this._config);
+    config = signal<AppConfig>(this.loadConfigFromLocalStorage());
 
     state: LayoutState = {
         staticMenuDesktopInactive: false,
@@ -59,7 +62,17 @@ export class LayoutService {
             }
             this.changeScale(config.scale);
             this.onConfigUpdate();
+            this.saveConfigToLocalStorage(config);
         });
+    }
+
+    private loadConfigFromLocalStorage(): AppConfig {
+        const storedConfig = localStorage.getItem(this.LOCAL_STORAGE_KEY);
+        return storedConfig ? JSON.parse(storedConfig) : this._config;
+    }
+
+    private saveConfigToLocalStorage(config: AppConfig) {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(config));
     }
 
     updateStyle(config: AppConfig) {
@@ -121,6 +134,7 @@ export class LayoutService {
     changeTheme() {
         const config = this.config();
         const themeLink = <HTMLLinkElement>document.getElementById('theme-css');
+        console.log(themeLink)
         const themeLinkHref = themeLink.getAttribute('href')!;
         const newHref = themeLinkHref
             .split('/')
@@ -138,6 +152,7 @@ export class LayoutService {
     replaceThemeLink(href: string) {
         const id = 'theme-css';
         let themeLink = <HTMLLinkElement>document.getElementById(id);
+        console.log(themeLink)
         const cloneLinkElement = <HTMLLinkElement>themeLink.cloneNode(true);
 
         cloneLinkElement.setAttribute('href', href);

@@ -5,6 +5,7 @@ import { MenuService } from '../sidebar/components/menu/app.menu.service';
 @Component({
     selector: 'app-config',
     templateUrl: './app.config.component.html',
+    styleUrl: './app.config.component.scss',
 })
 export class AppConfigComponent {
     @Input() minimal: boolean = false;
