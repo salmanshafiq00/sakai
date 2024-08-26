@@ -93,7 +93,9 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
   @Input() resizableColumns: boolean = true;
-  @Input() styleClass: string = null;
+  @Input() columnResizeMode: 'fit' | 'expand' = 'expand';
+  @Input() styleClass: string = 'p-datatable-sm'; // 'p-datatable-sm p-datatable-gridlines'
+  // @Input() dataTableSize: string = 'p-datatable-sm';
 
   @Output() handleToolbarAction: EventEmitter<AppPageActionModel> = new EventEmitter<AppPageActionModel>();
   @Output() handleGridRowAction: EventEmitter<{ action: AppPageActionModel, data: any }> = new EventEmitter<{ action: AppPageActionModel, data: any }>();

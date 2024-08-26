@@ -10,6 +10,7 @@ import { DragDropModule } from 'primeng/dragdrop';
 import { TabMenuModule } from 'primeng/tabmenu';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
+import { SelectButtonModule } from 'primeng/selectbutton';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { FileUploadModule } from 'primeng/fileupload';
     DragDropModule,
     TabMenuModule,
     InputTextModule,
-    FileUploadModule
+    FileUploadModule,
+    SelectButtonModule
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

@@ -22,7 +22,6 @@ export class AppPageDetailComponent implements OnInit {
   activeView: 'design' | 'json' = 'design';
   jsonError: string | null = null;
   item: AppPageModel = new AppPageModel();
-
   pageLayout: any = {
     'toolbarActions': [],
     'showRowActionCol': true,
@@ -183,7 +182,7 @@ export class AppPageDetailComponent implements OnInit {
 
   showSelectedView(viewName: 'design' | 'json') {
     this.activeView = viewName;
-    if (viewName === 'json') {
+    if (this.activeView === 'json') {
       this.updateJsonFromForm();
     }
   }
