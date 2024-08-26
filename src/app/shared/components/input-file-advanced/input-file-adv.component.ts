@@ -3,6 +3,7 @@ import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { ToastService } from '../../services/toast.service';
 
 @Component({
   selector: 'app-input-file-adv',
@@ -11,6 +12,7 @@ import { environment } from 'src/environments/environment';
 })
 export class InputFileAdvComponent {
   @Input() label: string = '';
+  @Input() location: string = ''; // 'images' or 'images/student'
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
@@ -51,7 +53,9 @@ export class InputFileAdvComponent {
   @Output() selectedFiles = new EventEmitter<any>();
   @Output() uploadError = new EventEmitter<any>();
 
-  private baseUrl = `${environment.API_BASE_URL}/api/users`;
+  private baseUrl = `${environment.API_BASE_URL}/api/managefiles`;
+
+  private toast = inject(ToastService)
 
   progressValue: number = 0;
   uploadFiles: any[] = [];
@@ -79,14 +83,14 @@ export class InputFileAdvComponent {
     this.upload(event.files).subscribe({
       next: (response) => {
         if (response.status === 'success') {
-          console.log('File uploaded successfully, path:', response.body);
+          this.toast.showCustom(`Upload Successfully` ,'success', '', 'file-toast', 3000);
           // Do something with the file path (e.g., display a message or update UI)
         } else if (response.status === 'progress') {
           this.progressValue = response.progress; // Update progress bar
         }
       },
       error: (error) => {
-        console.error('Upload error:', error);
+        this.toast.showCustom(`Upload Failed` ,'error', '', 'file-toast', 3000);
       }
     });
 
@@ -97,6 +101,8 @@ export class InputFileAdvComponent {
     files.forEach(file => {
       formData.append('files', file, file.name);
     });
+    formData.append('location', this.location);
+
     return this.http.post(`${this.baseUrl}/upload`, formData, {
       reportProgress: true,
       withCredentials: true,

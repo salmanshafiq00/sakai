@@ -1,0 +1,17 @@
+.circle-image-container {
+  display: inline-block; /* Ensures the container wraps tightly around the image */
+}
+
+::ng-deep{
+  .circle-image-container .circle-image img {
+    width: 100px; /* Set the width to your desired size */
+    height: 100px; /* Set the height to be equal to width */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image covers the area without stretching */
+  }
+
+  .circle-image-container .circle-image-border img {
+    border: 2px solid #304562;
+    padding: 4px;
+  }
+}
