@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AppUserModel, UsersClient } from 'src/app/modules/generated-clients/api-service';
 import { ToastService } from 'src/app/shared/services/toast.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'user-user-basic',
@@ -13,6 +14,7 @@ export class UserBasicComponent {
 
   item: AppUserModel;
   form: FormGroup;
+  photoUrl: string;
 
   get f() {
     return this.form.controls;
@@ -53,6 +55,7 @@ export class UserBasicComponent {
     this.entityClient.getProfile().subscribe({
       next: (res: any) => {
         this.item = res;
+        this.photoUrl = environment.API_BASE_URL + this.item.photoUrl 
         this.form.patchValue({
           ...this.item
         });

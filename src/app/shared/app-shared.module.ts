@@ -58,6 +58,8 @@ import { InputSelectButtonComponent } from './components/input-select-button/inp
 import { OverlayPanelModule } from 'primeng/overlaypanel';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
+import { ImageModule } from 'primeng/image';
+import { ImageComponent } from './components/image/image.component';
 
 
 @NgModule({
@@ -89,7 +91,8 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
 		TreeComponent,
 		TreeSelectComponent,
 		InputSelectButtonComponent,
-		ProgressBarComponent
+		ProgressBarComponent,
+		ImageComponent
 	],
 	imports: [
 		CommonModule,
@@ -123,7 +126,8 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
 		TreeSelectModule,
 		SelectButtonModule,
 		OverlayPanelModule,
-		ProgressBarModule 
+		ProgressBarModule,
+		ImageModule  
 	],
 	providers: [
 		MessageService,
@@ -159,7 +163,8 @@ import { ProgressBarComponent } from './components/progress-bar/progress-bar.com
 		ButtonComponent,
 		TreeComponent,
 		TreeSelectComponent,
-		InputSelectButtonComponent
+		InputSelectButtonComponent,
+		ImageComponent
 		
 	]
 })

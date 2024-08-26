@@ -116,4 +116,15 @@ export class ToastService {
         life: this.lifeSpan
       });
   }
+
+  showCustom(message: string, severity?: string, title?: string, key?: string, life?: number) {
+    this.messageService.add(
+      {
+        severity: severity || 'success',
+        summary: title,
+        detail: message,
+        key: key, 
+        life: life || this.lifeSpan
+      });
+  }
 }
