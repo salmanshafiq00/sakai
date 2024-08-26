@@ -124,7 +124,8 @@
                     </div>
                 </ng-template>
 
-            <ng-template pTemplate="header" let-columns>
+                <!-- Table Header With Advanced Filter Start -->
+                <ng-template pTemplate="header" let-columns>
                     <tr>
                         <th style="width: 3rem" *ngIf="appPageLayout?.showSelectCheckbox">
                             <p-tableHeaderCheckbox />
@@ -220,9 +221,10 @@
                         </ng-container>
                     <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
                     </tr>
-
-
                 </ng-template>
+                <!-- Table Header With Advanced Filter End -->
+
+                <!-- Table Body Start -->
                 <ng-template pTemplate="body" let-items let-columns="columns">
                     <tr >
                         <td *ngIf="appPageLayout?.showSelectCheckbox">
