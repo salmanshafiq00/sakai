@@ -124,9 +124,112 @@
                     </div>
                 </ng-template>
 
-                <!-- Table Header With Advanced Filter Start -->
-                <ng-template pTemplate="header" let-columns>
-                    <tr>
+                 <ng-template pTemplate="header" let-columns>
+                    <!-- Table Header With Basic Filter Start -->
+                    <tr *ngIf="filterType === 'basic'">
+                        <ng-container *ngFor="let col of columns">
+                            <th [pSortableColumn]="col.isSortable ? col.field : ''" pResizableColumn >
+                                <p-sortIcon 
+                                    [hidden]="!col.isSortable" 
+                                    [field]="col.field">
+                                </p-sortIcon>
+                                {{col.header}}
+                            </th>
+                        </ng-container>
+                        <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
+                    </tr>
+                    <tr *ngIf="filterType === 'basic'">
+                        <th style="width: 3rem" *ngIf="appPageLayout?.showSelectCheckbox">
+                            <p-tableHeaderCheckbox />
+                        </th>
+
+                        <ng-container  *ngFor="let col of columns">
+                            <th>
+                                <!-- FieldType.string -->
+                                <p-columnFilter 
+                                    type="text" 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.string" 
+                                    [field]="col.field" 
+                                    [placeholder]="'Search by ' + col.header" 
+                                    [showClearButton]="false"  />
+
+                                <!-- FieldType.select -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.select" 
+                                    [field]="col.field" 
+                                    [showMenu]="true"
+                                    [matchMode]="FilterMatchModes.EQUALS"
+                                    [showMatchModes]="false"
+                                    [showOperator]="false"
+                                    [showAddButton]="false"
+                                    [showClearButton]="false"
+                                    >
+                                    <ng-template 
+                                        pTemplate="filter" 
+                                        let-value let-filter="filterCallback">
+                                        <p-dropdown 
+                                            [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
+                                            [options]="optionsDataSources[col?.dSName]" 
+                                            (onChange)="filter($event.value?.id)" 
+                                            placeholder="Select One"
+                                            [optionLabel]="'name'" 
+                                            appendTo="body"
+                                            [showClear]="true">
+                                                <ng-template let-option pTemplate="item">
+                                                    <p-tag 
+                                                        [value]="option.name" 
+                                                        [severity]="option.severity" />
+                                                </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>   
+
+                                <!-- FieldType.multiSelect -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.multiSelect" 
+                                    [field]="col.field" 
+                                    [showMenu]="false"
+                                    [matchMode]="FilterMatchModes.IN"
+                                    [showMatchModes]="false"
+                                    [showOperator]="false"
+                                    [showAddButton]="false"
+                                    [showClearButton]="false"
+                                    >
+                                    <ng-template 
+                                        pTemplate="filter" 
+                                        let-value let-filter="filterCallback">
+                                        <p-multiSelect 
+                                            [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'multiSelect')]"
+                                            [options]="optionsDataSources[col?.dSName]" 
+                                            placeholder="Select Any" 
+                                            (onChange)="filter($event.value)" 
+                                            optionLabel="name"
+                                            appendTo="body"
+                                            [showClear]="true">
+                                                <ng-template let-option pTemplate="item">
+                                                    <div class="inline-block vertical-align-middle">
+                                                        <span class="ml-1 mt-1">{{ option.name }}</span>
+                                                    </div>
+                                                </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                </p-columnFilter>  
+
+                                <!-- FieldType.date -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.date"
+                                    type="date" 
+                                    [field]="col.field" 
+                                    display="menu">
+                                </p-columnFilter>
+                            </th>                                                   
+                        </ng-container>
+                        <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
+                    </tr>
+                    <!-- Table Header With Basic Filter End -->               
+
+                    <!-- Table Header With Advanced Filter Start -->
+                    <tr *ngIf="filterType === 'advanced'">
                         <th style="width: 3rem" *ngIf="appPageLayout?.showSelectCheckbox">
                             <p-tableHeaderCheckbox />
                         </th>
@@ -188,7 +291,7 @@
                                     pTemplate="filter" 
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
-                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
+                                        [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'multiSelect')]"
                                         [options]="optionsDataSources[col?.dSName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
@@ -219,10 +322,10 @@
                             </p-sortIcon>
                         </th>
                         </ng-container>
-                    <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
+                        <th *ngIf="appPageLayout?.showRowActionCol === true"></th>
                     </tr>
+                     <!-- Table Header With Advanced Filter End -->                
                 </ng-template>
-                <!-- Table Header With Advanced Filter End -->
 
                 <!-- Table Body Start -->
                 <ng-template pTemplate="body" let-items let-columns="columns">

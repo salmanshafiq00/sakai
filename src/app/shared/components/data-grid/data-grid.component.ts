@@ -92,6 +92,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() pageTitle: string = null;
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
+  @Input() filterType: 'basic' | 'advanced' = 'advanced';
   @Input() resizableColumns: boolean = true;
   @Input() columnResizeMode: 'fit' | 'expand' = 'expand';
   @Input() styleClass: string = 'p-datatable-sm'; // 'p-datatable-sm p-datatable-gridlines'
@@ -100,10 +101,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Output() handleToolbarAction: EventEmitter<AppPageActionModel> = new EventEmitter<AppPageActionModel>();
   @Output() handleGridRowAction: EventEmitter<{ action: AppPageActionModel, data: any }> = new EventEmitter<{ action: AppPageActionModel, data: any }>();
 
-  @Input() get selectedRows(): any[]{
+  @Input() get selectedRows(): any[] {
     return this._selectedRows;
   }
-  set selectedRows(value: any[]){
+  set selectedRows(value: any[]) {
     this._selectedRows = value;
     this.selectedRowsChange.emit(this._selectedRows)
   }
@@ -193,8 +194,14 @@ export class DataGridComponent implements OnInit, OnDestroy {
     query.globalFilterFields = this.globalFilterFieldModels;
     query.isInitialLoaded = this.isInitialLoaded;
 
-    this.mapAndSetToDataFilterModel(event.filters);
+    if(this.filterType === 'advanced'){
+      this.mapAndSetToDataFilterModel(event.filters);
+    } else {
+      this.mapAndSetToDataFilterModelForBasic(event.filters);
+    }
+
     query.filters = this.filters;
+
 
     if (query.sortField
       || query.globalFilterValue
@@ -320,12 +327,10 @@ export class DataGridComponent implements OnInit, OnDestroy {
         routerLink += `/${paramValue}`;
       });
     }
-    console.log(routerLink)
     this.router.navigate([routerLink])
   }
 
   private onGlobalFilter(searchText: string, matchMode: string = 'contains'): void {
-    console.log(searchText)
     this.table.filterGlobal(searchText, matchMode);
     this.table.filterDelay = this.debounceTimeout;
   }
@@ -360,7 +365,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   private mapAndSetToDataFilterModel(filters: FilterDictionary) {
     for (const field in filters) {
-
       if (field === 'global') continue;
 
       // to ensure that properties are not being accessed from the prototype chain unintentionally
@@ -406,6 +410,30 @@ export class DataGridComponent implements OnInit, OnDestroy {
             existingFilter.matchMode = filterMetadata.matchMode || '';
             existingFilter.operator = filterMetadata.operator || '';
           }
+        }
+      }
+    }
+  }
+
+  private mapAndSetToDataFilterModelForBasic(filters: FilterDictionary) {
+    console.log(this.filters)
+    for (const field in filters) {
+      if (field === 'global') continue;
+
+      // to ensure that properties are not being accessed from the prototype chain unintentionally
+      if (filters.hasOwnProperty(field)) {
+
+        // existingFilter is exist
+        const existingFilter = this.filters.find(x => x.field === field);
+
+        if (!existingFilter) continue;
+
+        const filterMetadata = filters?.[field];
+
+        if (typeof filterMetadata === 'object' && filterMetadata !== null && !Array.isArray(filterMetadata)) {
+          existingFilter.value = this.getTranformValue(existingFilter, filterMetadata);
+          existingFilter.matchMode = filterMetadata.matchMode || '';
+          existingFilter.operator = filterMetadata.operator || '';
         }
       }
     }
@@ -494,7 +522,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
   // -------------- Page Setting -----------------
   showPageSetting() {
-    console.log(this.pageId)
     if (this.pageId && this.pageId !== this.emptyGuid) {
       this.openPageSettingDialog(this.pageId)
     }
