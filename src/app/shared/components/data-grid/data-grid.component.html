@@ -4,7 +4,8 @@
 <div class="grid">
     <div class="col-12">
         <div class="card px-2  pb-6 sm:px-6">
-            <p-toolbar styleClass="mb-4">
+            <!-- <h5 class="mb-4 sm:m-0">{{pageTitle}}</h5>  -->
+            <p-toolbar styleClass="mb-3">
                 <ng-template pTemplate="left">
                     <div >
                         <ng-container *ngFor="let action of leftToolbarActions">
@@ -102,7 +103,7 @@
                                 type="text" 
                                 (input)="onSearchInput($event)" 
                                 (keyup.enter)="onSearchEnter($event)"
-                                placeholder="Search..."  
+                                placeholder="Global Search..."  
                                 class="w-10 sm:w-auto"/>
                                 <ng-template #toolTipContent>
                                     <div class="flex align-items-center text-xs">
@@ -122,6 +123,7 @@
                                 (click)="clear()" />
                         </span>
                     </div>
+                    <p-divider />
                     <div *ngIf="filterType === 'basic-top'" class="flex flex-column flex-wrap sm:gap-3 sm:flex-row sm:justify-content-end mt-5">
                         <ng-container  *ngFor="let col of dataFields">
                             <span >

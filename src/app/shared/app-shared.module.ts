@@ -60,6 +60,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { ProgressBarComponent } from './components/progress-bar/progress-bar.component';
 import { ImageModule } from 'primeng/image';
 import { ImageComponent } from './components/image/image.component';
+import { DividerModule } from 'primeng/divider';
 
 
 @NgModule({
@@ -127,7 +128,9 @@ import { ImageComponent } from './components/image/image.component';
 		SelectButtonModule,
 		OverlayPanelModule,
 		ProgressBarModule,
-		ImageModule  
+		ImageModule,
+		DividerModule 
+
 	],
 	providers: [
 		MessageService,
