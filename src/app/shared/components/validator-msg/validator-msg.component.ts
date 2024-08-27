@@ -9,6 +9,7 @@ import { AbstractControl } from '@angular/forms';
 export class ValidatorMsgComponent {
   @Input() control: AbstractControl | null = null;
   @Input() validationMessages: { [key: string]: string | ((params: any) => string) } = {};
+  @Input() styleClass: string = '';
 
   defaultMessages = {
     required: 'This field is required',

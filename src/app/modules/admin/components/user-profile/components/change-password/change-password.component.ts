@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/core/auth/services/auth.service';
+import { matchPasswordsValidator } from 'src/app/core/validators/matchPasswords.validator';
 import { AppUserModel } from 'src/app/modules/generated-clients/api-service';
 import { ToastService } from 'src/app/shared/services/toast.service';
 
@@ -59,6 +60,8 @@ export class ChangePasswordComponent {
       currentPassword: [null, Validators.required],
       newPassword: [null, Validators.required],
       confirmPassword: [null, Validators.required]
+    }, {
+      validators: matchPasswordsValidator('newPassword', 'confirmPassword')
     });
   }
 }

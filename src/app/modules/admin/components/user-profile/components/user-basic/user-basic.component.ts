@@ -15,6 +15,7 @@ export class UserBasicComponent {
   item: AppUserModel;
   form: FormGroup;
   photoUrl: string;
+  isEditing: boolean = false;
 
   get f() {
     return this.form.controls;
@@ -39,10 +40,20 @@ export class UserBasicComponent {
     this.updateBasic();
   }
 
+  onEditProfile() {
+    this.isEditing = true;
+  }
+
+  onCancel() {
+    this.isEditing = false;
+  }
+
   private updateBasic() {
     this.entityClient.updateBasic({ ...this.form.value }).subscribe({
       next: () => {
-        console.log(this.toast)
+        this.item = {...this.item, ...this.form.value};
+        console.log(this.item)
+        this.isEditing = false;
         this.toast.updated();
       },
       error: (error) => {

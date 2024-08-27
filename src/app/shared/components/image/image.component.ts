@@ -33,9 +33,12 @@ export class ImageComponent {
   @Output() onImageError = new EventEmitter<any>();
 
   showImage(event: any){
+    console.log(event)
+    this.styleClass = undefined;
     this.onShow.emit(event);
   }
   hideImage(event: any){
+    console.log(event)
     this.onHide.emit(event);
   }
   imageImage(event: any){

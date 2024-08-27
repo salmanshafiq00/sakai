@@ -53,6 +53,22 @@ export class InputFileAdvComponent {
   @Output() selectedFiles = new EventEmitter<any>();
   @Output() uploadError = new EventEmitter<any>();
 
+  _fileUrls: string[] = [];
+
+  @Input()
+  get fileUrls(): string[] {
+    return this._fileUrls;
+  }
+  
+  set fileUrls(value: string[]) {
+    this._fileUrls = value;
+    this.fileUrlsChange.emit(this._fileUrls);
+  }
+  
+  @Output() fileUrlsChange = new EventEmitter<string[]>();
+  
+
+
   private baseUrl = `${environment.API_BASE_URL}/api/managefiles`;
 
   private toast = inject(ToastService)
@@ -84,6 +100,7 @@ export class InputFileAdvComponent {
       next: (response) => {
         if (response.status === 'success') {
           this.toast.showCustom(`Upload Successfully` ,'success', '', 'file-toast', 3000);
+          this.fileUrls = response.body?.map(x => x.filePath);
           // Do something with the file path (e.g., display a message or update UI)
         } else if (response.status === 'progress') {
           this.progressValue = response.progress; // Update progress bar

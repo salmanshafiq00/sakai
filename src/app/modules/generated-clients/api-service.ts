@@ -2557,7 +2557,7 @@ export class AppPagesClient implements IAppPagesClient {
 }
 
 export interface IManageFilesClient {
-    upload(): Observable<FileResponse>;
+    upload(): Observable<FileResponse[]>;
     removeFile(removeFileReq: RemoveFileRequest): Observable<FileResponse>;
 }
 
@@ -2572,7 +2572,7 @@ export class ManageFilesClient implements IManageFilesClient {
         this.baseUrl = baseUrl ?? "";
     }
 
-    upload(): Observable<FileResponse> {
+    upload(): Observable<FileResponse[]> {
         let url_ = this.baseUrl + "/api/ManageFiles/Upload";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2592,14 +2592,14 @@ export class ManageFilesClient implements IManageFilesClient {
                 try {
                     return this.processUpload(response_ as any);
                 } catch (e) {
-                    return _observableThrow(e) as any as Observable<FileResponse>;
+                    return _observableThrow(e) as any as Observable<FileResponse[]>;
                 }
             } else
-                return _observableThrow(response_) as any as Observable<FileResponse>;
+                return _observableThrow(response_) as any as Observable<FileResponse[]>;
         }));
     }
 
-    protected processUpload(response: HttpResponseBase): Observable<FileResponse> {
+    protected processUpload(response: HttpResponseBase): Observable<FileResponse[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2610,7 +2610,14 @@ export class ManageFilesClient implements IManageFilesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = FileResponse.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(FileResponse.fromJS(item));
+            }
+            else {
+                result200 = <any>null;
+            }
             return _observableOf(result200);
             }));
         } else if (status === 400) {
@@ -3017,6 +3024,7 @@ export interface IUsersClient {
     getProfile(): Observable<AppUserModel>;
     create(command: CreateAppUserCommand): Observable<string>;
     update(command: UpdateAppUserCommand): Observable<void>;
+    changePhoto(command: ChangeUserPhotoCommand): Observable<void>;
     updateBasic(command: UpdateAppUserBasicCommand): Observable<void>;
     addToRoles(command: AddToRolesCommand): Observable<void>;
 }
@@ -3292,6 +3300,62 @@ export class UsersClient implements IUsersClient {
     }
 
     protected processUpdate(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (response as any).error instanceof Blob ? (response as any).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return _observableOf(null as any);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap((_responseText: string) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf(null as any);
+    }
+
+    changePhoto(command: ChangeUserPhotoCommand): Observable<void> {
+        let url_ = this.baseUrl + "/api/Users/ChangePhoto";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            withCredentials: true,
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processChangePhoto(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processChangePhoto(response_ as any);
+                } catch (e) {
+                    return _observableThrow(e) as any as Observable<void>;
+                }
+            } else
+                return _observableThrow(response_) as any as Observable<void>;
+        }));
+    }
+
+    protected processChangePhoto(response: HttpResponseBase): Observable<void> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -5897,7 +5961,7 @@ export interface IUpsertAppPageCommand extends IAppPageModel {
 }
 
 export class FileResponse implements IFileResponse {
-    path?: string;
+    filePath?: string;
 
     constructor(data?: IFileResponse) {
         if (data) {
@@ -5910,7 +5974,7 @@ export class FileResponse implements IFileResponse {
 
     init(_data?: any) {
         if (_data) {
-            this.path = _data["path"];
+            this.filePath = _data["filePath"];
         }
     }
 
@@ -5923,13 +5987,13 @@ export class FileResponse implements IFileResponse {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["path"] = this.path;
+        data["filePath"] = this.filePath;
         return data;
     }
 }
 
 export interface IFileResponse {
-    path?: string;
+    filePath?: string;
 }
 
 export class RemoveFileRequest implements IRemoveFileRequest {
@@ -6640,6 +6704,42 @@ export interface IUpdateAppUserCommand {
     photoUrl?: string;
     isActive?: boolean;
     roles?: string[] | undefined;
+}
+
+export class ChangeUserPhotoCommand implements IChangeUserPhotoCommand {
+    photoUrl?: string;
+
+    constructor(data?: IChangeUserPhotoCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.photoUrl = _data["photoUrl"];
+        }
+    }
+
+    static fromJS(data: any): ChangeUserPhotoCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new ChangeUserPhotoCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["photoUrl"] = this.photoUrl;
+        return data;
+    }
+}
+
+export interface IChangeUserPhotoCommand {
+    photoUrl?: string;
 }
 
 export class UpdateAppUserBasicCommand implements IUpdateAppUserBasicCommand {
