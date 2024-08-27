@@ -145,11 +145,14 @@
           <div class="field col-4 md:mt-4">
             <app-input-switch formControlName="showRowActionCol" label="Row Action" />
           </div>
-          <div class="field col-4 md:mt-4">
-            <app-input-switch formControlName="showSelectCheckbox" label="SelectCheckbox" />
+          <div class="field col-4">
+            <app-input-select [options]="gridFilterTypeSelectList" formControlName="gridFilterType" label="Grid Filter" />
           </div>
           <div class="field col-4">
             <app-input-select [options]="actionTypeSelectList" formControlName="rowActionType" label="Row Action Type" />
+          </div>
+          <div class="field col-4 md:mt-4">
+            <app-input-switch formControlName="showSelectCheckbox" label="SelectCheckbox" />
           </div>
         </div>
         <div formArrayName="rowActions" *ngFor="let field of rowActions.controls; let i = index" pDroppable (onDrop)="drop($event, i, rowActions)">
@@ -313,7 +316,7 @@
                 <app-input-select [options]="filterSelectList" formControlName="filterType" label="Filter Type" />
               </div>
               <div class="field col-4">
-                <app-input-text formControlName="dSName" label="DS Name" />
+                <app-input-text formControlName="dsName" label="DS Name" />
               </div>
               <div class="field col-4">
                 <app-input-text formControlName="linkBaseUrl" label="Link Base Url" />

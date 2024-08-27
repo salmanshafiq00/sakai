@@ -122,11 +122,103 @@
                                 (click)="clear()" />
                         </span>
                     </div>
+                    <div *ngIf="filterType === 'basic-top'" class="flex flex-column flex-wrap sm:gap-3 sm:flex-row sm:justify-content-end mt-5">
+                        <ng-container  *ngFor="let col of dataFields">
+                            <span >
+                                <!-- FieldType.string -->
+                                <p-columnFilter 
+                                    type="text" 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.string" 
+                                    [field]="col.field" 
+                                    [placeholder]="'Search by ' + col.header" 
+                                    [showClearButton]="false"  />
+    
+                                <!-- FieldType.select -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.select" 
+                                    [field]="col.field" 
+                                    [showMenu]="false"
+                                    [matchMode]="FilterMatchModes.EQUALS"
+                                    [showMatchModes]="false"
+                                    [showOperator]="false"
+                                    [showAddButton]="false"
+                                    [showClearButton]="false"
+                                    [pTooltip]="col.header" 
+                                    tooltipPosition="top"
+                                    >
+                                    <ng-template 
+                                        pTemplate="filter" 
+                                        let-value let-filter="filterCallback">
+                                        <p-dropdown 
+                                            [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
+                                            [options]="optionsDataSources[col?.dsName]" 
+                                            (onChange)="filter($event.value?.id)" 
+                                            placeholder="Select One"
+                                            [optionLabel]="'name'" 
+                                            appendTo="body"
+                                            [showClear]="true">
+                                                <ng-template let-option pTemplate="item">
+                                                    <p-tag 
+                                                        [value]="option.name" 
+                                                        [severity]="option.severity" />
+                                                </ng-template>
+                                        </p-dropdown>
+                                    </ng-template>
+                                </p-columnFilter>   
+    
+                                <!-- FieldType.multiSelect -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.multiSelect" 
+                                    [field]="col.field" 
+                                    [showMenu]="false"
+                                    [matchMode]="FilterMatchModes.IN"
+                                    [showMatchModes]="false"
+                                    [showOperator]="false"
+                                    [showAddButton]="false"
+                                    [showClearButton]="false"
+                                    [pTooltip]="col.header" 
+                                    tooltipPosition="top"
+                                    >
+                                    <ng-template 
+                                        pTemplate="filter" 
+                                        let-value let-filter="filterCallback">
+                                        <p-multiSelect 
+                                            [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'multiSelect')]"
+                                            [options]="optionsDataSources[col?.dsName]" 
+                                            placeholder="Select Any" 
+                                            (onChange)="filter($event.value)" 
+                                            optionLabel="name"
+                                            appendTo="body"
+                                            [showClear]="true">
+                                                <ng-template let-option pTemplate="item">
+                                                    <div class="inline-block vertical-align-middle">
+                                                        <span class="ml-1 mt-1">{{ option.name }}</span>
+                                                    </div>
+                                                </ng-template>
+                                        </p-multiSelect>
+                                    </ng-template>
+                                </p-columnFilter>  
+    
+                                <!-- FieldType.date -->
+                                <p-columnFilter 
+                                    *ngIf="col.isFilterable && col.fieldType === FieldType.date"
+                                    type="date" 
+                                    [field]="col.field" 
+                                    display="menu">
+                                </p-columnFilter>
+                            </span>                                                   
+                        </ng-container>
+
+    
+                    </div>                    
                 </ng-template>
 
                  <ng-template pTemplate="header" let-columns>
                     <!-- Table Header With Basic Filter Start -->
-                    <tr *ngIf="filterType === 'basic'">
+                    <tr *ngIf="filterType === 'basic' || filterType === 'basic-top'">
+                        <th style="width: 3rem" *ngIf="appPageLayout?.showSelectCheckbox && filterType === 'basic-top'">
+                            <p-tableHeaderCheckbox />
+                        </th>
                         <ng-container *ngFor="let col of columns">
                             <th [pSortableColumn]="col.isSortable ? col.field : ''" pResizableColumn >
                                 <p-sortIcon 
@@ -169,7 +261,7 @@
                                         let-value let-filter="filterCallback">
                                         <p-dropdown 
                                             [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
-                                            [options]="optionsDataSources[col?.dSName]" 
+                                            [options]="optionsDataSources[col?.dsName]" 
                                             (onChange)="filter($event.value?.id)" 
                                             placeholder="Select One"
                                             [optionLabel]="'name'" 
@@ -200,7 +292,7 @@
                                         let-value let-filter="filterCallback">
                                         <p-multiSelect 
                                             [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'multiSelect')]"
-                                            [options]="optionsDataSources[col?.dSName]" 
+                                            [options]="optionsDataSources[col?.dsName]" 
                                             placeholder="Select Any" 
                                             (onChange)="filter($event.value)" 
                                             optionLabel="name"
@@ -262,7 +354,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-dropdown 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'select')]"
-                                        [options]="optionsDataSources[col?.dSName]" 
+                                        [options]="optionsDataSources[col?.dsName]" 
                                         (onChange)="filter($event.value?.id)" 
                                         placeholder="Select One"
                                         [optionLabel]="'name'" 
@@ -292,7 +384,7 @@
                                     let-value let-filter="filterCallback">
                                     <p-multiSelect 
                                         [(ngModel)]="dynamicDropdownValues[generateDropdownKey(col.field, 'multiSelect')]"
-                                        [options]="optionsDataSources[col?.dSName]" 
+                                        [options]="optionsDataSources[col?.dsName]" 
                                         placeholder="Select Any" 
                                         (onChange)="filter($event.value)" 
                                         optionLabel="name"

@@ -5484,6 +5484,7 @@ export class AppPageModel implements IAppPageModel {
     subTitle?: string;
     componentName?: string;
     appPageLayout?: string;
+    gridFilterType?: string;
     showRowActionCol?: boolean;
     rowActionType?: string | undefined;
     showSelectCheckbox?: boolean;
@@ -5508,6 +5509,7 @@ export class AppPageModel implements IAppPageModel {
             this.subTitle = _data["subTitle"];
             this.componentName = _data["componentName"];
             this.appPageLayout = _data["appPageLayout"];
+            this.gridFilterType = _data["gridFilterType"];
             this.showRowActionCol = _data["showRowActionCol"];
             this.rowActionType = _data["rowActionType"];
             this.showSelectCheckbox = _data["showSelectCheckbox"];
@@ -5550,6 +5552,7 @@ export class AppPageModel implements IAppPageModel {
         data["subTitle"] = this.subTitle;
         data["componentName"] = this.componentName;
         data["appPageLayout"] = this.appPageLayout;
+        data["gridFilterType"] = this.gridFilterType;
         data["showRowActionCol"] = this.showRowActionCol;
         data["rowActionType"] = this.rowActionType;
         data["showSelectCheckbox"] = this.showSelectCheckbox;
@@ -5585,6 +5588,7 @@ export interface IAppPageModel {
     subTitle?: string;
     componentName?: string;
     appPageLayout?: string;
+    gridFilterType?: string;
     showRowActionCol?: boolean;
     rowActionType?: string | undefined;
     showSelectCheckbox?: boolean;

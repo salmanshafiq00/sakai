@@ -64,6 +64,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // Filtering Global
   globalFilterFields: string[] = [];
   globalFilterFieldModels: GlobalFilterFieldModel[] = [];
+  filterType: 'basic' | 'basic-top' | 'advanced' = 'basic-top';
   // globalFilterFieldNames: string[] = [];
 
   // Global filters
@@ -92,7 +93,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
   @Input() pageTitle: string = null;
   @Input() listComponent: any;
   @Input() dialogTitle: string = 'Entity Detail';
-  @Input() filterType: 'basic' | 'advanced' = 'advanced';
   @Input() resizableColumns: boolean = true;
   @Input() columnResizeMode: 'fit' | 'expand' = 'expand';
   @Input() styleClass: string = 'p-datatable-sm'; // 'p-datatable-sm p-datatable-gridlines'
@@ -143,10 +143,13 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
             this.appPageLayout = JSON.parse(data.appPageLayout);
 
+            this.filterType = this.appPageLayout?.gridFilterType || this.filterType;
+            console.log(this.filterType)
+
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
             this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? [];
-
+            
             this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? [];
 
             this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? [];

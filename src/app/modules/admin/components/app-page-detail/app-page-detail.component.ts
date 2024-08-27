@@ -27,6 +27,7 @@ export class AppPageDetailComponent implements OnInit {
     'showRowActionCol': true,
     'showSelectCheckbox': false,
     'rowActionType': 'button',
+    'gridFilterType': 'basic-top',
     'rowActions': [],
     'appPageFields': [],
   };
@@ -110,6 +111,7 @@ export class AppPageDetailComponent implements OnInit {
           this.item.showRowActionCol = this.pageLayout.showRowActionCol;
           this.item.showSelectCheckbox = this.pageLayout.showSelectCheckbox;
           this.item.rowActionType = this.pageLayout.rowActionType;
+          this.item.gridFilterType = this.pageLayout.gridFilterType || 'basic-top';
           this.item.appPageFields?.forEach(() => {
             this.addAppPageField();
           });
@@ -140,6 +142,7 @@ export class AppPageDetailComponent implements OnInit {
       showRowActionCol: this.form.get('showRowActionCol').value,
       showSelectCheckbox: this.form.get('showSelectCheckbox').value,
       rowActionType: this.form.get('rowActionType').value,
+      gridFilterType: this.form.get('gridFilterType').value,
       rowActions: this.form.get('rowActions').value,
       appPageFields: this.form.get('appPageFields').value,
     };
@@ -165,6 +168,7 @@ export class AppPageDetailComponent implements OnInit {
       showRowActionCol: [true],
       showSelectCheckbox: [false],
       rowActionType: ['button'],
+      gridFilterType: ['basic-top'],
       rowActions: this.fb.array([]),
       appPageFields: this.fb.array([])
     });
@@ -222,6 +226,7 @@ export class AppPageDetailComponent implements OnInit {
       showRowActionCol: jsonData.showRowActionCol,
       showSelectCheckbox: jsonData.showSelectCheckbox,
       rowActionType: jsonData.rowActionType,
+      gridFilterType: jsonData.gridFilterType,
       rowActions: jsonData.rowActions || [],
       appPageFields: jsonData.appPageFields || []
     });
@@ -367,7 +372,7 @@ export class AppPageDetailComponent implements OnInit {
       isFilterable: [false],
       isGlobalFilterable: [false],
       filterType: [null],
-      dSName: [''],
+      dsName: [''],
       enableLink: [false],
       linkBaseUrl: [''],
       linkValueFieldName: [''],
@@ -417,6 +422,12 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'left', 'name': 'Left' },
     { 'id': 'right', 'name': 'Right' },
     { 'id': 'topright', 'name': 'Top-Right' }
+  ];
+
+  gridFilterTypeSelectList = [
+    { 'id': 'basic', 'name': 'Basic' },
+    { 'id': 'basic-top', 'name': 'Basic-Top' },
+    { 'id': 'advanced', 'name': 'Advanced' }
   ];
 
   actionTypeSelectList = [
