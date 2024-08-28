@@ -538,6 +538,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
     )
       .subscribe((isSucceed: boolean) => {
         if (isSucceed) {
+          this.clear();
           this.loadGridLayout();
           this.loadData({ first: this.first, rows: this.rows }, false)
         }

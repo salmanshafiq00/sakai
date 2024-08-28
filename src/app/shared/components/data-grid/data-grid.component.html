@@ -123,7 +123,7 @@
                                 (click)="clear()" />
                         </span>
                     </div>
-                    <p-divider />
+                    <p-divider *ngIf="filterType === 'basic-top'" />
                     <div *ngIf="filterType === 'basic-top'" class="flex flex-column flex-wrap sm:gap-3 sm:flex-row sm:justify-content-end mt-5">
                         <ng-container  *ngFor="let col of dataFields">
                             <span >
@@ -483,6 +483,8 @@
                         </td>  -->
                     </tr>
                 </ng-template>
+                <!-- Table Body End -->
+
                 <ng-template pTemplate="emptymessage">
                     <tr>
                         <td colspan="100%">
