@@ -11,6 +11,7 @@ import { TabMenuModule } from 'primeng/tabmenu';
 import { InputTextModule } from 'primeng/inputtext';
 import { FileUploadModule } from 'primeng/fileupload';
 import { SelectButtonModule } from 'primeng/selectbutton';
+import { TabViewModule } from 'primeng/tabview';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { SelectButtonModule } from 'primeng/selectbutton';
     TabMenuModule,
     InputTextModule,
     FileUploadModule,
-    SelectButtonModule
+    SelectButtonModule,
+    TabViewModule 
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },
