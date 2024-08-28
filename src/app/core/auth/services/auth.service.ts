@@ -95,6 +95,11 @@ export class AuthService {
     return decodedToken ? decodedToken.sub : '';
   }
 
+  getPhotoUrl(): string{
+    const decodedToken = this.decodeToken();
+    return decodedToken ? decodedToken.photoUrl : '';
+  }
+
   getAccessToken(): string | null {
     return localStorage.getItem(Access_Token);
   }
@@ -113,6 +118,7 @@ export interface JwtPayload {
   email: string;  // User's email
   jti: string;  // JWT ID
   username: string;  // Username
+  photoUrl: string;  // PhotoUrl
   ip: string;  // IP address
   "http://schemas.microsoft.com/ws/2008/06/identity/claims/role": string[];  // Array of roles
   exp: number;  // Expiration time (Unix timestamp)

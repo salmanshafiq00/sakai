@@ -144,7 +144,6 @@ export class DataGridComponent implements OnInit, OnDestroy {
             this.appPageLayout = JSON.parse(data.appPageLayout);
 
             this.filterType = this.appPageLayout?.gridFilterType || this.filterType;
-            console.log(this.filterType)
 
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 

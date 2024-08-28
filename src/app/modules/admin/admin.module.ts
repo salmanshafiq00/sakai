@@ -28,8 +28,7 @@ import { TabViewModule } from 'primeng/tabview';
     TabMenuModule,
     InputTextModule,
     FileUploadModule,
-    SelectButtonModule,
-    TabViewModule 
+    SelectButtonModule
   ],
   providers: [
     { provide: API_BASE_URL, useValue: environment.API_BASE_URL },

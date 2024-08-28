@@ -1,49 +1,41 @@
 <app-toast />
 <div class="card">
-    <p-tabView [scrollable]="true">
-        <p-tabPanel header="About">
-            <ng-template pTemplate="header">
-                <div class="flex align-items-center gap-2">
-                    <span class="pi pi-home"></span>
-                    <span class="font-bold white-space-nowrap m-0">
-                        About
+    <p-tabMenu [model]="items" [scrollable]="true" [activeItem]="activeItem"  (activeItemChange)="onActiveItemChange($event)">
+        <ng-template pTemplate="item" let-item>
+            <ng-container *ngIf="item.route; else elseBlock">
+                <a [routerLink]="item.route" class="p-menuitem-link">
+                    <span [class]="item.icon"></span>
+                    <span class="ml-2">
+                        {{ item.label }}
                     </span>
-                </div>
-            </ng-template>
-            <user-user-basic />
-        </p-tabPanel>
-        <p-tabPanel header="Change Password">
-            <ng-template pTemplate="header">
-                <div class="flex align-items-center gap-2">
-                    <span class="pi pi-lock"></span>
-                    <span class="font-bold white-space-nowrap m-0">
-                        Change Password
+                </a>
+            </ng-container>
+            <ng-template #elseBlock>
+                <a [href]="item.url" class="p-menuitem-link">
+                    <span [class]="item.icon"></span>
+                    <span class="ml-2">
+                        {{ item.label }}
                     </span>
-                </div>
+                </a>
             </ng-template>
-            <user-change-password />
-        </p-tabPanel>
-        <p-tabPanel header="Change Photo">
-            <ng-template pTemplate="header">
-                <div class="flex align-items-center gap-2">
-                    <span class="pi pi-image"></span>
-                    <span class="font-bold white-space-nowrap m-0">
-                        Change Photo
-                    </span>
-                </div>
-            </ng-template>
-            <user-change-profile-photo />
-        </p-tabPanel>
-        <p-tabPanel header="Reset Password">
-            <ng-template pTemplate="header">
-                <div class="flex align-items-center gap-2">
-                    <span class="pi pi-undo"></span>
-                    <span class="font-bold white-space-nowrap m-0">
-                        Reset Password
-                    </span>
-                </div>
-            </ng-template>
-            <user-change-profile-photo />
-        </p-tabPanel>
-    </p-tabView>
+        </ng-template>
+    </p-tabMenu>
+    <div *ngIf="activeItem?.label === 'About'">
+        <ng-container *ngTemplateOutlet="about"></ng-container>
+    </div>
+    <div *ngIf="activeItem?.label === 'Change Password'">
+        <ng-container *ngTemplateOutlet="changePassword"></ng-container>
+    </div>
+    <div *ngIf="activeItem?.label === 'Change Photo'">
+        <ng-container *ngTemplateOutlet="changePhoto"></ng-container>
+    </div>
 </div>
+<ng-template #about>
+    <user-user-basic />
+</ng-template>
+<ng-template #changePassword>
+    <user-change-password />
+</ng-template>
+<ng-template #changePhoto>
+    <user-change-profile-photo />
+</ng-template>

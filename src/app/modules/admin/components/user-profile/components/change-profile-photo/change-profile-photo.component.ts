@@ -22,7 +22,7 @@ export class ChangeProfilePhotoComponent {
 
     this.entityService.changePhoto(command).subscribe({
       next: () => {
-
+        localStorage.setItem('userPhotoUrl', fileUrls[0])
       }
     });
 

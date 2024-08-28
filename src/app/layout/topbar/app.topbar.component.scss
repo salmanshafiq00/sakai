@@ -6,6 +6,17 @@
     font-weight: 700;
 }
 
+.user-avatar-btn{
+  border: 1px solid var(--primary-color);
+}
+
+.user-avatar{
+  object-fit: cover;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+}
+
 ::ng-deep .notify-panel.p-overlaypanel {
   max-height: 450px;
   overflow-y: auto;

@@ -36,6 +36,11 @@ export class AppTopBarComponent implements OnInit {
         })
     };
 
+    get userPhotoUrl(){
+        const userPhotoUrl = localStorage.getItem('userPhotoUrl') || this.authService.getPhotoUrl();
+        return userPhotoUrl ? `${environment.API_BASE_URL}${userPhotoUrl}` : '/assets/images/user-avatar.png';
+    }
+
     constructor(
         public layoutService: LayoutService,
         private http: HttpClient,

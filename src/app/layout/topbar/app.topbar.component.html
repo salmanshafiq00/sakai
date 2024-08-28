@@ -14,7 +14,7 @@
         <i class="pi pi-ellipsis-v"></i>
     </button>
 
-    <div #topbarmenu class="layout-topbar-menu"
+    <div #topbarmenu class="layout-topbar-menu md:gap-2"
         [ngClass]="{'layout-topbar-menu-mobile-active': layoutService.state.profileSidebarVisible}">
         <button class="p-link layout-topbar-button">
             <i class="pi pi-calendar"></i>
@@ -49,8 +49,8 @@
                 </div>
             </div>
         </p-overlayPanel>
-        <button class="p-link layout-topbar-button" (click)="profilePanel.toggle($event)">
-            <i class="pi pi-user"></i>
+        <button class="p-link layout-topbar-button user-avatar-btn" (click)="profilePanel.toggle($event)">
+            <img [src]="userPhotoUrl" class="user-avatar" />
             <span>Profile</span>
         </button>
         <p-overlayPanel #profilePanel styleClass="profile-panel">
@@ -75,11 +75,10 @@
                 </ul>
             </div>
         </p-overlayPanel>
-        <!-- <p-menu #userMenu [model]="userItems" [popup]="true" /> -->
-        <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
+        <!-- <button class="p-link layout-topbar-button" [routerLink]="'/documentation'">
             <i class="pi pi-cog"></i>
             <span>Settings</span>
-        </button>
+        </button> -->
     </div>
 </div>
 
