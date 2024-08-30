@@ -553,17 +553,30 @@ export class DataGridComponent implements OnInit, OnDestroy {
   // --------- Export to PDF ---------------------
 
   exportPdf() {
-    const headers = this.dataFields.filter(col => col.isVisible).map(col => col.header);
-    const fields = this.dataFields.filter(col => col.isVisible).map(col => col.field);
+    const visibleFields = this.dataFields.filter(col => col.isVisible);
+    const headers = visibleFields.map(col => col.header);
+    const fields = visibleFields.map(col => col.field);
 
-    const data = this.items.map(row => {
-      return fields.map(field => row[field]);
-    });
+    const data = this.items.map(row => fields.map(field => row[field]));
 
     const today = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
 
     // Generate filter text
-    const filterTextLines = this.filters.map(filter => `${filter.field}: ${filter.value}`);
+    const filterTextLines = this.filters
+      .filter(filter => filter.value)
+      .map(filter => {
+        const dataField = this.dataFields.find(x => x.field === filter.field);
+        let filterValue = filter.value;
+        
+        if (dataField.fieldType === 'select' || dataField.fieldType === 'multiselect') {
+          const dataSource = this.optionsDataSources[dataField?.dsName]?.find(
+            x => x.id?.toString().toLowerCase() == filterValue.toLowerCase().replace(/^'|'$/g, ''));
+          filterValue = dataSource?.name;
+        }
+
+        console.log(dataField)
+        return `${dataField.header}: ${filterValue}`
+    });
 
     import("jspdf").then(jsPDF => {
       import("jspdf-autotable").then(autoTable => {
@@ -577,31 +590,28 @@ export class DataGridComponent implements OnInit, OnDestroy {
         doc.text(this.pageTitle, textX, 10);
 
         // Add Filters
-        let startY = 20; // Starting Y position for filters
+        let startY = 30; // Starting Y position for filters
+        const tableStartX = 10; // This should match the table's left margin
         doc.setFontSize(12); // Adjust the font size for filters
-        const maxFiltersPerLine = 2; // Number of filters per line
-        let currentLine = '';
 
-        filterTextLines.forEach((line, index) => {
-          if (index % maxFiltersPerLine === 0 && currentLine) {
-            doc.text(currentLine, 10, startY);
-            startY += 10; // Move to the next line
-            currentLine = '';
-          }
-          currentLine += line + '     '; // Add some space between filters
+        // Split filters into two columns
+        const maxFiltersPerLine = Math.ceil(filterTextLines.length / 2);
+        const leftColumnFilters = filterTextLines.slice(0, maxFiltersPerLine);
+        const rightColumnFilters = filterTextLines.slice(maxFiltersPerLine);
+
+        leftColumnFilters.forEach((leftLine, index) => {
+          const rightLine = rightColumnFilters[index] || '';
+          doc.text(leftLine, tableStartX, startY); // Align with table's left side
+          doc.text(rightLine, pageWidth / 2 + tableStartX, startY); // Align right-side filters with a gap from the middle of the page
+          startY += 10; // Move to the next line
         });
-
-        if (currentLine) {
-          doc.text(currentLine, 10, startY);
-          startY += 10;
-        }
-
 
         // Page Grid
         autoTable.default(doc, {
-          startY: startY + 10, // Start the table below the filters
+          startY: startY, // Start the table below the filters
           head: [headers],
           body: data,
+          margin: { left: tableStartX }, // Align table with filters
           didDrawPage: function (data) {
             // Printed Date
             doc.setFontSize(8);
@@ -611,13 +621,14 @@ export class DataGridComponent implements OnInit, OnDestroy {
             const marginY = pageHeight - 10; // Position from the bottom edge
             doc.text(dateStr, marginX, marginY);
           }
-
         });
 
         doc.save(`${this.pageTitle}.pdf`);
       });
     });
   }
+
+
 
 
 }
