@@ -148,9 +148,9 @@ export class DataGridComponent implements OnInit, OnDestroy {
             this.pageTitle = this.pageTitle ?? this.appPageModel?.title ?? this.listComponent.constructor.name;
 
             this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? [];
-            
+
             this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? [];
-            
+
             this.rightToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'right' && action.isVisible === true)] ?? [];
 
             this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? [];
@@ -198,7 +198,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
     query.globalFilterFields = this.globalFilterFieldModels;
     query.isInitialLoaded = this.isInitialLoaded;
 
-    if(this.filterType === 'advanced'){
+    if (this.filterType === 'advanced') {
       this.mapAndSetToDataFilterModel(event.filters);
     } else {
       this.mapAndSetToDataFilterModelForBasic(event.filters);
@@ -293,9 +293,9 @@ export class DataGridComponent implements OnInit, OnDestroy {
       this.refreshGrid();
     } else if (action.actionName === 'multiple-delete') {
       this.deleteSelectedItems();
-    } else if(action.actionName === 'csv'){
+    } else if (action.actionName === 'csv') {
       this.table.exportCSV();
-    } else if(action.actionName === 'pdf'){
+    } else if (action.actionName === 'pdf') {
       this.exportPdf();
     }
     // else if(action.actionType === 'multi-select') {
@@ -560,6 +560,11 @@ export class DataGridComponent implements OnInit, OnDestroy {
       return fields.map(field => row[field]);
     });
 
+    const today = this.datePipe.transform(new Date(), 'dd/MM/yyyy');
+
+    // Generate filter text
+    const filterTextLines = this.filters.map(filter => `${filter.field}: ${filter.value}`);
+
     import("jspdf").then(jsPDF => {
       import("jspdf-autotable").then(autoTable => {
         const doc = new jsPDF.default();
@@ -571,10 +576,42 @@ export class DataGridComponent implements OnInit, OnDestroy {
         const textX = (pageWidth - textWidth) / 2;
         doc.text(this.pageTitle, textX, 10);
 
+        // Add Filters
+        let startY = 20; // Starting Y position for filters
+        doc.setFontSize(12); // Adjust the font size for filters
+        const maxFiltersPerLine = 2; // Number of filters per line
+        let currentLine = '';
+
+        filterTextLines.forEach((line, index) => {
+          if (index % maxFiltersPerLine === 0 && currentLine) {
+            doc.text(currentLine, 10, startY);
+            startY += 10; // Move to the next line
+            currentLine = '';
+          }
+          currentLine += line + '     '; // Add some space between filters
+        });
+
+        if (currentLine) {
+          doc.text(currentLine, 10, startY);
+          startY += 10;
+        }
+
+
         // Page Grid
         autoTable.default(doc, {
+          startY: startY + 10, // Start the table below the filters
           head: [headers],
-          body: data
+          body: data,
+          didDrawPage: function (data) {
+            // Printed Date
+            doc.setFontSize(8);
+            const dateStr = 'printed date: ' + today;
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const marginX = pageWidth - doc.getTextWidth(dateStr) - 15; // Position from the right edge
+            const marginY = pageHeight - 10; // Position from the bottom edge
+            doc.text(dateStr, marginX, marginY);
+          }
+
         });
 
         doc.save(`${this.pageTitle}.pdf`);
