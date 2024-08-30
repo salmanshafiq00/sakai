@@ -421,7 +421,6 @@ export class AppPageDetailComponent implements OnInit {
   actionButtonsPositionSelectList = [
     { 'id': 'left', 'name': 'Left' },
     { 'id': 'right', 'name': 'Right' },
-    { 'id': 'topright', 'name': 'Top-Right' }
   ];
 
   gridFilterTypeSelectList = [
@@ -434,7 +433,9 @@ export class AppPageDetailComponent implements OnInit {
     { 'id': 'button', 'name': 'Button' },
     { 'id': 'multi-select', 'name': 'Multi-Select' },
     { 'id': 'dropdown', 'name': 'Dropdown' },
-    { 'id': 'upload', 'name': 'Upload' }
+    { 'id': 'upload', 'name': 'Upload' },
+    { 'id': 'csv', 'name': 'CSV' },
+    { 'id': 'pdf', 'name': 'PDF' }
   ];
 
   severitySelectList = [

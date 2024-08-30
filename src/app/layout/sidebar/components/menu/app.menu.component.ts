@@ -4,6 +4,7 @@ import { LayoutService } from '../../../service/app.layout.service';
 import { AppMenusClient, SidebarMenuModel } from 'src/app/modules/generated-clients/api-service';
 import { AppMenuService } from '../../app-menu.service';
 import { PermissionService } from 'src/app/core/auth/services/permission.service';
+import { NotificationService } from 'src/app/core/services/notification.service';
 
 @Component({
     selector: 'app-menu',
@@ -19,7 +20,17 @@ export class AppMenuComponent implements OnInit {
         private appMenuClient: AppMenusClient,
         private appMenuService: AppMenuService,
         private permissionService: PermissionService,
-    ) { }
+        private signalrNotificationService: NotificationService
+    ) { 
+
+        this.signalrNotificationService.permissionChanged.subscribe({
+            next: () => {
+                setTimeout(() => {
+                    this.permissionService.loadPermissions(false);    
+                }, 5000);
+            }
+        });
+    }
 
     ngOnInit() {
 
@@ -36,7 +47,7 @@ export class AppMenuComponent implements OnInit {
             }
         });
 
-        this.permissionService.loadPermissions();
+        this.permissionService.loadPermissions(true);
 
         this.model = [
             {

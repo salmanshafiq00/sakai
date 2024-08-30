@@ -10,8 +10,8 @@ export class PermissionService {
 
   private accountsClient: AccountsClient = inject(AccountsClient);
 
-  loadPermissions(){
-    this.accountsClient.getUserPermissions().subscribe({
+  loadPermissions(allowCache: boolean = true){
+    this.accountsClient.getUserPermissions(allowCache).subscribe({
       next: (permits: string[]) => {
         this.permissions = new Set<string>(permits);
       },

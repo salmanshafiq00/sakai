@@ -256,15 +256,20 @@ export class AccountsClient implements IAccountsClient {
     }
     return _observableOf(null as any);
   }
-  getUserPermissions(): Observable<string[]> {
+  
+  getUserPermissions(allowCache: boolean | undefined): Observable<string[]> {
     let url_ = this.baseUrl + "/api/Accounts/GetUserPermissions";
     url_ = url_.replace(/[?&]$/, "");
 
+    const content_ = JSON.stringify(allowCache);
+
     let options_: any = {
+      body: content_,
       observe: "response",
       responseType: "blob",
       withCredentials: true,
       headers: new HttpHeaders({
+        "Content-Type": "application/json",
         "Accept": "application/json"
       })
     };

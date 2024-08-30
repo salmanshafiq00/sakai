@@ -34,6 +34,17 @@
                                 [disabled]="!selectedRows || !selectedRows.length"
                                 (onClick)="handleToolbarActions(action)" />
                             </span>
+                            <span >
+                                <app-input-file-adv 
+                                    *ngIf="action.actionType === 'upload'"
+                                    mode="basic" 
+                                    [url]="action.navigationUrl" 
+                                    [chooseIcon]="action.icon" 
+                                    [chooseLabel]="action.caption" 
+                                    [uploadLabel]="action.caption" 
+                                    styleClass="p-button-sm"                                   
+                                />
+                            </span>
                         </ng-container>                   
                         <!-- <p-button 
                             pRipple
@@ -51,18 +62,44 @@
                 </ng-template>
 
                 <ng-template pTemplate="right">
-                    <p-fileUpload 
-                        mode="basic" 
-                        accept="image/*" 
-                        [maxFileSize]="1000000" 
-                        label="Import" 
-                        styleClass="p-button-sm"
-                        chooseLabel="Import" 
-                        class="inline-block">
-                    </p-fileUpload>
-                    <app-button icon="pi pi-file" size="small" tooltip="CSV" tooltipPos="bottom" styleClass="ml-2" (onClick)="dt.exportCSV()"  />
-                    <app-button severity="warning" size="small" icon="pi pi-file-pdf" tooltip="PDF" tooltipPos="bottom" styleClass="ml-2" (onClick)="exportPdf()"  />
-                    <app-button icon="pi pi-wrench" [rounded]="true" [outlined]="true" size="small" tooltip="Page Setting" tooltipPos="bottom" (onClick)="showPageSetting()" styleClass="ml-2" />
+                    <ng-container *ngFor="let action of rightToolbarActions">
+                    <span>
+                        <app-button 
+                            *ngIf="permit.hasPermission(action.permissions) && action.actionType === 'button'"
+                            [id]="action.actionName + '_btn'"
+                            [label]="action.showCaption ? action.caption : null" 
+                            class="mr-2" 
+                            [size]="'small'"
+                            [icon]="action.icon"
+                            [severity]="action.severity"
+                            [outlined]="true"
+                            [tooltip]="action.caption"
+                            tooltipPos="bottom"
+                            (onClick)="handleToolbarActions(action)" 
+                        />
+                    </span>
+                    <span  pTooltip="Upload" tooltipPosition="bottom">
+                        <app-input-file-adv 
+                            *ngIf="action.actionType === 'upload'"
+                            mode="basic" 
+                            [url]="action.navigationUrl" 
+                            [chooseIcon]="action.icon" 
+                            [chooseLabel]="action.showCaption ? action.caption : null" 
+                            [uploadLabel]="action.showCaption ? action.caption : null" 
+                            styleClass="p-button-sm p-button-outlined mr-2" 
+                        />
+                    </span>
+                    </ng-container>
+                    <app-button
+                        *ngIf="permit.hasPermission('Permissions.AppPageSetting.Edit')"
+                        icon="pi pi-wrench" 
+                        [rounded]="true" 
+                        [outlined]="true" 
+                        size="small" 
+                        tooltip="Page Setting" 
+                        tooltipPos="bottom" 
+                        (onClick)="showPageSetting()" styleClass="ml-2" 
+                    />
                 </ng-template>
             </p-toolbar>
 

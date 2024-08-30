@@ -1,8 +1,8 @@
 <div [ngClass]="{'p-hidden': hidden}" class="cust-field input-file">
   <app-toast key="file-toast" position="top-center" />
     <p-fileUpload
+      #fileUpload
       [name]="name"
-      [url]="url"
       [accept]="accept"
       [multiple]="multiple"
       [maxFileSize]="maxFileSize"

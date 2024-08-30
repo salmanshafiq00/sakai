@@ -150,6 +150,8 @@ export class DataGridComponent implements OnInit, OnDestroy {
             this.dataFields = [...this.appPageLayout?.appPageFields?.filter(field => field.isVisible === true)] ?? [];
             
             this.leftToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'left' && action.isVisible === true)] ?? [];
+            
+            this.rightToolbarActions = [...this.appPageLayout?.toolbarActions?.filter(action => action.position === 'right' && action.isVisible === true)] ?? [];
 
             this.rowActions = [...this.appPageLayout?.rowActions?.filter(field => field.isVisible === true)] ?? [];
 
@@ -288,9 +290,13 @@ export class DataGridComponent implements OnInit, OnDestroy {
     if (action.actionName === 'new') {
       this.openDialog(this.emptyGuid)
     } else if (action.actionName === 'refresh') {
-      this.refreshGrid()
+      this.refreshGrid();
     } else if (action.actionName === 'multiple-delete') {
       this.deleteSelectedItems();
+    } else if(action.actionName === 'csv'){
+      this.table.exportCSV();
+    } else if(action.actionName === 'pdf'){
+      this.exportPdf();
     }
     // else if(action.actionType === 'multi-select') {
     //   this.handleToolbarAction.emit(action)

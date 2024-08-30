@@ -1,9 +1,10 @@
 // input-file.component.ts
 import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
-import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output, ViewChild } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ToastService } from '../../services/toast.service';
+import { FileUpload } from 'primeng/fileupload';
 
 @Component({
   selector: 'app-input-file-adv',
@@ -12,7 +13,7 @@ import { ToastService } from '../../services/toast.service';
 })
 export class InputFileAdvComponent {
   @Input() label: string = '';
-  @Input() location: string = ''; // 'images' or 'images/student'
+  @Input() location: string = ''; // file-location: '/images' or '/images/student'
   @Input() required: boolean = false;
   @Input() disabled: boolean = false;
   @Input() readonly: boolean = false;
@@ -20,7 +21,7 @@ export class InputFileAdvComponent {
   @Input() accept: string = null;
   @Input() multiple: boolean = true;
   @Input() name: string = null;
-  @Input() url: string = null;
+  @Input() url: string = '/managefiles/upload';
   @Input() auto: boolean = false;
   @Input() maxFileSize: number = 2000000; // two mb
   @Input() fileLimit: number = 2;
@@ -42,10 +43,10 @@ export class InputFileAdvComponent {
   @Input() style: any = null;
   @Input() styleClass: string = null;
   @Input() previewWidth: number = 50;
-  @Input() uploadStyleClass: string = null;
+  @Input() uploadStyleClass: string = 'p-button-successs';
   @Input() cancelStyleClass: string = null;
   @Input() removeStyleClass: string = null;
-  @Input() chooseStyleClass: string = null; 
+  @Input() chooseStyleClass: string = null;
   @Input() invalidFileTypeMessageSummary: string = 'Invalid File Type';
   @Input() invalidFileSizeMessageSummary: string = 'File Max Size Exceeded';
   @Input() invalidFileLimitMessageSummary: string = 'File Limit Exceed';
@@ -59,17 +60,17 @@ export class InputFileAdvComponent {
   get fileUrls(): string[] {
     return this._fileUrls;
   }
-  
+
   set fileUrls(value: string[]) {
     this._fileUrls = value;
     this.fileUrlsChange.emit(this._fileUrls);
   }
-  
+
   @Output() fileUrlsChange = new EventEmitter<string[]>();
-  
 
+  @ViewChild('fileUpload') fileUpload: FileUpload;
 
-  private baseUrl = `${environment.API_BASE_URL}/api/managefiles`;
+  private baseUrl = `${environment.API_BASE_URL}/api`;
 
   private toast = inject(ToastService)
 
@@ -80,34 +81,38 @@ export class InputFileAdvComponent {
 
   onUpload(event: any) {
     this.uploadedFiles.emit(event.files);
+    console.log('onupload')
   }
 
   onProgress(event: any) {
     this.progressValue = event.progres;
   }
 
-  onError(event: any){
+  onError(event: any) {
     this.uploadError.emit(event)
   }
 
-  onSelect(event: any){
+  onSelect(event: any) {
     this.selectedFiles.emit(event);
   }
 
-  onUploadHandler(event: any){
+  onUploadHandler(event: any) {
 
     this.upload(event.files).subscribe({
       next: (response) => {
         if (response.status === 'success') {
-          this.toast.showCustom(`Upload Successfully` ,'success', '', 'file-toast', 3000);
-          this.fileUrls = response.body?.map(x => x.filePath);
+          this.toast.showCustom(`Upload Successfully`, 'success', '', 'file-toast', 3000);
+          if(response?.body && Array.isArray(response?.body)){
+            this.fileUrls = response.body?.map(x => x.filePath);
+          }
           // Do something with the file path (e.g., display a message or update UI)
+          this.fileUpload.clear();
         } else if (response.status === 'progress') {
           this.progressValue = response.progress; // Update progress bar
         }
       },
       error: (error) => {
-        this.toast.showCustom(`Upload Failed` ,'error', '', 'file-toast', 3000);
+        this.toast.showCustom(`Upload Failed`, 'error', '', 'file-toast', 3000);
       }
     });
 
@@ -120,7 +125,7 @@ export class InputFileAdvComponent {
     });
     formData.append('location', this.location);
 
-    return this.http.post(`${this.baseUrl}/upload`, formData, {
+    return this.http.post(`${this.baseUrl}${this.url}`, formData, {
       reportProgress: true,
       withCredentials: true,
       observe: 'events'
@@ -143,8 +148,8 @@ export class InputFileAdvComponent {
       })
     );
   }
-  
-  
+
+
 }
 
 
