@@ -13,6 +13,7 @@ import { AppDataGridModel } from '../../models/app-data-grid.model';
 import { AppPageDetailComponent } from 'src/app/modules/admin/components/app-page-detail/app-page-detail.component';
 import { PermissionService } from 'src/app/core/auth/services/permission.service';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-data-grid',
@@ -21,7 +22,7 @@ import { Router } from '@angular/router';
   providers: [ToastService, BackoffService, ConfirmDialogService, DatePipe, AppPagesClient]
 })
 export class DataGridComponent implements OnInit, OnDestroy {
-
+  baseUrl = environment.API_BASE_URL;
   // Page Layout Settings Start Start
   isPagelayoutFound: boolean = true;
   appPageLayout: any = {};
@@ -567,7 +568,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
       .map(filter => {
         const dataField = this.dataFields.find(x => x.field === filter.field);
         let filterValue = filter.value;
-        
+
         if (dataField.fieldType === 'select' || dataField.fieldType === 'multiselect') {
           const dataSource = this.optionsDataSources[dataField?.dsName]?.find(
             x => x.id?.toString().toLowerCase() == filterValue.toLowerCase().replace(/^'|'$/g, ''));
@@ -576,7 +577,7 @@ export class DataGridComponent implements OnInit, OnDestroy {
 
         console.log(dataField)
         return `${dataField.header}: ${filterValue}`
-    });
+      });
 
     import("jspdf").then(jsPDF => {
       import("jspdf-autotable").then(autoTable => {
